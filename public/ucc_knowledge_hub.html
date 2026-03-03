@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>UCC Knowledge Hub — Empowering Digital Learning</title>
+  <link rel="stylesheet" href="main.css">
+
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo-wrap">
+        <!-- Official UCC logo (if unavailable, replace with local file 'ucc-logo.png') -->
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEC31GlH03Kf6NAmmiIHqInFd0q1bQz2gmDg&s" alt="UCC logo" class="ucc-logo">
+      </div>
+      <div class="title-wrap">
+        <h1>UCC Knowledge Hub</h1>
+        <p class="subtitle">Empowering Digital Learning</p>
+      </div>
+      <nav class="main-nav">
+        <a href="Loaners.html">Request/Borrow</a>
+        <a href="#">Scan Me</a>
+        <a href="profile.html">Profile</a>
+        <a href="ucc_landing_page.html">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="hero-copy">
+  <h2>Find research. Read smarter. Create knowledge.</h2>
+  <p>Search UCC's collections, access Caribbean archives, and use AI tools to accelerate your learning.</p>
+
+  <form class="search-form" id="bookSearchForm" autocomplete="off">
+    <input
+      id="bookQuery"
+      type="search"
+      placeholder="Search books by title or author..."
+      aria-label="Search books"
+    >
+    <button class="btn primary" type="submit">Search</button>
+  </form>
+
+  <div id="searchResults" class="search-results"></div>
+</div>
+
+
+        </div>
+        <div class="hero-visual">
+          <div class="tech-pattern"></div>
+        </div>
+      </div>
+    </section>
+<section class="features">
+  <h3>Key Features</h3>
+
+  <div class="feature-grid">
+
+    <div class="feature-card clickable">
+      <h4>Smart Search & Discovery</h4>
+      <p>Semantic search with filters and auto-complete to quickly find relevant resources.</p>
+    </div>
+
+    <div class="feature-card clickable">
+      <h4>Account Management</h4>
+      <p>Secure profiles for loans, holds, history and personalized recommendations.</p>
+    </div>
+
+    <div id="caribbeanArchive" class="feature-card clickable"
+         onclick="window.open('https://nlj.gov.jm/digital-collections/')">
+      <h4>Jamaica Digital Archive</h4>
+      <p>Access Jamaica’s digitized heritage materials via the National Library of Jamaica (NLJ).</p>
+    </div>
+
+    <div class="feature-card clickable" onclick="location.href='loaners.html'">
+      <h4>Borrowing & Renewing</h4>
+      <p>View borrowed items, renew loans, check availability, place holds.</p>
+    </div>
+
+    <div class="feature-card clickable">
+      <h4>Notifications & Alerts</h4>
+      <p>Due date reminders, new arrivals, and hold alerts.</p>
+    </div>
+
+    <div class="feature-card clickable">
+      <h4>E-Resources Access</h4>
+      <p>Deep links to e-books, journals, and databases.</p>
+    </div>
+
+    <div class="feature-card clickable">
+      <h4>Social & Community Features</h4>
+      <p>Book Reviews & Ratings.<br>Social Sharing.</p>
+    </div>
+
+    <div class="feature-card clickable" onclick="location.href='forum.html'">
+      <h4>User Forum</h4>
+      <p>Connect with Students and Teachers.</p>
+    </div>
+
+  </div>
+
+</section>
+    <section class="library-grid">
+      <h3>Featured Resources</h3>
+      <div class="cards">
+        <article class="resource-card">
+          <img src="https://webimages.iadb.org/Drupal_pantheon/publications/english/images/10895.png" alt="Digital Transformation">
+          <div class="card-body">
+            <h4>Digital Transformation in the Caribbean</h4>
+            <p class="meta">By Martínez Garza Fernández, Ricardo ; Iglesias Rodriguez, Enrique ; García Zaballos, Antonio</p>
+            <p class="excerpt">A study on the adoption of digital technologies across Caribbean institutions.</p>
+            <div class="card-actions">
+              <a class="btn ghost" href="https://publications.iadb.org/en/publications/english/viewer/Digital-Transformation-Infrastructure-Sharing-in-Latin-America-and-the-Caribbean.pdf">View</a>
+              <a class="btn" href="https://publications.iadb.org/publications/english/document/Digital-Transformation-Infrastructure-Sharing-in-Latin-America-and-the-Caribbean.pdf">Download</a>
+              <a class="btn" href="https://publications.iadb.org/en/digital-transformation-infrastructure-sharing-latin-america-and-caribbean">Source</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="resource-card">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8xchLY9XmVnmIgAhvNfDeH1GtvC4m123dZw&s" alt="AI in Education">
+          <div class="card-body">
+            <h4>AI in Education</h4>
+            <p class="meta">By Matt Miller</p>
+            <p class="excerpt">Explores the role of AI tools in teaching and learning across the world.</p>
+            <div class="card-actions">
+              <a class="btn ghost" href="https://ditchthattextbook.com/ai-edu/#tve-jump-186cc04809e">View</a>
+              <a class="btn" href="https://www.amazon.com/Educators-Strategies-Efficiencies-Artificial-Intelligence-ebook/dp/B0BYPL6ZBV?_encoding=UTF8&qid=&sr=&language=en_US&ref_=as_li_ss_tl">Buy/Download</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="resource-card">
+          <img src="https://m.media-amazon.com/images/I/61j6+dXTjgL._SL1500_.jpg" alt="Thesis">
+          <div class="card-body">
+            <h4>Renewable Energy: Law, Policy and Practice</h4>
+            <p class="meta">By Troy A. Rule</p>
+            <p class="excerpt">A thesis examining policy options and implementation challenges in Jamaica.</p>
+            <div class="card-actions">
+              <a class="btn ghost" href="https://www.amazon.com/Renewable-Energy-Practice-American-Casebook/dp/1647083656">View</a>
+              <a class="btn" href="https://www.amazon.com/Renewable-Energy-Practice-American-Casebook/dp/1647083656">Buy/Download</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="assistant">
+  <div class="assistant-wrap">
+    <div class="assistant-left">
+      <p>Type a question to get a quick summary, citation help, or related readings...</p>
+    </div>
+    <div class="assistant-right">
+      <form onsubmit="return false;">
+        <input type="text" placeholder="e.g., 'Cite this article in APA'">
+        <button class="btn primary">Generate</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+
+  </main>
+
+  <footer class="site-footer">
+  <div class="footer-inner">
+    <p>
+      <strong>University of the Commonwealth Caribbean</strong><br>
+      17 Worthington Avenue, Kingston 5, Jamaica W.I.<br>
+      <a href="https://www.ucc.edu.jm">www.ucc.edu.jm</a>
+    </p>
+    <small>© <span id="year"></span> UCC — All Rights Reserved</small>
+  </div>
+  </footer>
+
+
+ <script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("bookSearchForm");
+    const input = document.getElementById("bookQuery");
+    const resultsBox = document.getElementById("searchResults");
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const query = input.value.trim();
+      if (!query) return;
+
+      resultsBox.innerHTML = "<p>Searching across sources…</p>";
+
+      const [openLibData, googleData, archiveData] = await Promise.all([
+        fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}`).then(r => r.json()).catch(() => null),
+        fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`).then(r => r.json()).catch(() => null),
+        fetch(`https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}&output=json`).then(r => r.json()).catch(() => null)
+      ]);
+
+      let results = [];
+
+      if (openLibData?.docs) {
+        results.push({
+          source: "Open Library",
+          books: openLibData.docs.slice(0, 5).map(b => ({
+            title: b.title,
+            author: b.author_name?.join(", ") || "Unknown",
+            description: b.first_sentence || "",
+            link: "https://openlibrary.org" + b.key
+          }))
+        });
+      }
+
+      if (googleData?.items) {
+        results.push({
+          source: "Google Books",
+          books: googleData.items.slice(0, 5).map(b => ({
+            title: b.volumeInfo.title,
+            author: (b.volumeInfo.authors || ["Unknown"]).join(", "),
+            description: b.volumeInfo.description || "",
+            link: b.volumeInfo.previewLink
+          }))
+        });
+      }
+
+      if (archiveData?.response?.docs) {
+        results.push({
+          source: "Internet Archive",
+          books: archiveData.response.docs.slice(0, 5).map(b => ({
+            title: b.title,
+            author: b.creator || "Unknown",
+            description: b.description || "",
+            link: `https://archive.org/details/${b.identifier}`
+          }))
+        });
+      }
+
+      if (!results.length) {
+        resultsBox.innerHTML = "<p>No results found from any source.</p>";
+        return;
+      }
+
+      resultsBox.innerHTML = results.map(group => `
+        <h4>${group.source}</h4>
+        <ul class="search-section">
+          ${group.books.map(book => `
+            <li>
+              <strong>${book.title}</strong><br>
+              <span>${book.author}</span><br>
+              <a href="${book.link}" target="_blank">View</a><br>
+              <button class="btn ghost summary-btn" data-title="${book.title}" data-author="${book.author}" data-description="${book.description}">
+                Generate AI Summary
+              </button>
+              <p class="ai-summary" style="display:none;"></p>
+            </li>
+          `).join("")}
+        </ul>
+      `).join("") + `
+        <div class="external-links">
+          <h4>External Search Options</h4>
+          <a href="https://www.oreilly.com/search/?q=${encodeURIComponent(query)}" target="_blank">O’Reilly</a>
+          <a href="https://z-lib.id/s?q=${encodeURIComponent(query)}" target="_blank">Z-Library</a>
+          <a href="https://www.gutenberg.org/ebooks/search/?query=${encodeURIComponent(query)}" target="_blank">Project Gutenberg</a>
+        </div>
+      `;
+
+      // Bind summary buttons
+      document.querySelectorAll('.summary-btn').forEach(button => {
+        button.addEventListener('click', async () => {
+          const title = button.dataset.title;
+          const author = button.dataset.author;
+          const description = button.dataset.description;
+          const summaryEl = button.nextElementSibling;
+
+          summaryEl.style.display = "block";
+          summaryEl.textContent = "⏳ Generating summary...";
+
+          try {
+            const res = await fetch('http://localhost:5000/api/summary', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ bookTitle: title, author, description })
+            });
+
+            const data = await res.json();
+            summaryEl.textContent = data.summary || "No summary returned.";
+          } catch (err) {
+            summaryEl.textContent = "⚠️ Failed to fetch summary.";
+          }
+        });
+      });
+    });
+  });
+</script>
+
+<script>
+  if (window.location.hash === "#caribbeanArchive") {
+    setTimeout(() => {
+      document.getElementById("caribbeanArchive")
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 300);
+  }
+</script>
+
+<script>
+  async function loadResources() {
+    const res = await fetch("http://localhost:5000/api/resources");
+    const data = await res.json();
+    const container = document.querySelector(".cards");
+    container.innerHTML = data.map(item => `
+      <article class="resource-card">
+        <img src="https://via.placeholder.com/120x160.png?text=${encodeURIComponent(item.format)}" alt="${item.title}">
+        <div class="card-body">
+          <h4>${item.title}</h4>
+          <p class="meta">By ${item.author || "Unknown"} — ${item.format}</p>
+          <p class="excerpt">${item.description || ""}</p>
+        </div>
+      </article>
+    `).join("");
+  }
+
+  loadResources();
+</script>
+<script>
+  function logout() {
+    localStorage.removeItem("token");
+    window.location.href = "ucc_landing_page.html";
+  }
+</script>
+<script>
+    const token = localStorage.getItem("token");
+    if (!token) {
+      window.location.href = "ucc_landing_page.html";
+    }
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>UCC Knowledge Hub — Login</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+    body{background:linear-gradient(135deg,#002b5c,#00509e);color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;}
+    header{width:100%;background:rgba(0,0,0,0.2);display:flex;align-items:center;padding:15px 40px;}
+    header img{height:60px;}
+    .login-box{margin-top:80px;background:rgba(255,255,255,0.1);backdrop-filter:blur(12px);padding:45px 40px;border-radius:20px;width:400px;text-align:center;box-shadow:0 0 25px rgba(0,0,0,0.3);}
+    .login-box h1{color:#ffcc00;font-size:2rem;margin-bottom:25px;}
+    input{width:100%;padding:14px;margin:10px 0;border:none;border-radius:10px;font-size:1rem;background:rgba(255,255,255,0.9);color:#000;}
+    button{width:100%;padding:14px;margin-top:15px;border:none;border-radius:10px;font-size:1.1rem;font-weight:700;background:#ffcc00;color:#002b5c;cursor:pointer;transition:.3s;}
+    button:hover{background:#fff;box-shadow:0 0 20px rgba(255,204,0,0.7);}
+    .extra{text-align:center;margin-top:20px;}
+    .extra a{color:#ffcc00;text-decoration:none;font-weight:600;}
+    footer{margin-top:auto;padding:20px;text-align:center;font-size:.9rem;opacity:.8;}
+  </style>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="site-header">
+    <div class="header-inner">
+      <div class="logo-wrap">
+        <!-- Official UCC logo (if unavailable, replace with local file 'ucc-logo.png') -->
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEC31GlH03Kf6NAmmiIHqInFd0q1bQz2gmDg&s" alt="UCC logo" class="ucc-logo">
+      </div>
+      <div class="title-wrap">
+        <h1>UCC Knowledge Hub</h1>
+        <p class="subtitle">Empowering Digital Learning</p>
+      </div>
+      <nav class="main-nav">
+        <a href="ucc_knowledge_hub.html">Home</a>
+        <a href="ucc_landing_page.html">About</a>
+       
+      </nav>
+    </div>
+  </header>
+ 
+  <div class="login-box">
+    <h1>Student Login</h1>
+    <form id="loginForm">
+      <input type="number" id="schoolId" placeholder="School ID" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <button type="submit">Login</button>
+    </form>
+    <div class="extra">
+      <p>Don’t have an account? <a href="signup.html">SignUp</a></p>
+    </div>
+    <p id="result"></p>
+  </div>
+
+  <footer>© <span id="year"></span> UCC — All Rights Reserved</footer>
+  <script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  
+  const schoolId = document.getElementById("schoolId").value;
+  const password = document.getElementById("password").value;
+
+  const res = await fetch("/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ schoolId, password })
+  });
+
+  const data = await res.json();
+  document.getElementById("result").textContent = data.message;
+  
+// Store token
+if (data.success) {
+  localStorage.setItem("token", data.token); 
+   // Redirect to home/dashboard
+  window.location.href = "ucc_knowledge_hub.html";
+}
+
+// redirect to dashboard
+  if (data.token) {
+    localStorage.setItem("token", data.token);
+    window.location.href = "ucc_knowledge_hub.html"; 
+  }
+});
+</script>
+
+
+</body>
+</html>

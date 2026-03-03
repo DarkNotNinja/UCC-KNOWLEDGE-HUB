@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home</title>
+    
+</head>
+<body>
+    <h2>Welcome to UCC Knowledge Hub</h2>
+    <button id="logoutBtn">Logout</button>
+
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>

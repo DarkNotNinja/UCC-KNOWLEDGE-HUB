@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>UCC Knowledge Hub — Profile</title>
+  <link rel="stylesheet" href="main.css">
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+    body{background:linear-gradient(135deg,#002b5c,#00509e);color:#fff;min-height:100vh;display:flex;flex-direction:column;}
+    header{width:100%;background:rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:space-between;padding:15px 40px;}
+    header img{height:60px;}
+    header nav a{color:#ffcc00;text-decoration:none;margin-left:25px;font-weight:600;transition:.3s;}
+    header nav a:hover{color:#fff;}
+    main{flex:1;display:flex;justify-content:center;align-items:flex-start;padding:60px 20px;}
+    .profile-container{background:rgba(255,255,255,0.1);backdrop-filter:blur(12px);padding:40px 50px;border-radius:20px;max-width:800px;width:100%;box-shadow:0 0 25px rgba(0,0,0,0.3);}
+    h1{color:#ffcc00;font-size:2rem;margin-bottom:20px;text-align:center;}
+    section{margin-top:30px;}
+    h2{font-size:1.3rem;color:#ffcc00;margin-bottom:10px;}
+    table{width:100%;border-collapse:collapse;margin-top:10px;}
+    th,td{padding:12px 10px;text-align:left;background:rgba(255,255,255,0.1);}
+    th{color:#ffcc00;}
+    tr:nth-child(even){background:rgba(255,255,255,0.15);}
+    form{margin-top:10px;}
+    input{width:100%;padding:12px;margin-bottom:10px;border:none;border-radius:8px;font-size:1rem;background:rgba(255,255,255,0.9);color:#000;}
+    button{padding:12px 20px;border:none;border-radius:8px;font-size:1rem;font-weight:700;background:#ffcc00;color:#002b5c;cursor:pointer;transition:.3s;}
+    button:hover{background:#fff;box-shadow:0 0 20px rgba(255,204,0,0.7);}
+    footer{padding:20px;text-align:center;font-size:.9rem;opacity:.8;}
+  </style>
+</head>
+<body>
+  <script>
+    const token = localStorage.getItem("token");
+    if (!token) {
+      window.location.href = "ucc_landing_page.html";
+    }
+  </script>
+
+  <header>
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEC31GlH03Kf6NAmmiIHqInFd0q1bQz2gmDg&s" alt="UCC logo">
+    <nav>
+      <a href="ucc_knowledge_hub.html">Home</a>
+      <a href="#" id="logoutBtn">Log Out</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="profile-container">
+      <h1>My Profile</h1>
+        <div id="userInfo" style="margin-bottom:20px; text-align:center;">
+          <p><strong>Loading user info...</strong></p>
+        </div>
+
+      <section id="loanSection">
+        <h2>My Loans</h2>
+        <table id="loanTable">
+          <thead>
+            <tr><th>Book Title</th><th>Due Date</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Introduction to AI</td><td>Nov 20, 2025</td><td>Active</td></tr>
+            <tr><td>Jamaican History Archives</td><td>Oct 30, 2025</td><td>Returned</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="passwordSection">
+        <h2>Set / Change Password</h2>
+        <form id="passwordForm">
+          <input type="password" id="currentPassword" placeholder="Current Password" required>
+          <input type="password" id="newPassword" placeholder="New Password" required>
+          <button type="submit">Update Password</button>
+        </form>
+        <p id="passwordResult"></p>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    © <span id="year"></span> University of the Commonwealth Caribbean — All Rights Reserved
+  </footer>
+
+  <script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+// LOAD LOGGED-IN USER USING JWT
+async function loadUser() {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    // IF NOT LOGGED IN -> GO TO LOGIN PAGE
+    window.location.href = "login.html";
+    return;
+  }
+
+  try {
+    const res = await fetch("/api/user", {
+      method: "GET",
+      headers: {
+        "Authorization": "Bearer " + token
+      }
+    });
+
+    if (!res.ok) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    const user = await res.json();
+
+    document.getElementById("userInfo").innerHTML = `
+      <p><strong>Name:</strong> ${user.fullname}</p>
+      <p><strong>Email:</strong> ${user.email}</p>
+      <p><strong>Student ID:</strong> ${user.school_id}</p>
+    `;
+
+  } catch (err) {
+    document.getElementById("userInfo").innerHTML =
+      "<p style='color:#ff8080;'>Error loading user data.</p>";
+  }
+}
+
+loadUser();
+
+/* UPDATE PASSWORD*/
+document.getElementById("passwordForm").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const token = localStorage.getItem("token");
+  const current = document.getElementById("currentPassword").value;
+  const newPass = document.getElementById("newPassword").value;
+
+  try {
+    const res = await fetch("/setpassword", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify({ current, newPass })
+    });
+
+    const data = await res.json();
+
+    document.getElementById("passwordResult").textContent = data.message || "Something happened.";
+
+  } catch (err) {
+    document.getElementById("passwordResult").textContent = "Error: Could not update password.";
+  }
+});
+
+
+/*LOGOUT */
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  localStorage.removeItem("token");
+  window.location.href = "ucc_landing_page.html";
+});
+</script>
+
+
+</body>
+</html>

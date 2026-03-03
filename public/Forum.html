@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Community Forum — UCC Knowledge Hub</title>
+ <link rel="stylesheet" href="main.css">
+
+</head>
+
+<body>
+  <script>
+    const token = localStorage.getItem("token");
+    if (!token) {
+      window.location.href = "ucc_landing_page.html";
+    }
+  </script>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo-wrap">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEC31GlH03Kf6NAmmiIHqInFd0q1bQz2gmDg&s"
+             alt="UCC logo"
+             class="ucc-logo">
+      </div>
+
+      <nav class="main-nav">
+        <a href="ucc_knowledge_hub.html">Home</a>
+        <a href="request_borrow.html">Request/Borrow</a>
+        <a href="forum.html" class="active">Forum</a>
+        <a href="profile.html">Profile</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- HERO -->
+    <section class="hero small-hero">
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <h2>UCC Community Forum</h2>
+          <p>Ask questions. Share ideas. Learn from peers.</p>
+
+          <form class="search-form" id="forumSearchForm">
+            <input type="search" id="forumSearchInput" placeholder="Search forum topics…">
+            <button class="btn primary">Search</button>
+          </form>
+        </div>
+
+        <div class="hero-visual">
+          <div class="tech-pattern"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- THREAD LIST -->
+    <section class="library-grid">
+      <h3>Discussions</h3>
+
+      <div id="threadContainer" class="cards">
+        <p id="loadingMessage">Loading discussions...</p>
+      </div>
+    </section>
+
+    <!-- NEW POST FORM -->
+   <section class="features">
+  <h3>Start a Discussion</h3>
+
+  <div class="centered-wrapper">
+    <div class="feature-card" style="max-width:650px;">
+      <form id="newPostForm" class="request-form">
+
+          <label>Title</label>
+          <input type="text" id="postTitle" required placeholder="Enter discussion title">
+
+          <label>Category</label>
+          <select id="postCategory" required>
+            <option value="">Select category</option>
+            <option>General</option>
+            <option>IT</option>
+            <option>Business</option>
+            <option>Research</option>
+          </select>
+
+          <label>Message</label>
+          <textarea id="postMessage" rows="4" required placeholder="Write your message…"></textarea>
+
+          <button class="btn primary" type="submit">Post Discussion</button>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>University of the Commonwealth Caribbean</strong><br>
+      17 Worthington Avenue, Kingston 5, Jamaica W.I.<br>
+      <a href="https://www.ucc.edu.jm">www.ucc.edu.jm</a></p>
+
+      <small>© <span id="year"></span> UCC — All Rights Reserved</small>
+    </div>
+  </footer>
+
+<script>
+document.getElementById("year").textContent = new Date().getFullYear();
+
+const API_BASE = "http://localhost:3000/api"; // <<< EDIT THIS IF YOUR SERVER URL CHANGES
+
+const threadContainer = document.getElementById("threadContainer");
+const loadingMessage = document.getElementById("loadingMessage");
+
+
+// LOAD THREADS FROM BACKEND AND DATABASE
+async function loadThreads() {
+  try {
+    const res = await fetch(`${API_BASE}/threads`);
+    const threads = await res.json();
+
+    if (!threads.length) {
+      threadContainer.innerHTML = "<p>No discussions yet. Be the first to post!</p>";
+      return;
+    }
+
+    threadContainer.innerHTML = threads.map(t => `
+      <article class="resource-card thread-card" data-category="${t.category}">
+        <div class="card-body">
+          <h4>${t.title}</h4>
+          <p class="meta">Posted by <strong>${t.author || "Anonymous"}</strong> • ${t.category}</p>
+          <p class="excerpt">${t.message}</p>
+
+          <div class="card-actions">
+            <button class="btn ghost">View Thread</button>
+          </div>
+        </div>
+      </article>
+    `).join("");
+
+  } catch (err) {
+    threadContainer.innerHTML = "<p>Error loading discussions. Check server connection.</p>";
+  }
+}
+
+loadThreads();
+
+
+// SEARCH FILTER
+document.getElementById("forumSearchForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+  const term = document.getElementById("forumSearchInput").value.toLowerCase();
+
+  document.querySelectorAll(".thread-card").forEach(card => {
+    const match = card.innerText.toLowerCase().includes(term);
+    card.style.display = match ? "" : "none";
+  });
+});
+
+
+// NEW POST — SEND TO BACKEND
+document.getElementById("newPostForm").onsubmit = async function(e) {
+  e.preventDefault();
+
+  const newPost = {
+    title: document.getElementById("postTitle").value,
+    category: document.getElementById("postCategory").value,
+    message: document.getElementById("postMessage").value,
+    author: "User" // replace with logged-in user's name later
+  };
+
+  try {
+    const res = await fetch(`${API_BASE}/threads`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newPost)
+    });
+
+    if (!res.ok) throw new Error("Request failed");
+
+    alert("Discussion posted!");
+    loadThreads(); // refresh list
+    e.target.reset();
+
+  } catch (err) {
+    alert("Failed to post discussion. Server error.");
+  }
+};
+
+
+</script>
+
+</body>
+</html>

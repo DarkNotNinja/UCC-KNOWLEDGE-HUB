@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Assistant — UCC Knowledge Hub</title>
+  <link rel="stylesheet" href="main.css" />
+  <style>
+    .assistant-section {
+      max-width: 800px;
+      margin: 3rem auto;
+      padding: 2rem;
+      background: var(--card-bg, #fff);
+      border-radius: 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .assistant-section h2 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .assistant-section textarea {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1rem;
+      resize: vertical;
+      border-radius: 0.5rem;
+      border: 1px solid #ccc;
+      margin-bottom: 1rem;
+    }
+
+    .assistant-section .btn {
+      margin-top: 0.5rem;
+    }
+
+    .response-box {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: #eef7ff;
+      border-left: 4px solid #0078d7;
+      border-radius: 6px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+<script>
+    const token = localStorage.getItem("token");
+    if (!token) {
+      window.location.href = "ucc_landing_page.html";
+    }
+  </script>
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo-wrap">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEC31GlH03Kf6NAmmiIHqInFd0q1bQz2gmDg&s"
+             alt="UCC logo"
+             class="ucc-logo">
+      </div>
+
+      <nav class="main-nav">
+        <a href="ucc_landing_page.html">Home</a>
+        <a href="ucc_knowledge_hub.html">Library</a>
+        <a href="request_borrow.html">Borrow</a>
+        <a href="forum.html">Forum</a>
+        <a href="profile.html">Profile</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+    <section class="assistant-section">
+      <h2>Ask the AI Assistant</h2>
+      <textarea id="userInput" rows="5" placeholder="Ask me anything related to research, IT, business, and more…"></textarea>
+      <button class="btn primary" onclick="askAssistant()">Ask</button>
+
+      <div id="responseBox" class="response-box" style="display:none;"></div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>University of the Commonwealth Caribbean</strong><br>
+        17 Worthington Avenue, Kingston 5, Jamaica W.I.<br>
+        <a href="https://www.ucc.edu.jm">www.ucc.edu.jm</a></p>
+      <small>© <span id="year"></span> UCC — All Rights Reserved</small>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    async function askAssistant() {
+      const input = document.getElementById("userInput").value.trim();
+      const responseBox = document.getElementById("responseBox");
+
+      if (!input) return alert("Please enter a question.");
+      responseBox.style.display = "block";
+      responseBox.textContent = "Thinking…";
+
+      try {
+        const res = await fetch("http://localhost:3000/api/assistant", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ message: input })
+        });
+
+        const data = await res.json();
+        responseBox.textContent = data.response || "No response received.";
+
+      } catch (err) {
+        console.error(err);
+        responseBox.textContent = "Failed to contact AI assistant.";
+      }
+    }
+  </script>
+</body>
+</html>

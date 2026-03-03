@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>UCC Knowledge Hub — Welcome</title>
+  <link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-inner">
+      <img
+        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEC31GlH03Kf6NAmmiIHqInFd0q1bQz2gmDg&s"
+        alt="UCC logo"
+        class="ucc-logo"
+      >
+      <nav class="main-nav"></nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="overlay"></div>
+    <div class="hero-content">
+      <h1>UCC Knowledge Hub</h1>
+      <p>Empowering Knowledge. Connecting Minds.</p>
+      <div class="actions">
+        <a href="login.html" class="btn ghost">Log In</a>
+        <a href="signup.html" class="btn ghost">Sign Up</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="about">
+    <div class="container">
+      <h2>About the Knowledge Hub</h2>
+      <p>
+        The UCC Knowledge Hub is a digital library system designed to provide seamless
+        access to academic materials, Caribbean archives, and AI-powered learning tools.
+        It aims to make research and information access easier for every student at the
+        University of the Commonwealth Caribbean.
+      </p>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features">
+    <div class="container">
+      <h2>Why Choose the Knowledge Hub?</h2>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h3>📚 Digital Access</h3>
+          <p>Access books, journals, and theses from any device, anywhere.</p>
+        </div>
+
+        <div class="feature-card clickable"
+             onclick="location.href='ucc_knowledge_hub.html#searchBarAnchor'">
+          <h3>🔎 Smart Search</h3>
+          <p>Find resources quickly with intelligent search and filtering.</p>
+        </div>
+
+        <div class="feature-card clickable"
+             onclick="location.href='ucc_knowledge_hub.html#caribbeanArchive'">
+          <h3>🌍 Caribbean Archives</h3>
+          <p>Explore a dedicated repository for Jamaican and Caribbean research.</p>
+        </div>
+
+        <div class="feature-card clickable"
+              onclick="location.href='assistant.html'">
+          <h3>🤖 AI Assistant</h3>
+          <p>Use our built-in AI for research support and citation help.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="container">
+      <h2>Start Your Learning Journey</h2>
+      <p>Discover, read, and grow with the UCC Knowledge Hub today.</p>
+      <a href="ucc_knowledge_hub.html" class="btn primary">Explore Now</a>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>
+        <strong>University of the Commonwealth Caribbean</strong><br>
+        17 Worthington Avenue, Kingston 5, Jamaica W.I.<br>
+        <a href="https://www.ucc.edu.jm">www.ucc.edu.jm</a>
+      </p>
+      <small>© <span id="year"></span> UCC — All Rights Reserved</small>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+
+</body>
+</html>

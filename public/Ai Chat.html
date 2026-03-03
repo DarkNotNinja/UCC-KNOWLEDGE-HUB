@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UCC AI Assistant</title>
+  <link rel="stylesheet" href="main.css">
+  <style>
+    .chat-container {
+      max-width: 700px;
+      margin: 3rem auto;
+      padding: 2rem;
+      background: #f9f9f9;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .chat-container h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1rem;
+      resize: vertical;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 1rem;
+    }
+
+    .btn {
+      display: inline-block;
+      background: #004080;
+      color: #fff;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .response-box {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: #e7f3ff;
+      border-left: 4px solid #0078d7;
+      border-radius: 6px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="chat-container">
+    <h2>Ask the AI Assistant</h2>
+    <textarea id="userInput" rows="5" placeholder="Type your question here..."></textarea>
+    <button class="btn" onclick="askAssistant()">Ask</button>
+    <div id="responseBox" class="response-box" style="display:none;"></div>
+  </div>
+
+  <script>
+    async function askAssistant() {
+      const input = document.getElementById("userInput").value.trim();
+      const responseBox = document.getElementById("responseBox");
+
+      if (!input) return alert("Please enter a question.");
+
+      responseBox.style.display = "block";
+      responseBox.textContent = "Thinking...";
+
+      try {
+        const res = await fetch("http://localhost:3000/api/assistant", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ message: input })
+        });
+
+        const data = await res.json();
+        if (data.response) {
+          responseBox.textContent = data.response;
+        } else {
+          responseBox.textContent = "No response received.";
+        }
+
+      } catch (err) {
+        console.error(err);
+        responseBox.textContent = "Failed to contact AI assistant.";
+      }
+    }
+  </script>
+
+</body>
+</html>
