@@ -6,15 +6,17 @@ const cors = require('cors');
 const jwt = require("jsonwebtoken");
 const { Pool } = require('pg');
 const { OpenAI } = require('openai');
+const path = require('path');
 
 const app = express();
+
 app.use(bodyParser.json());
 app.use(cors());
 app.use(express.static('public'));
-app.get('/', (req, res) => {
-  res.send("UCC Knowledge Hub server is running");
-});
 
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
 
 // JWT MIDDLEWARE (WORKING)
 function authenticateToken(req, res, next) {
@@ -32,11 +34,10 @@ function authenticateToken(req, res, next) {
 
 // DB SETUP (WORKING)
 const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.DATABASE_URL
+    ? { rejectUnauthorized: false }
+    : false
 });
 
 // SIGNUP (WORKING)
@@ -151,7 +152,7 @@ app.post('/api/citation', async (req, res) => {
     const prompt = `Generate an APA 7th edition citation for the following book:\n\nTitle: ${title}\nAuthor(s): ${author}\nFormat it exactly as it should appear in a reference list.`;
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-4o-mini",
       messages: [{ role: "user", content: prompt }],
       temperature: 0.2
     });
@@ -166,7 +167,7 @@ app.post('/api/citation', async (req, res) => {
 });
 
 // CREATE FORUM THREAD (WORKING)
-app.post('/api/threads', async (req, res) => {
+app.post('/api/threads', authenticateToken, async (req, res) => {
   const { title, category, message, author } = req.body;
 
   if (!title || !category || !message) {
@@ -202,4 +203,4 @@ app.get('/api/threads', async (req, res) => {
 
 // SERVER START (WORKING)
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT} — ${process.env.NODE_ENV || 'development'}`);
