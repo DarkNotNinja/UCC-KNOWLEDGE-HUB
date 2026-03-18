@@ -34,12 +34,41 @@ function authenticateToken(req, res, next) {
 
 // DB SETUP (WORKING)
 const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_DATABASE,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
+
+// AUTO-CREATE TABLES IF THEY DON'T EXIST
+(async () => {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        school_id VARCHAR(50) UNIQUE NOT NULL,
+        fullname TEXT NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL
+      );
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS threads (
+        id SERIAL PRIMARY KEY,
+        title TEXT NOT NULL,
+        category TEXT NOT NULL,
+        message TEXT NOT NULL,
+        author TEXT DEFAULT 'Anonymous',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    console.log("Database tables checked/created successfully!");
+  } catch (err) {
+    console.error("Error creating tables:", err);
+  }
+})();
 
 // SIGNUP (WORKING)
 app.post('/signup', async (req, res) => {
@@ -199,8 +228,6 @@ app.get('/api/threads', async (req, res) => {
     res.status(500).json({ error: "Failed to load threads" });
   }
 });
-
-
 
 // SERVER START (WORKING)
 const PORT = process.env.PORT || 3000;

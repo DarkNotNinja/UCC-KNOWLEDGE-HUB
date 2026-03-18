@@ -1,38 +1,371 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>UCC Knowledge Hub — Welcome</title>
-  <link rel="stylesheet" href="main.css">
-</head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UCC Knowledge Hub — Digital Library Platform</title>
+  <meta name="description" content="The UCC Knowledge Hub provides seamless access to academic materials, Caribbean archives, and AI-powered learning tools for University of the Commonwealth Caribbean students." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
+    :root {
+      --bg: hsl(220, 40%, 7%);
+      --fg: hsl(45, 30%, 92%);
+      --primary: hsl(43, 55%, 54%);
+      --primary-fg: hsl(220, 40%, 7%);
+      --card: hsl(220, 35%, 11%);
+      --muted: hsl(220, 15%, 55%);
+      --border: hsl(220, 25%, 18%);
+      --secondary: hsl(220, 30%, 16%);
+      --glow-gold: 0 0 40px hsla(43, 55%, 54%, 0.3);
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-body);
+      line-height: 1.6;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: var(--font-display);
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* ── HEADER ── */
+    .site-header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 50;
+      background: hsla(220, 35%, 11%, 0.6);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .header-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .ucc-logo {
+      height: 40px; width: 40px;
+      border-radius: 50%;
+    }
+    .header-title {
+      font-family: var(--font-display);
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--fg);
+    }
+    .main-nav { display: flex; gap: 24px; }
+    .main-nav a {
+      font-size: 0.875rem;
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+    .main-nav a:hover { color: var(--fg); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      height: 100vh;
+      min-height: 600px;
+      width: 100%;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, hsla(220, 40%, 5%, 0.85) 0%, hsla(220, 40%, 5%, 0.4) 60%, transparent 100%);
+    }
+    .hero-content {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100%;
+      padding: 0 48px;
+      max-width: 700px;
+    }
+    .hero-tag {
+      margin-bottom: 16px;
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      color: var(--primary);
+    }
+    .hero h1 {
+      font-size: clamp(2.8rem, 6vw, 4.5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      letter-spacing: -0.02em;
+    }
+    .hero h1 .gold {
+      color: var(--primary);
+      text-shadow: var(--glow-gold);
+    }
+    .hero-desc {
+      font-size: 1.125rem;
+      line-height: 1.7;
+      color: hsla(45, 30%, 92%, 0.7);
+      max-width: 480px;
+      margin-bottom: 40px;
+    }
+    .hero-bottom-fade {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 128px;
+      background: linear-gradient(to top, var(--bg), transparent);
+    }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 32px;
+      border-radius: 8px;
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: var(--primary-fg);
+    }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-outline {
+      border: 1px solid hsla(45, 30%, 92%, 0.3);
+      background: transparent;
+      color: var(--fg);
+    }
+    .btn-outline:hover {
+      background: hsla(45, 30%, 92%, 0.1);
+    }
+    .actions { display: flex; gap: 16px; flex-wrap: wrap; }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 48px 24px;
+    }
+    .stats-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      text-align: center;
+    }
+    .stat-number {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .stat-label {
+      font-size: 0.875rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ── ABOUT ── */
+    .about {
+      padding: 80px 24px;
+    }
+    .about .container {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .about h2 {
+      font-size: 2rem;
+      margin-bottom: 24px;
+    }
+    .about p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.8;
+    }
+
+    /* ── FEATURES ── */
+    .features {
+      padding: 80px 24px;
+    }
+    .features .container {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    .features h2 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 48px;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+    }
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px 24px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .feature-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 0 30px hsla(43, 55%, 54%, 0.1);
+    }
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 16px;
+      display: block;
+    }
+    .feature-card h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--fg);
+    }
+    .feature-card p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── CTA ── */
+    .cta {
+      padding: 80px 24px;
+      text-align: center;
+    }
+    .cta h2 {
+      font-size: 2rem;
+      margin-bottom: 16px;
+    }
+    .cta p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      margin-bottom: 32px;
+    }
+
+    /* ── FOOTER ── */
+    .site-footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 24px;
+      text-align: center;
+    }
+    .site-footer p {
+      font-family: var(--font-display);
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+    .site-footer strong { color: var(--fg); }
+    .site-footer a { color: var(--primary); }
+    .site-footer a:hover { text-decoration: underline; }
+    .site-footer small {
+      display: block;
+      margin-top: 8px;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .hero-content { padding: 0 24px; }
+      .stats-inner { grid-template-columns: 1fr; gap: 24px; }
+      .main-nav { display: none; }
+    }
+  </style>
+</head>
 <body>
 
   <!-- HEADER -->
   <header class="site-header">
     <div class="header-inner">
-      <img
-        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEC31GlH03Kf6NAmmiIHqInFd0q1bQz2gmDg&s"
-        alt="UCC logo"
-        class="ucc-logo"
-      >
-      <nav class="main-nav"></nav>
+      <div class="header-left">
+        <img
+          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEC31GlH03Kf6NAmmiIHqInFd0q1bQz2gmDg&s"
+          alt="UCC logo"
+          class="ucc-logo"
+        />
+        <span class="header-title">UCC Knowledge Hub</span>
+      </div>
+      <nav class="main-nav">
+        <a href="#about">About</a>
+        <a href="login.html">Login</a>
+      </nav>
     </div>
   </header>
 
   <!-- HERO -->
   <section class="hero">
-    <div class="overlay"></div>
+    <img
+      src="https://www.ucc.edu.jm/sites/default/files/Campus%20Image%202.jpg"
+      alt="Modern university library interior"
+      class="hero-bg"
+    />
+    <div class="hero-overlay"></div>
     <div class="hero-content">
-      <h1>UCC Knowledge Hub</h1>
-      <p>Empowering Knowledge. Connecting Minds.</p>
+      <p class="hero-tag">Digital Library Platform</p>
+      <h1>UCC <span class="gold">Knowledge Hub</span></h1>
+      <p class="hero-desc">
+        Empowering Knowledge. Connecting Minds. Access academic materials,
+        Caribbean archives, and AI-powered learning tools — all in one place.
+      </p>
       <div class="actions">
-        <a href="login.html" class="btn ghost">Log In</a>
-        <a href="signup.html" class="btn ghost">Sign Up</a>
+        <a href="ucc_knowledge_hub.html" class="btn btn-primary">Explore Now</a>
+        <a href="login.html" class="btn btn-outline">Log In</a>
       </div>
     </div>
+    <div class="hero-bottom-fade"></div>
   </section>
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stats-inner">
+      <div>
+        <div class="stat-number">50K+</div>
+        <div class="stat-label">Digital Resources</div>
+      </div>
+      <div>
+        <div class="stat-number">2,500+</div>
+        <div class="stat-label">Caribbean Archives</div>
+      </div>
+      <div>
+        <div class="stat-number">24/7</div>
+        <div class="stat-label">AI-Powered Support</div>
+      </div>
+    </div>
+  </div>
 
   <!-- ABOUT -->
   <section id="about" class="about">
@@ -51,51 +384,48 @@
   <section class="features">
     <div class="container">
       <h2>Why Choose the Knowledge Hub?</h2>
-
       <div class="feature-grid">
         <div class="feature-card">
-          <h3>📚 Digital Access</h3>
+          <span class="feature-icon">📚</span>
+          <h3>Digital Access</h3>
           <p>Access books, journals, and theses from any device, anywhere.</p>
         </div>
-
-        <div class="feature-card clickable"
-             onclick="location.href='ucc_knowledge_hub.html#searchBarAnchor'">
-          <h3>🔎 Smart Search</h3>
+        <div class="feature-card" onclick="location.href='ucc_knowledge_hub.html#searchBarAnchor'" style="cursor:pointer;">
+          <span class="feature-icon">🔎</span>
+          <h3>Smart Search</h3>
           <p>Find resources quickly with intelligent search and filtering.</p>
         </div>
-
-        <div class="feature-card clickable"
-             onclick="location.href='ucc_knowledge_hub.html#caribbeanArchive'">
-          <h3>🌍 Caribbean Archives</h3>
+        <div class="feature-card" onclick="location.href='ucc_knowledge_hub.html#caribbeanArchive'" style="cursor:pointer;">
+          <span class="feature-icon">🌍</span>
+          <h3>Caribbean Archives</h3>
           <p>Explore a dedicated repository for Jamaican and Caribbean research.</p>
         </div>
-
-        <div class="feature-card clickable"
-              onclick="location.href='assistant.html'">
-          <h3>🤖 AI Assistant</h3>
+        <div class="feature-card" onclick="location.href='assistant.html'" style="cursor:pointer;">
+          <span class="feature-icon">🤖</span>
+          <h3>AI Assistant</h3>
           <p>Use our built-in AI for research support and citation help.</p>
         </div>
       </div>
     </div>
   </section>
 
+  <!-- CTA -->
   <section class="cta">
     <div class="container">
       <h2>Start Your Learning Journey</h2>
       <p>Discover, read, and grow with the UCC Knowledge Hub today.</p>
-      <a href="ucc_knowledge_hub.html" class="btn primary">Explore Now</a>
+      <a href="ucc_knowledge_hub.html" class="btn btn-primary">Explore Now</a>
     </div>
   </section>
 
+  <!-- FOOTER -->
   <footer class="site-footer">
-    <div class="footer-inner">
-      <p>
-        <strong>University of the Commonwealth Caribbean</strong><br>
-        17 Worthington Avenue, Kingston 5, Jamaica W.I.<br>
-        <a href="https://www.ucc.edu.jm">www.ucc.edu.jm</a>
-      </p>
-      <small>© <span id="year"></span> UCC — All Rights Reserved</small>
-    </div>
+    <p>
+      <strong>University of the Commonwealth Caribbean</strong><br />
+      17 Worthington Avenue, Kingston 5, Jamaica W.I.<br />
+      <a href="https://www.ucc.edu.jm">www.ucc.edu.jm</a>
+    </p>
+    <small>© <span id="year"></span> UCC — All Rights Reserved</small>
   </footer>
 
   <script>
