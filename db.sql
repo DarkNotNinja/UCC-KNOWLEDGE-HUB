@@ -1,15 +1,55 @@
 
 -- UCC Knowledge Hub Schema
 
--- Users
+-- UCC Knowledge Hub Schema (SERVER COMPATIBLE)
+
+-- USERS
 CREATE TABLE users (
-    user_id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
+    id SERIAL PRIMARY KEY,
+    school_id VARCHAR(50) UNIQUE NOT NULL,
+    fullname VARCHAR(100) NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-    role VARCHAR(50) DEFAULT 'user',
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- THREADS
+CREATE TABLE threads (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    category VARCHAR(100) NOT NULL,
+    message TEXT NOT NULL,
+    author VARCHAR(100) DEFAULT 'Anonymous',
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- BOOKS
+CREATE TABLE books (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    author VARCHAR(255),
+    description TEXT,
+    isbn VARCHAR(50),
+    published_date DATE,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- REVIEWS
+CREATE TABLE reviews (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id) ON DELETE CASCADE,
+    book_id INT REFERENCES books(id) ON DELETE CASCADE,
+    rating INT CHECK(rating >= 1 AND rating <= 5),
+    content TEXT,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- BOOKMARKS
+CREATE TABLE bookmarks (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id) ON DELETE CASCADE,
+    book_id INT REFERENCES books(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT NOW()
 );
 
 -- Books

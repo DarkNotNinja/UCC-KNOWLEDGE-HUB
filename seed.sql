@@ -2,13 +2,13 @@
 -- UCC Knowledge Hub Sample Data
 
 
--- Users
-INSERT INTO users (name, email, password_hash, role)
+-- USERS
+INSERT INTO users (school_id, fullname, email, password_hash)
 VALUES
-('John Brown', 'john.brown@stu.ucc.edu.jm', 'hashed_password_1', 'Student'),
-('Jack Smith', 'jack.smith@stu.ucc.edu.jm', 'hashed_password_2', 'Student'),
-('Sarah Wilson', 'librarian01@ucc.edu.jm', 'hashed_password_3', 'Librarian'),
-('Admin User', 'admin@ucc.edu.jm', 'hashed_password_4', 'Admin');
+('620001', 'John Brown', 'john.brown@stu.ucc.edu.jm', 'hashed_password_1'),
+('620002', 'Jack Smith', 'jack.smith@stu.ucc.edu.jm', 'hashed_password_2'),
+('620003', 'Sarah Wilson', 'librarian01@ucc.edu.jm', 'hashed_password_3'),
+('620004', 'Admin User', 'admin@ucc.edu.jm', 'hashed_password_4');
 
 -- Books
 INSERT INTO books (title, author, description, isbn, published_date)
