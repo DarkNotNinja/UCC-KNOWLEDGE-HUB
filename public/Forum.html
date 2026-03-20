@@ -1,195 +1,705 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Community Forum — UCC Knowledge Hub</title>
- <link rel="stylesheet" href="main.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Study Circles — UCC Knowledge Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-</head>
-
-<body>
-  <script>
-    const token = localStorage.getItem("token");
-    if (!token) {
-      window.location.href = "ucc_landing_page.html";
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --bg:         hsl(220, 40%, 7%);
+      --fg:         hsl(45, 30%, 92%);
+      --primary:    hsl(43, 55%, 54%);
+      --primary-fg: hsl(220, 40%, 7%);
+      --card:       hsl(220, 35%, 11%);
+      --muted:      hsl(220, 15%, 55%);
+      --border:     hsl(220, 25%, 18%);
+      --secondary:  hsl(220, 30%, 16%);
+      --green:      hsl(152, 60%, 52%);
+      --red:        hsl(0, 70%, 60%);
+      --blue:       hsl(210, 80%, 65%);
+      --purple:     hsl(270, 60%, 65%);
+      --glow-gold:  0 0 40px hsla(43, 55%, 54%, 0.25);
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-body:    'Inter', sans-serif;
     }
+    body { background:var(--bg); color:var(--fg); font-family:var(--font-body); line-height:1.6; min-height:100vh; display:flex; flex-direction:column; }
+    a { text-decoration:none; color:inherit; }
+    h1,h2,h3,h4,h5,h6 { font-family:var(--font-display); }
+
+    /* HEADER */
+    .site-header { position:sticky; top:0; z-index:50; background:hsla(220,35%,11%,0.75); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); }
+    .header-inner { max-width:1280px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:12px 24px; gap:16px; }
+    .logo-wrap { display:flex; align-items:center; gap:12px; }
+    .ucc-logo  { height:40px; width:40px; border-radius:50%; }
+    .title-wrap h1        { font-size:1.125rem; font-weight:700; }
+    .title-wrap .subtitle { font-size:0.75rem; color:var(--muted); }
+    .main-nav { display:flex; gap:8px; align-items:center; }
+    .main-nav a { font-size:0.875rem; color:var(--muted); padding:7px 14px; border-radius:8px; transition:all .2s; }
+    .main-nav a:hover, .main-nav a.active { color:var(--fg); background:var(--secondary); }
+    .main-nav a.active { color:var(--primary); }
+    .nav-logout { font-size:0.875rem; color:hsl(0,70%,70%); padding:7px 14px; border-radius:8px; border:1px solid hsla(0,70%,60%,0.25); background:hsla(0,70%,60%,0.08); cursor:pointer; transition:all .2s; font-family:var(--font-body); }
+    .nav-logout:hover { background:hsla(0,70%,60%,0.18); color:#fff; }
+
+    /* LAYOUT */
+    .page-wrap { max-width:1280px; width:100%; margin:0 auto; padding:48px 24px 80px; display:grid; grid-template-columns:240px 1fr; gap:28px; flex:1; align-items:start; }
+
+    /* SIDEBAR */
+    .sidebar { display:flex; flex-direction:column; gap:14px; position:sticky; top:76px; }
+    .sidebar-section { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px 20px; }
+    .sidebar-section h3 { font-size:0.72rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; margin-bottom:12px; }
+    .new-post-btn { width:100%; padding:12px; border:none; border-radius:10px; background:var(--primary); color:var(--primary-fg); font-family:var(--font-display); font-size:0.9rem; font-weight:700; cursor:pointer; transition:all .2s; margin-bottom:14px; }
+    .new-post-btn:hover { opacity:.9; box-shadow:var(--glow-gold); }
+    .cat-list { list-style:none; display:flex; flex-direction:column; gap:3px; }
+    .cat-item { display:flex; align-items:center; gap:9px; padding:7px 10px; border-radius:8px; cursor:pointer; font-size:0.85rem; transition:all .2s; border:1px solid transparent; color:var(--muted); }
+    .cat-item:hover { background:var(--secondary); color:var(--fg); }
+    .cat-item.active { background:var(--secondary); border-color:hsla(43,55%,54%,0.35); color:var(--primary); }
+    .cat-icon { font-size:0.95rem; width:20px; text-align:center; flex-shrink:0; }
+    .cat-count { margin-left:auto; font-size:0.68rem; background:var(--secondary); padding:2px 6px; border-radius:8px; }
+    .cat-item.active .cat-count { background:hsla(43,55%,54%,0.15); color:var(--primary); }
+    .type-legend { display:flex; flex-direction:column; gap:6px; }
+    .legend-item { display:flex; align-items:center; gap:8px; font-size:0.78rem; color:var(--muted); }
+    .legend-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+    /* MAIN */
+    .main-col { display:flex; flex-direction:column; gap:18px; min-width:0; }
+    .forum-hero { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:26px 30px; animation:fadeUp .4s ease both; }
+    .forum-hero-top { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:16px; }
+    .forum-hero h2 { font-size:1.5rem; font-weight:700; margin-bottom:4px; }
+    .forum-hero p  { color:var(--muted); font-size:0.88rem; }
+    .hero-stats { display:flex; gap:20px; flex-shrink:0; }
+    .h-stat .num { font-family:var(--font-display); font-size:1.4rem; font-weight:700; color:var(--primary); line-height:1; }
+    .h-stat .lbl { font-size:0.68rem; color:var(--muted); margin-top:2px; }
+    .filter-bar { display:flex; gap:10px; flex-wrap:wrap; }
+    .search-wrap { flex:1; min-width:180px; display:flex; align-items:center; background:var(--card); border:1px solid var(--border); border-radius:10px; padding:8px 14px; gap:8px; transition:border-color .2s; }
+    .search-wrap:focus-within { border-color:var(--primary); }
+    .search-wrap input { flex:1; background:none; border:none; outline:none; color:var(--fg); font-family:var(--font-body); font-size:0.875rem; }
+    .search-wrap input::placeholder { color:var(--muted); }
+    .sort-sel { padding:9px 13px; background:var(--card); border:1px solid var(--border); border-radius:10px; color:var(--fg); font-family:var(--font-body); font-size:0.875rem; outline:none; cursor:pointer; }
+    .sort-sel option { background:var(--card); }
+
+    /* THREAD CARDS */
+    .threads-list { display:flex; flex-direction:column; gap:10px; animation:fadeUp .4s .1s ease both; }
+    .thread-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px 22px; transition:border-color .25s; }
+    .thread-card.is-lecturer   { border-left:3px solid var(--primary); }
+    .thread-card.is-announcement { border-left:3px solid var(--red); }
+    .tc-top { display:flex; align-items:flex-start; gap:12px; margin-bottom:8px; }
+    .tc-avatar { width:36px; height:36px; border-radius:50%; flex-shrink:0; background:var(--secondary); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:0.85rem; font-weight:700; color:var(--primary); }
+    .tc-meta { flex:1; min-width:0; }
+    .tc-title { font-size:0.97rem; font-weight:600; margin-bottom:3px; line-height:1.35; cursor:pointer; }
+    .tc-title:hover { color:var(--primary); }
+    .tc-sub { display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
+    .tc-author { font-size:0.75rem; color:var(--muted); }
+    .tc-time   { font-size:0.7rem;  color:var(--muted); }
+    .lecturer-badge { font-size:0.65rem; font-weight:700; padding:2px 7px; border-radius:8px; background:hsla(43,55%,54%,0.15); color:var(--primary); border:1px solid hsla(43,55%,54%,0.3); font-family:var(--font-display); }
+    .tc-body { font-size:0.875rem; color:var(--muted); line-height:1.6; margin-bottom:12px; }
+    .tc-footer { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .type-pill { font-size:0.68rem; font-weight:700; padding:3px 9px; border-radius:20px; font-family:var(--font-display); white-space:nowrap; }
+    .tp-discussion       { background:hsla(210,80%,65%,0.12); color:var(--blue);    border:1px solid hsla(210,80%,65%,0.25); }
+    .tp-resource_request { background:hsla(152,60%,52%,0.12); color:var(--green);   border:1px solid hsla(152,60%,52%,0.25); }
+    .tp-ask_a_lecturer   { background:hsla(43,55%,54%,0.12);  color:var(--primary); border:1px solid hsla(43,55%,54%,0.3); }
+    .tp-study_group      { background:hsla(270,60%,65%,0.12); color:var(--purple);  border:1px solid hsla(270,60%,65%,0.25); }
+    .tp-announcement     { background:hsla(0,70%,60%,0.12);   color:var(--red);     border:1px solid hsla(0,70%,60%,0.25); }
+    .tp-book_club        { background:hsla(30,80%,60%,0.12);  color:#f0a060;        border:1px solid hsla(30,80%,60%,0.25); }
+    .tp-cite_me          { background:hsla(180,60%,50%,0.12); color:#60d0c8;        border:1px solid hsla(180,60%,50%,0.25); }
+    .cat-pill  { font-size:0.68rem; padding:3px 9px; border-radius:20px; background:var(--secondary); color:var(--muted); border:1px solid var(--border); font-family:var(--font-display); }
+    .book-pill { font-size:0.68rem; padding:3px 9px; border-radius:20px; background:var(--secondary); color:var(--muted); border:1px solid var(--border); display:flex; align-items:center; gap:4px; }
+    .tc-actions { margin-left:auto; display:flex; gap:6px; align-items:center; }
+    .tc-btn { display:flex; align-items:center; gap:4px; font-size:0.75rem; color:var(--muted); background:var(--secondary); border:1px solid var(--border); padding:4px 10px; border-radius:7px; cursor:pointer; transition:all .2s; font-family:var(--font-body); }
+    .tc-btn:hover { color:var(--fg); border-color:var(--primary); }
+    .tc-btn.liked { color:var(--primary); border-color:hsla(43,55%,54%,0.4); background:hsla(43,55%,54%,0.08); }
+    .tc-btn.edit-btn:hover  { color:var(--blue);  border-color:hsla(210,80%,65%,0.4); }
+    .tc-btn.delete-btn:hover { color:var(--red);  border-color:hsla(0,70%,60%,0.4); }
+
+    /* REPLIES SECTION */
+    .replies-section { margin-top:14px; padding-top:14px; border-top:1px solid var(--border); display:none; }
+    .replies-section.open { display:block; }
+    .replies-list { display:flex; flex-direction:column; gap:8px; margin-bottom:12px; }
+    .reply-item { display:flex; gap:10px; }
+    .reply-avatar { width:28px; height:28px; border-radius:50%; flex-shrink:0; background:var(--secondary); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:0.72rem; font-weight:700; color:var(--primary); }
+    .reply-body { flex:1; background:var(--secondary); border:1px solid var(--border); border-radius:10px; padding:10px 14px; }
+    .reply-meta { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+    .reply-author { font-size:0.78rem; font-weight:600; }
+    .reply-time   { font-size:0.68rem; color:var(--muted); }
+    .reply-text   { font-size:0.85rem; color:var(--muted); line-height:1.55; }
+    .reply-actions { margin-left:auto; display:flex; gap:6px; }
+    .reply-btn { font-size:0.68rem; color:var(--muted); background:none; border:none; cursor:pointer; padding:2px 6px; border-radius:5px; transition:color .2s; font-family:var(--font-body); }
+    .reply-btn:hover { color:var(--fg); }
+    .reply-btn.del:hover { color:var(--red); }
+
+    .reply-form { display:flex; gap:8px; align-items:flex-start; }
+    .reply-input { flex:1; padding:9px 12px; background:var(--secondary); border:1px solid var(--border); border-radius:8px; outline:none; color:var(--fg); font-family:var(--font-body); font-size:0.85rem; resize:none; transition:border-color .2s; }
+    .reply-input:focus { border-color:var(--primary); }
+    .reply-input::placeholder { color:var(--muted); }
+    .reply-submit { padding:9px 16px; border:none; border-radius:8px; background:var(--primary); color:var(--primary-fg); font-family:var(--font-display); font-size:0.8rem; font-weight:700; cursor:pointer; transition:all .2s; white-space:nowrap; }
+    .reply-submit:hover { opacity:.9; }
+
+    /* EMPTY */
+    .empty { text-align:center; padding:48px 20px; color:var(--muted); }
+    .empty .icon { font-size:2.5rem; margin-bottom:10px; }
+    .empty p { font-size:0.875rem; }
+
+    /* MODAL */
+    .modal-overlay { display:none; position:fixed; inset:0; z-index:100; background:hsla(220,40%,5%,0.8); backdrop-filter:blur(6px); align-items:center; justify-content:center; }
+    .modal-overlay.open { display:flex; }
+    .modal { background:var(--card); border:1px solid var(--border); border-radius:18px; padding:30px 34px; width:90%; max-width:560px; max-height:90vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,0.6); animation:scaleIn .22s ease; }
+    .modal-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+    .modal-top h3 { font-size:1.1rem; font-weight:700; }
+    .modal-close { background:none; border:none; color:var(--muted); font-size:1.2rem; cursor:pointer; }
+    .modal-close:hover { color:var(--fg); }
+    .form-group { margin-bottom:13px; }
+    .form-group label { display:block; font-size:0.72rem; color:var(--muted); margin-bottom:5px; font-family:var(--font-display); font-weight:600; letter-spacing:.05em; text-transform:uppercase; }
+    .form-group input, .form-group select, .form-group textarea { width:100%; padding:10px 13px; background:var(--secondary); border:1px solid var(--border); border-radius:8px; outline:none; color:var(--fg); font-family:var(--font-body); font-size:0.875rem; transition:border-color .2s; resize:vertical; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color:var(--primary); }
+    .form-group input::placeholder, .form-group textarea::placeholder { color:var(--muted); }
+    .form-group select option { background:var(--card); }
+    .type-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:13px; }
+    .type-opt { padding:9px 6px; border-radius:9px; border:1px solid var(--border); background:var(--secondary); cursor:pointer; text-align:center; font-size:0.75rem; font-weight:600; font-family:var(--font-display); transition:all .2s; color:var(--muted); }
+    .type-opt:hover { border-color:var(--primary); color:var(--fg); }
+    .type-opt.selected { border-color:var(--primary); background:hsla(43,55%,54%,0.1); color:var(--primary); }
+    .type-opt .t-icon { font-size:1.1rem; display:block; margin-bottom:3px; }
+    .btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:10px 22px; border-radius:8px; font-family:var(--font-display); font-size:0.875rem; font-weight:600; cursor:pointer; border:none; transition:all .2s; }
+    .btn-primary { background:var(--primary); color:var(--primary-fg); width:100%; }
+    .btn-primary:hover { opacity:.9; box-shadow:var(--glow-gold); }
+    .btn:disabled { opacity:.45; cursor:not-allowed; }
+    .status-msg { margin-top:8px; font-size:0.82rem; min-height:16px; font-family:var(--font-display); }
+
+    /* FOOTER */
+    .site-footer { border-top:1px solid var(--border); padding:28px 24px; margin-top:auto; }
+    .footer-inner { max-width:1280px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+    .site-footer p { font-family:var(--font-display); font-size:0.875rem; color:var(--muted); line-height:1.7; }
+    .site-footer strong { color:var(--fg); }
+    .site-footer a { color:var(--primary); }
+    .site-footer a:hover { text-decoration:underline; }
+    .site-footer small { font-size:0.75rem; color:var(--muted); }
+
+    @keyframes fadeUp  { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes scaleIn { from { opacity:0; transform:scale(.94); }       to { opacity:1; transform:scale(1); } }
+    @media (max-width:900px) { .page-wrap { grid-template-columns:1fr; } .sidebar { position:static; } }
+    @media (max-width:640px) { .page-wrap { padding:24px 16px 60px; } .hero-stats { display:none; } .type-grid { grid-template-columns:repeat(2,1fr); } }
+  </style>
+</head>
+<body>
+
+  <script>
+    if (!localStorage.getItem("token")) window.location.href = "ucc_landing_page.html";
   </script>
 
-  <!-- HEADER -->
   <header class="site-header">
     <div class="header-inner">
       <div class="logo-wrap">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEC31GlH03Kf6NAmmiIHqInFd0q1bQz2gmDg&s"
-             alt="UCC logo"
-             class="ucc-logo">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEC31GlH03Kf6NAmmiIHqInFd0q1bQz2gmDg&s" alt="UCC logo" class="ucc-logo">
+        <div class="title-wrap">
+          <h1>UCC Knowledge Hub</h1>
+          <p class="subtitle">Empowering Digital Learning</p>
+        </div>
       </div>
-
       <nav class="main-nav">
         <a href="ucc_knowledge_hub.html">Home</a>
-        <a href="request_borrow.html">Request/Borrow</a>
+        <a href="Loaners.html">Borrow</a>
         <a href="forum.html" class="active">Forum</a>
         <a href="profile.html">Profile</a>
+        <button class="nav-logout" id="logoutBtn">Log Out</button>
       </nav>
     </div>
   </header>
 
-  <main>
+  <div class="page-wrap">
 
-    <!-- HERO -->
-    <section class="hero small-hero">
-      <div class="hero-inner">
-        <div class="hero-copy">
-          <h2>UCC Community Forum</h2>
-          <p>Ask questions. Share ideas. Learn from peers.</p>
-
-          <form class="search-form" id="forumSearchForm">
-            <input type="search" id="forumSearchInput" placeholder="Search forum topics…">
-            <button class="btn primary">Search</button>
-          </form>
-        </div>
-
-        <div class="hero-visual">
-          <div class="tech-pattern"></div>
+    <aside class="sidebar">
+      <button class="new-post-btn" onclick="openPostModal()">✏️ Start a Discussion</button>
+      <div class="sidebar-section">
+        <h3>Categories</h3>
+        <ul class="cat-list" id="catList">
+          <li class="cat-item active" data-cat="all" onclick="filterCat('all',this)"><span class="cat-icon">🏠</span>All Topics<span class="cat-count" id="cnt-all">0</span></li>
+          <li class="cat-item" data-cat="General"          onclick="filterCat('General',this)"><span class="cat-icon">💬</span>General<span class="cat-count" id="cnt-General">0</span></li>
+          <li class="cat-item" data-cat="IT"               onclick="filterCat('IT',this)"><span class="cat-icon">💻</span>IT<span class="cat-count" id="cnt-IT">0</span></li>
+          <li class="cat-item" data-cat="Business"         onclick="filterCat('Business',this)"><span class="cat-icon">📊</span>Business<span class="cat-count" id="cnt-Business">0</span></li>
+          <li class="cat-item" data-cat="Research"         onclick="filterCat('Research',this)"><span class="cat-icon">🔬</span>Research<span class="cat-count" id="cnt-Research">0</span></li>
+          <li class="cat-item" data-cat="Caribbean Studies" onclick="filterCat('Caribbean Studies',this)"><span class="cat-icon">🌴</span>Caribbean Studies<span class="cat-count" id="cnt-Caribbean Studies">0</span></li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <h3>Thread Types</h3>
+        <div class="type-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>Discussion</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Resource Request</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--primary)"></div>Ask a Lecturer</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>Study Group</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Announcement</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#f0a060"></div>Book Club</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#60d0c8"></div>Cite Me</div>
         </div>
       </div>
-    </section>
+    </aside>
 
-    <!-- THREAD LIST -->
-    <section class="library-grid">
-      <h3>Discussions</h3>
+    <div class="main-col">
 
-      <div id="threadContainer" class="cards">
-        <p id="loadingMessage">Loading discussions...</p>
-      </div>
-    </section>
-
-    <!-- NEW POST FORM -->
-   <section class="features">
-  <h3>Start a Discussion</h3>
-
-  <div class="centered-wrapper">
-    <div class="feature-card" style="max-width:650px;">
-      <form id="newPostForm" class="request-form">
-
-          <label>Title</label>
-          <input type="text" id="postTitle" required placeholder="Enter discussion title">
-
-          <label>Category</label>
-          <select id="postCategory" required>
-            <option value="">Select category</option>
-            <option>General</option>
-            <option>IT</option>
-            <option>Business</option>
-            <option>Research</option>
+      <div class="forum-hero">
+        <div class="forum-hero-top">
+          <div>
+            <h2>📚 Study Circles</h2>
+            <p>Ask questions, share resources, connect with lecturers and classmates.</p>
+          </div>
+          <div class="hero-stats">
+            <div class="h-stat"><div class="num" id="statThreads">0</div><div class="lbl">Threads</div></div>
+            <div class="h-stat"><div class="num" id="statToday">0</div><div class="lbl">Today</div></div>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <div class="search-wrap">
+            <span>🔍</span>
+            <input type="search" id="searchInput" placeholder="Search discussions…" oninput="filterThreads()">
+          </div>
+          <select class="sort-sel" id="sortSel" onchange="filterThreads()">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="popular">Most Liked</option>
           </select>
-
-          <label>Message</label>
-          <textarea id="postMessage" rows="4" required placeholder="Write your message…"></textarea>
-
-          <button class="btn primary" type="submit">Post Discussion</button>
-        </form>
+          <select class="sort-sel" id="typeSel" onchange="filterThreads()">
+            <option value="all">All Types</option>
+            <option value="discussion">Discussion</option>
+            <option value="resource_request">Resource Request</option>
+            <option value="ask_a_lecturer">Ask a Lecturer</option>
+            <option value="study_group">Study Group</option>
+            <option value="announcement">Announcement</option>
+            <option value="book_club">Book Club</option>
+            <option value="cite_me">Cite Me</option>
+          </select>
+        </div>
       </div>
-    </section>
 
-  </main>
+      <div class="threads-list" id="threadsList">
+        <div class="empty"><div class="icon">⏳</div><p>Loading discussions…</p></div>
+      </div>
 
-  <!-- FOOTER -->
+    </div>
+  </div>
+
   <footer class="site-footer">
     <div class="footer-inner">
       <p><strong>University of the Commonwealth Caribbean</strong><br>
-      17 Worthington Avenue, Kingston 5, Jamaica W.I.<br>
-      <a href="https://www.ucc.edu.jm">www.ucc.edu.jm</a></p>
-
+        17 Worthington Avenue, Kingston 5, Jamaica W.I. &nbsp;·&nbsp;
+        <a href="https://www.ucc.edu.jm">www.ucc.edu.jm</a></p>
       <small>© <span id="year"></span> UCC — All Rights Reserved</small>
     </div>
   </footer>
 
-<script>
-document.getElementById("year").textContent = new Date().getFullYear();
+  <!-- NEW / EDIT POST MODAL -->
+  <div class="modal-overlay" id="postModal">
+    <div class="modal">
+      <div class="modal-top">
+        <h3 id="modalTitle">✏️ Start a Discussion</h3>
+        <button class="modal-close" onclick="closePostModal()">✕</button>
+      </div>
+      <div style="margin-bottom:13px;">
+        <label style="display:block;font-size:.72rem;color:var(--muted);margin-bottom:8px;font-family:var(--font-display);font-weight:600;letter-spacing:.05em;text-transform:uppercase;">Thread Type</label>
+        <div class="type-grid" id="typeGrid">
+          <div class="type-opt selected" data-val="discussion"       onclick="selectType(this)"><span class="t-icon">💬</span>Discussion</div>
+          <div class="type-opt"          data-val="resource_request" onclick="selectType(this)"><span class="t-icon">📦</span>Resource Request</div>
+          <div class="type-opt"          data-val="ask_a_lecturer"   onclick="selectType(this)"><span class="t-icon">🎓</span>Ask a Lecturer</div>
+          <div class="type-opt"          data-val="study_group"      onclick="selectType(this)"><span class="t-icon">👥</span>Study Group</div>
+          <div class="type-opt"          data-val="book_club"        onclick="selectType(this)"><span class="t-icon">📖</span>Book Club</div>
+          <div class="type-opt"          data-val="cite_me"          onclick="selectType(this)"><span class="t-icon">📑</span>Cite Me</div>
+        </div>
+      </div>
+      <div class="form-group"><label>Title</label><input type="text" id="postTitle" placeholder="What's your discussion about?"></div>
+      <div class="form-group">
+        <label>Category</label>
+        <select id="postCategory">
+          <option value="">Select category</option>
+          <option>General</option><option>IT</option><option>Business</option>
+          <option>Research</option><option>Caribbean Studies</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Link to a Book (optional)</label><input type="text" id="postBookRef" placeholder="e.g. Principles of Economics"></div>
+      <div class="form-group"><label>Message</label><textarea id="postMessage" rows="4" placeholder="Write your message…"></textarea></div>
+      <button class="btn btn-primary" id="postBtn" onclick="submitPost()">Post Discussion</button>
+      <p class="status-msg" id="postStatus"></p>
+    </div>
+  </div>
 
-const API_BASE = "http://localhost:3000/api"; // <<< EDIT THIS IF YOUR SERVER URL CHANGES
+  <script>
+  // ── CONFIG ──────────────────────────────────────────
+  const SUPABASE_URL  = "https://YOUR_PROJECT_ID.supabase.co"; // ← replace
+  const SUPABASE_ANON = "YOUR_ANON_KEY";                       // ← replace
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+  const API_BASE = "http://localhost:3000/api";
 
-const threadContainer = document.getElementById("threadContainer");
-const loadingMessage = document.getElementById("loadingMessage");
+  document.getElementById("year").textContent = new Date().getFullYear();
 
+  // ── AUTH ────────────────────────────────────────────
+  const token = localStorage.getItem("token");
+  function parseJwt(t) {
+    try { return JSON.parse(atob(t.split(".")[1].replace(/-/g,"+").replace(/_/g,"/"))); }
+    catch { return null; }
+  }
+  const jwt      = parseJwt(token);
+  const userId   = jwt?.userId   ? String(jwt.userId) : null;
+  const fullname = jwt?.fullname || "Anonymous";
 
-// LOAD THREADS FROM BACKEND AND DATABASE
-async function loadThreads() {
-  try {
-    const res = await fetch(`${API_BASE}/threads`);
-    const threads = await res.json();
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+    localStorage.removeItem("token");
+    window.location.href = "ucc_landing_page.html";
+  });
 
-    if (!threads.length) {
-      threadContainer.innerHTML = "<p>No discussions yet. Be the first to post!</p>";
+  // ── STATE ───────────────────────────────────────────
+  let allThreads   = [];
+  let activeCat    = "all";
+  let selectedType = "discussion";
+  let editingId    = null;  // null = new post, number = editing existing
+  let likedIds     = JSON.parse(localStorage.getItem("liked_threads") || "[]");
+
+  // ── LOAD THREADS — uses Express backend only ─────────
+  async function loadThreads() {
+    try {
+      const res = await fetch(`${API_BASE}/threads`);
+      if (!res.ok) throw new Error("Server error");
+      allThreads = await res.json();
+    } catch {
+      document.getElementById("threadsList").innerHTML =
+        `<div class="empty"><div class="icon">⚠️</div><p>Error loading discussions. Is your server running?</p></div>`;
       return;
     }
+    updateStats();
+    updateCatCounts();
+    filterThreads();
+  }
 
-    threadContainer.innerHTML = threads.map(t => `
-      <article class="resource-card thread-card" data-category="${t.category}">
-        <div class="card-body">
-          <h4>${t.title}</h4>
-          <p class="meta">Posted by <strong>${t.author || "Anonymous"}</strong> • ${t.category}</p>
-          <p class="excerpt">${t.message}</p>
+  // ── RENDER THREADS ──────────────────────────────────
+  function renderThreads(threads) {
+    const list = document.getElementById("threadsList");
+    if (!threads.length) {
+      list.innerHTML = `<div class="empty"><div class="icon">💬</div><p>No discussions yet. Be the first to post!</p></div>`;
+      return;
+    }
+    list.innerHTML = threads.map(t => {
+      const initials   = (t.author||"?").split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase();
+      const timeAgo    = getTimeAgo(t.created_at);
+      const isLiked    = likedIds.includes(String(t.id));
+      const typeKey    = t.type || "discussion";
+      const typeLabel  = typeKey.replace(/_/g," ").replace(/\b\w/g,c=>c.toUpperCase());
+      const isOwner    = userId && (String(t.user_id) === String(userId) || t.author === fullname);
+      const isLecturer = t.is_lecturer;
 
-          <div class="card-actions">
-            <button class="btn ghost">View Thread</button>
+      return `<div class="thread-card ${isLecturer?"is-lecturer":""} ${typeKey==="announcement"?"is-announcement":""}" id="thread-${t.id}">
+        <div class="tc-top">
+          <div class="tc-avatar">${initials}</div>
+          <div class="tc-meta">
+            <div class="tc-title" onclick="toggleReplies(${t.id})">${t.title}</div>
+            <div class="tc-sub">
+              <span class="tc-author">${t.author||"Anonymous"}</span>
+              ${isLecturer?'<span class="lecturer-badge">👨‍🏫 Lecturer</span>':''}
+              <span class="tc-time">${timeAgo}</span>
+            </div>
           </div>
         </div>
-      </article>
-    `).join("");
-
-  } catch (err) {
-    threadContainer.innerHTML = "<p>Error loading discussions. Check server connection.</p>";
+        <div class="tc-body">${t.message}</div>
+        <div class="tc-footer">
+          <span class="type-pill tp-${typeKey}">${typeLabel}</span>
+          <span class="cat-pill">${t.category}</span>
+          ${t.book_ref?`<span class="book-pill">📚 ${t.book_ref}</span>`:""}
+          <div class="tc-actions">
+            <button class="tc-btn ${isLiked?"liked":""}" onclick="likeThread('${t.id}',this)">♥ <span class="like-count">${t.likes||0}</span></button>
+            <button class="tc-btn" onclick="toggleReplies(${t.id})">💬 Reply</button>
+            ${isOwner?`
+              <button class="tc-btn edit-btn"   onclick="openEditModal(${t.id})">✏️ Edit</button>
+              <button class="tc-btn delete-btn" onclick="deleteThread(${t.id})">🗑 Delete</button>
+            `:""}
+          </div>
+        </div>
+        <!-- REPLIES -->
+        <div class="replies-section" id="replies-${t.id}">
+          <div class="replies-list" id="replies-list-${t.id}">
+            <p style="color:var(--muted);font-size:.82rem;">Loading replies…</p>
+          </div>
+          <div class="reply-form">
+            <textarea class="reply-input" id="reply-input-${t.id}" placeholder="Write a reply…" rows="2"></textarea>
+            <button class="reply-submit" onclick="submitReply(${t.id})">Reply</button>
+          </div>
+        </div>
+      </div>`;
+    }).join("");
   }
-}
 
-loadThreads();
+  // ── REPLIES ─────────────────────────────────────────
+  async function toggleReplies(threadId) {
+    const section = document.getElementById(`replies-${threadId}`);
+    if (section.classList.contains("open")) {
+      section.classList.remove("open");
+      return;
+    }
+    section.classList.add("open");
+    await loadReplies(threadId);
+  }
 
+  async function loadReplies(threadId) {
+    const list = document.getElementById(`replies-list-${threadId}`);
+    let data = [];
+    try {
+      const res = await fetch(`${API_BASE}/replies/${threadId}`);
+      if (!res.ok) throw new Error();
+      data = await res.json();
+    } catch {
+      list.innerHTML = `<p style="color:var(--muted);font-size:.82rem;">Could not load replies.</p>`;
+      return;
+    }
+    if (!data.length) { list.innerHTML=`<p style="color:var(--muted);font-size:.82rem;">No replies yet. Be the first!</p>`; return; }
 
-// SEARCH FILTER
-document.getElementById("forumSearchForm").addEventListener("submit", function(e) {
-  e.preventDefault();
-  const term = document.getElementById("forumSearchInput").value.toLowerCase();
+    list.innerHTML = data.map(r => {
+      const initials = (r.author||"?").split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase();
+      const isOwner  = userId && (String(r.user_id) === String(userId) || r.author === fullname);
+      return `<div class="reply-item" id="reply-${r.id}">
+        <div class="reply-avatar">${initials}</div>
+        <div class="reply-body">
+          <div class="reply-meta">
+            <span class="reply-author">${r.author||"Anonymous"}</span>
+            ${r.is_lecturer?'<span class="lecturer-badge">👨‍🏫</span>':""}
+            <span class="reply-time">${getTimeAgo(r.created_at)}</span>
+            ${isOwner?`<div class="reply-actions">
+              <button class="reply-btn"     onclick="editReply(${r.id},${threadId},\`${esc(r.message)}\`)">✏️</button>
+              <button class="reply-btn del" onclick="deleteReply(${r.id},${threadId})">🗑</button>
+            </div>`:""}
+          </div>
+          <div class="reply-text" id="reply-text-${r.id}">${r.message}</div>
+        </div>
+      </div>`;
+    }).join("");
+  }
 
-  document.querySelectorAll(".thread-card").forEach(card => {
-    const match = card.innerText.toLowerCase().includes(term);
-    card.style.display = match ? "" : "none";
+  async function submitReply(threadId) {
+    const input   = document.getElementById(`reply-input-${threadId}`);
+    const message = input.value.trim();
+    if (!message) return;
+    try {
+      const res = await fetch(`${API_BASE}/replies`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+        body: JSON.stringify({ thread_id: threadId, message })
+      });
+      const data = await res.json();
+      if (!res.ok) { alert("Failed to post reply: " + (data.error || "Unknown error")); return; }
+      input.value = "";
+      await loadReplies(threadId);
+    } catch { alert("Failed to post reply: Could not reach server."); }
+  }
+
+  async function editReply(replyId, threadId, currentMsg) {
+    const newMsg = prompt("Edit your reply:", currentMsg);
+    if (!newMsg || newMsg.trim() === currentMsg) return;
+    try {
+      const res = await fetch(`${API_BASE}/replies/${replyId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+        body: JSON.stringify({ message: newMsg.trim() })
+      });
+      const data = await res.json();
+      if (!res.ok) { alert("Edit failed: " + (data.error || "Unknown error")); return; }
+      await loadReplies(threadId);
+    } catch { alert("Edit failed: Could not reach server."); }
+  }
+
+  async function deleteReply(replyId, threadId) {
+    if (!confirm("Delete this reply?")) return;
+    try {
+      const res = await fetch(`${API_BASE}/replies/${replyId}`, {
+        method: "DELETE",
+        headers: { "Authorization": "Bearer " + token }
+      });
+      const data = await res.json();
+      if (!res.ok) { alert("Delete failed: " + (data.error || "Unknown error")); return; }
+      await loadReplies(threadId);
+    } catch { alert("Delete failed: Could not reach server."); }
+  }
+
+  // ── LIKE ────────────────────────────────────────────
+  async function likeThread(id, btn) {
+    if (likedIds.includes(String(id))) return;
+    const thread = allThreads.find(t=>String(t.id)===String(id));
+    if (!thread) return;
+    const newLikes = (thread.likes||0) + 1;
+    await sb.from("threads").update({ likes: newLikes }).eq("id", id);
+    thread.likes = newLikes;
+    likedIds.push(String(id));
+    localStorage.setItem("liked_threads", JSON.stringify(likedIds));
+    btn.classList.add("liked");
+    const likeBtn = document.querySelector(`#thread-${id} .like-count`); if(likeBtn) likeBtn.textContent = newLikes;
+  }
+
+  // ── DELETE THREAD — goes through backend to verify ownership ──
+  async function deleteThread(id) {
+    if (!confirm("Delete this discussion? This cannot be undone.")) return;
+    try {
+      const res = await fetch(`${API_BASE}/threads/${id}`, {
+        method: "DELETE",
+        headers: { "Authorization": "Bearer " + token }
+      });
+      const data = await res.json();
+      if (!res.ok) { alert("Delete failed: " + (data.error || "Unknown error")); return; }
+      await loadThreads();
+    } catch { alert("Delete failed: Could not reach server."); }
+  }
+
+  // ── EDIT THREAD MODAL ───────────────────────────────
+  function openEditModal(id) {
+    const t = allThreads.find(t=>String(t.id)===String(id));
+    if (!t) return;
+    editingId = id;
+    document.getElementById("modalTitle").textContent  = "✏️ Edit Discussion";
+    document.getElementById("postTitle").value         = t.title;
+    document.getElementById("postCategory").value      = t.category;
+    document.getElementById("postMessage").value       = t.message;
+    document.getElementById("postBookRef").value       = t.book_ref || "";
+    document.getElementById("postBtn").textContent     = "Save Changes";
+    // Set type
+    const typeKey = t.type || "discussion";
+    document.querySelectorAll(".type-opt").forEach(o => {
+      o.classList.toggle("selected", o.dataset.val === typeKey);
+    });
+    selectedType = typeKey;
+    openPostModal();
+  }
+
+  // ── POST MODAL ──────────────────────────────────────
+  function openPostModal() { document.getElementById("postModal").classList.add("open"); }
+  function closePostModal() {
+    document.getElementById("postModal").classList.remove("open");
+    // Reset to "new" mode
+    editingId = null;
+    document.getElementById("modalTitle").textContent = "✏️ Start a Discussion";
+    document.getElementById("postBtn").textContent    = "Post Discussion";
+    document.getElementById("postTitle").value        = "";
+    document.getElementById("postCategory").value     = "";
+    document.getElementById("postMessage").value      = "";
+    document.getElementById("postBookRef").value      = "";
+    document.getElementById("postStatus").textContent = "";
+    document.querySelectorAll(".type-opt").forEach(o => o.classList.toggle("selected", o.dataset.val==="discussion"));
+    selectedType = "discussion";
+  }
+  document.getElementById("postModal").addEventListener("click", e => {
+    if (e.target === document.getElementById("postModal")) closePostModal();
   });
-});
 
+  function selectType(el) {
+    document.querySelectorAll(".type-opt").forEach(o=>o.classList.remove("selected"));
+    el.classList.add("selected");
+    selectedType = el.dataset.val;
+  }
 
-// NEW POST — SEND TO BACKEND
-document.getElementById("newPostForm").onsubmit = async function(e) {
-  e.preventDefault();
+  // ── SUBMIT / SAVE POST ──────────────────────────────
+  async function submitPost() {
+    const title    = document.getElementById("postTitle").value.trim();
+    const category = document.getElementById("postCategory").value;
+    const message  = document.getElementById("postMessage").value.trim();
+    const bookRef  = document.getElementById("postBookRef").value.trim();
+    const statusEl = document.getElementById("postStatus");
+    const btn      = document.getElementById("postBtn");
 
-  const newPost = {
-    title: document.getElementById("postTitle").value,
-    category: document.getElementById("postCategory").value,
-    message: document.getElementById("postMessage").value,
-    author: "User" // replace with logged-in user's name later
-  };
+    if (!title||!category||!message) {
+      statusEl.style.color="var(--red)"; statusEl.textContent="⚠️ Please fill in all required fields."; return;
+    }
 
-  try {
-    const res = await fetch(`${API_BASE}/threads`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newPost)
+    btn.disabled=true; statusEl.style.color="var(--muted)"; statusEl.textContent="Saving…";
+
+    if (editingId) {
+      // UPDATE via backend — verifies JWT ownership
+      try {
+        const res = await fetch(`${API_BASE}/threads/${editingId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+          body: JSON.stringify({ title, category, message, book_ref: bookRef||null, type: selectedType })
+        });
+        const data = await res.json();
+        if (!res.ok) { btn.disabled=false; statusEl.style.color="var(--red)"; statusEl.textContent="✗ "+(data.error||"Update failed"); return; }
+      } catch { btn.disabled=false; statusEl.style.color="var(--red)"; statusEl.textContent="✗ Could not reach server."; return; }
+      statusEl.style.color="var(--green)"; statusEl.textContent="✓ Discussion updated!";
+    } else {
+      // INSERT new thread — try Supabase first, fallback to backend
+      const payload = { title, category, message, author: fullname, type: selectedType, book_ref: bookRef||null, likes: 0, user_id: userId, is_lecturer: false };
+      const { error: sbErr } = await sb.from("threads").insert(payload);
+
+      if (sbErr) {
+        try {
+          const res = await fetch(`${API_BASE}/threads`, {
+            method: "POST",
+            headers: { "Content-Type":"application/json", "Authorization":"Bearer "+token },
+            body: JSON.stringify(payload)
+          });
+          if (!res.ok) throw new Error();
+        } catch {
+          btn.disabled=false; statusEl.style.color="var(--red)"; statusEl.textContent="✗ Failed to post."; return;
+        }
+      }
+      statusEl.style.color="var(--green)"; statusEl.textContent="✓ Discussion posted!";
+    }
+
+    btn.disabled=false;
+    setTimeout(closePostModal, 1200);
+    await loadThreads();
+  }
+
+  // ── FILTER / SORT ───────────────────────────────────
+  function filterThreads() {
+    const q     = document.getElementById("searchInput").value.toLowerCase().trim();
+    const sort  = document.getElementById("sortSel").value;
+    const typeF = document.getElementById("typeSel").value;
+
+    let filtered = allThreads.filter(t => {
+      const catMatch  = activeCat==="all" || t.category===activeCat;
+      const typeMatch = typeF==="all" || (t.type||"discussion")===typeF;
+      const qMatch    = !q || t.title.toLowerCase().includes(q) || t.message.toLowerCase().includes(q) || (t.author||"").toLowerCase().includes(q);
+      return catMatch && typeMatch && qMatch;
     });
 
-    if (!res.ok) throw new Error("Request failed");
+    if (sort==="newest")  filtered.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+    if (sort==="oldest")  filtered.sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+    if (sort==="popular") filtered.sort((a,b)=>(b.likes||0)-(a.likes||0));
 
-    alert("Discussion posted!");
-    loadThreads(); // refresh list
-    e.target.reset();
-
-  } catch (err) {
-    alert("Failed to post discussion. Server error.");
+    renderThreads(filtered);
   }
-};
 
+  function filterCat(cat, el) {
+    activeCat = cat;
+    document.querySelectorAll(".cat-item").forEach(i=>i.classList.remove("active"));
+    el.classList.add("active");
+    filterThreads();
+  }
 
-</script>
+  // ── STATS ───────────────────────────────────────────
+  function updateStats() {
+    document.getElementById("statThreads").textContent = allThreads.length;
+    const today = new Date().toDateString();
+    document.getElementById("statToday").textContent  = allThreads.filter(t=>new Date(t.created_at).toDateString()===today).length;
+  }
+
+  function updateCatCounts() {
+    document.getElementById("cnt-all").textContent = allThreads.length;
+    ["General","IT","Business","Research","Caribbean Studies"].forEach(c => {
+      const el = document.getElementById(`cnt-${c}`);
+      if (el) el.textContent = allThreads.filter(t=>t.category===c).length;
+    });
+  }
+
+  // ── HELPERS ─────────────────────────────────────────
+  function getTimeAgo(d) {
+    if (!d) return "";
+    const s = (new Date()-new Date(d))/1000;
+    if (s<60) return "just now";
+    if (s<3600) return `${Math.floor(s/60)}m ago`;
+    if (s<86400) return `${Math.floor(s/3600)}h ago`;
+    return `${Math.floor(s/86400)}d ago`;
+  }
+
+  function esc(s){ return (s||"").replace(/`/g,"\\`"); }
+
+  // ── INIT ────────────────────────────────────────────
+  loadThreads();
+  </script>
 
 </body>
 </html>

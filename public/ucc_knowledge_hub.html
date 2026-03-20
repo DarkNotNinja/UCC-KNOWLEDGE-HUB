@@ -1,121 +1,350 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>UCC Knowledge Hub — Empowering Digital Learning</title>
-  <link rel="stylesheet" href="main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
 
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:         hsl(220, 40%, 7%);
+      --fg:         hsl(45, 30%, 92%);
+      --primary:    hsl(43, 55%, 54%);
+      --primary-fg: hsl(220, 40%, 7%);
+      --card:       hsl(220, 35%, 11%);
+      --muted:      hsl(220, 15%, 55%);
+      --border:     hsl(220, 25%, 18%);
+      --secondary:  hsl(220, 30%, 16%);
+      --glow-gold:  0 0 40px hsla(43, 55%, 54%, 0.25);
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-body:    'Inter', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+    }
+
+    a { text-decoration: none; color: inherit; }
+    h1,h2,h3,h4,h5,h6 { font-family: var(--font-display); }
+
+    /* ── HEADER ── */
+    .site-header {
+      position: sticky; top: 0; z-index: 50;
+      background: hsla(220, 35%, 11%, 0.7);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .header-inner {
+      max-width: 1280px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 24px; gap: 16px;
+    }
+    .logo-wrap { display: flex; align-items: center; gap: 12px; }
+    .ucc-logo  { height: 40px; width: 40px; border-radius: 50%; }
+    .title-wrap h1 { font-size: 1.125rem; font-weight: 700; color: var(--fg); }
+    .title-wrap .subtitle { font-size: 0.75rem; color: var(--muted); letter-spacing: 0.03em; }
+    .main-nav { display: flex; gap: 8px; align-items: center; }
+    .main-nav a {
+      font-size: 0.875rem; color: var(--muted);
+      padding: 7px 14px; border-radius: 8px; transition: all 0.2s;
+    }
+    .main-nav a:hover { color: var(--fg); background: var(--secondary); }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 80px 24px 60px;
+      max-width: 1280px; margin: 0 auto; width: 100%;
+    }
+    .hero-inner { display: flex; gap: 48px; align-items: flex-start; }
+    .hero-copy  { flex: 1; }
+    .hero-copy h2 {
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 700; line-height: 1.2;
+      margin-bottom: 16px; letter-spacing: -0.02em;
+    }
+    .hero-copy > p { font-size: 1rem; color: var(--muted); max-width: 520px; margin-bottom: 32px; line-height: 1.7; }
+
+    .search-form {
+      display: flex; gap: 10px; max-width: 600px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px; padding: 8px 8px 8px 18px;
+      transition: border-color 0.2s;
+    }
+    .search-form:focus-within { border-color: var(--primary); }
+    .search-form input {
+      flex: 1; background: none; border: none; outline: none;
+      color: var(--fg); font-family: var(--font-body); font-size: 0.9rem;
+    }
+    .search-form input::placeholder { color: var(--muted); }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 10px 24px; border-radius: 8px;
+      font-family: var(--font-display); font-size: 0.875rem; font-weight: 600;
+      cursor: pointer; border: none; transition: all 0.2s;
+    }
+    .btn.primary { background: var(--primary); color: var(--primary-fg); }
+    .btn.primary:hover { opacity: 0.9; box-shadow: var(--glow-gold); }
+    .btn.ghost {
+      background: transparent; border: 1px solid hsla(45,30%,92%,0.2);
+      color: var(--fg);
+    }
+    .btn.ghost:hover { background: var(--secondary); }
+
+    /* ── SEARCH RESULTS ── */
+    .search-results { margin-top: 28px; max-width: 700px; }
+    .search-results h4 {
+      font-size: 0.85rem; font-weight: 600; color: var(--primary);
+      text-transform: uppercase; letter-spacing: 0.05em;
+      margin: 20px 0 10px;
+    }
+    .search-section { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .search-section li {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px 18px; font-size: 0.875rem; line-height: 1.65;
+      transition: border-color 0.2s;
+    }
+    .search-section li:hover { border-color: hsla(43,55%,54%,0.3); }
+    .search-section li strong { color: var(--fg); font-size: 0.95rem; }
+    .search-section li span  { color: var(--muted); }
+    .search-section li a     { color: var(--primary); font-weight: 600; font-size: 0.8rem; }
+    .summary-btn {
+      margin-top: 8px; padding: 5px 14px;
+      border: 1px solid var(--border); border-radius: 8px;
+      background: var(--secondary); color: var(--primary);
+      font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+      font-family: var(--font-display);
+    }
+    .summary-btn:hover { border-color: var(--primary); }
+    .ai-summary { margin-top: 8px; color: var(--muted); font-size: 0.82rem; font-style: italic; line-height: 1.55; }
+    .external-links { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .external-links h4 { width: 100%; }
+    .external-links a {
+      padding: 6px 14px; border-radius: 8px;
+      background: var(--card); border: 1px solid var(--border);
+      color: var(--muted); font-size: 0.8rem; font-weight: 600; transition: all 0.2s;
+    }
+    .external-links a:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* ── SECTIONS ── */
+    section { width: 100%; }
+    .features, .library-grid, .assistant {
+      max-width: 1280px; margin: 0 auto;
+      padding: 60px 24px;
+    }
+    .features h3, .library-grid h3 {
+      font-size: 1.5rem; font-weight: 700;
+      margin-bottom: 28px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── FEATURE GRID ── */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .feature-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 24px 20px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .feature-card.clickable { cursor: pointer; }
+    .feature-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 0 28px hsla(43,55%,54%,0.1);
+    }
+    .feature-card h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 8px; color: var(--fg); }
+    .feature-card p  { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── RESOURCE CARDS ── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .resource-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden;
+      display: flex; flex-direction: column;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .resource-card:hover { border-color: var(--primary); box-shadow: 0 0 28px hsla(43,55%,54%,0.1); }
+    .resource-card img { width: 100%; height: 160px; object-fit: cover; }
+    .card-body { padding: 18px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+    .card-body h4    { font-size: 0.95rem; font-weight: 600; color: var(--fg); line-height: 1.4; }
+    .card-body .meta { font-size: 0.78rem; color: var(--muted); }
+    .card-body .excerpt { font-size: 0.83rem; color: var(--muted); line-height: 1.55; flex: 1; }
+    .card-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .card-actions .btn {
+      padding: 6px 14px; font-size: 0.78rem;
+    }
+
+    /* ── AI ASSISTANT ── */
+    .assistant-wrap {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 28px 32px;
+      display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+      transition: border-color 0.3s;
+    }
+    .assistant-wrap:hover { border-color: hsla(43,55%,54%,0.3); }
+    .assistant-left { flex: 1; min-width: 180px; }
+    .assistant-left p { color: var(--muted); font-size: 0.9rem; line-height: 1.65; }
+    .assistant-left p strong { color: var(--primary); }
+    .assistant-right { flex: 2; min-width: 260px; }
+    .assistant-right form { display: flex; gap: 10px; }
+    .assistant-right input {
+      flex: 1; padding: 11px 14px;
+      background: var(--secondary); border: 1px solid var(--border);
+      border-radius: 8px; outline: none;
+      color: var(--fg); font-family: var(--font-body); font-size: 0.875rem;
+      transition: border-color 0.2s;
+    }
+    .assistant-right input:focus { border-color: var(--primary); }
+    .assistant-right input::placeholder { color: var(--muted); }
+
+    /* ── FOOTER ── */
+    .site-footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 24px; margin-top: auto;
+    }
+    .footer-inner {
+      max-width: 1280px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .site-footer p { font-family: var(--font-display); font-size: 0.875rem; color: var(--muted); line-height: 1.7; }
+    .site-footer strong { color: var(--fg); }
+    .site-footer a { color: var(--primary); }
+    .site-footer a:hover { text-decoration: underline; }
+    .site-footer small { font-size: 0.75rem; color: var(--muted); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+    .hero          { animation: fadeUp .45s ease both; }
+    .features      { animation: fadeUp .45s .08s ease both; }
+    .library-grid  { animation: fadeUp .45s .15s ease both; }
+    .assistant     { animation: fadeUp .45s .2s ease both; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .hero { padding: 48px 20px 40px; }
+      .hero-inner { flex-direction: column; }
+      .features, .library-grid, .assistant { padding: 40px 20px; }
+      .title-wrap .subtitle { display: none; }
+    }
+    @media (max-width: 480px) {
+      .main-nav a:first-child { display: none; }
+    }
+  </style>
 </head>
 <body>
+
+  <script>
+    if (!localStorage.getItem("token")) window.location.href = "ucc_landing_page.html";
+  </script>
+
+  <!-- HEADER -->
   <header class="site-header">
     <div class="header-inner">
       <div class="logo-wrap">
-        <!-- Official UCC logo (if unavailable, replace with local file 'ucc-logo.png') -->
         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEC31GlH03Kf6NAmmiIHqInFd0q1bQz2gmDg&s" alt="UCC logo" class="ucc-logo">
-      </div>
-      <div class="title-wrap">
-        <h1>UCC Knowledge Hub</h1>
-        <p class="subtitle">Empowering Digital Learning</p>
+        <div class="title-wrap">
+          <h1>UCC Knowledge Hub</h1>
+          <p class="subtitle">Empowering Digital Learning</p>
+        </div>
       </div>
       <nav class="main-nav">
-        <a href="Loaners.html">Request/Borrow</a>
-        <a href="#">Scan Me</a>
+        <a href="Loaners.html">Request / Borrow</a>
         <a href="profile.html">Profile</a>
-        <a href="ucc_landing_page.html">About</a>
       </nav>
     </div>
   </header>
 
   <main>
+
+    <!-- HERO -->
     <section class="hero">
       <div class="hero-inner">
         <div class="hero-copy">
-  <h2>Find research. Read smarter. Create knowledge.</h2>
-  <p>Search UCC's collections, access Caribbean archives, and use AI tools to accelerate your learning.</p>
+          <h2>Find research. Read smarter. Create knowledge.</h2>
+          <p>Search UCC's collections, access Caribbean archives, and use AI tools to accelerate your learning.</p>
 
-  <form class="search-form" id="bookSearchForm" autocomplete="off">
-    <input
-      id="bookQuery"
-      type="search"
-      placeholder="Search books by title or author..."
-      aria-label="Search books"
-    >
-    <button class="btn primary" type="submit">Search</button>
-  </form>
+          <form class="search-form" id="bookSearchForm" autocomplete="off">
+            <input id="bookQuery" type="search" placeholder="Search books by title or author…" aria-label="Search books">
+            <button class="btn primary" type="submit">Search</button>
+          </form>
 
-  <div id="searchResults" class="search-results"></div>
-</div>
-
-
-        </div>
-        <div class="hero-visual">
-          <div class="tech-pattern"></div>
+          <div id="searchResults" class="search-results"></div>
         </div>
       </div>
     </section>
-<section class="features">
-  <h3>Key Features</h3>
 
-  <div class="feature-grid">
+    <!-- FEATURES -->
+    <section class="features">
+      <h3>Key Features</h3>
+      <div class="feature-grid">
+        <div class="feature-card clickable">
+          <h4>🔍 Smart Search &amp; Discovery</h4>
+          <p>Semantic search with filters and auto-complete to quickly find relevant resources.</p>
+        </div>
+        <div class="feature-card clickable">
+          <h4>👤 Account Management</h4>
+          <p>Secure profiles for loans, holds, history and personalized recommendations.</p>
+        </div>
+        <div id="caribbeanArchive" class="feature-card clickable" onclick="window.open('https://nlj.gov.jm/digital-collections/')">
+          <h4>🇯🇲 Jamaica Digital Archive</h4>
+          <p>Access Jamaica's digitized heritage materials via the National Library of Jamaica (NLJ).</p>
+        </div>
+        <div class="feature-card clickable" onclick="location.href='loaners.html'">
+          <h4>📚 Borrowing &amp; Renewing</h4>
+          <p>View borrowed items, renew loans, check availability, place holds.</p>
+        </div>
+        <div class="feature-card clickable">
+          <h4>🔔 Notifications &amp; Alerts</h4>
+          <p>Due date reminders, new arrivals, and hold alerts.</p>
+        </div>
+        <div class="feature-card clickable">
+          <h4>📰 E-Resources Access</h4>
+          <p>Deep links to e-books, journals, and databases.</p>
+        </div>
+        <div class="feature-card clickable">
+          <h4>⭐ Social &amp; Community</h4>
+          <p>Book Reviews &amp; Ratings. Social Sharing.</p>
+        </div>
+        <div class="feature-card clickable" onclick="location.href='forum.html'">
+          <h4>💬 User Forum</h4>
+          <p>Connect with Students and Teachers.</p>
+        </div>
+      </div>
+    </section>
 
-    <div class="feature-card clickable">
-      <h4>Smart Search & Discovery</h4>
-      <p>Semantic search with filters and auto-complete to quickly find relevant resources.</p>
-    </div>
-
-    <div class="feature-card clickable">
-      <h4>Account Management</h4>
-      <p>Secure profiles for loans, holds, history and personalized recommendations.</p>
-    </div>
-
-    <div id="caribbeanArchive" class="feature-card clickable"
-         onclick="window.open('https://nlj.gov.jm/digital-collections/')">
-      <h4>Jamaica Digital Archive</h4>
-      <p>Access Jamaica’s digitized heritage materials via the National Library of Jamaica (NLJ).</p>
-    </div>
-
-    <div class="feature-card clickable" onclick="location.href='loaners.html'">
-      <h4>Borrowing & Renewing</h4>
-      <p>View borrowed items, renew loans, check availability, place holds.</p>
-    </div>
-
-    <div class="feature-card clickable">
-      <h4>Notifications & Alerts</h4>
-      <p>Due date reminders, new arrivals, and hold alerts.</p>
-    </div>
-
-    <div class="feature-card clickable">
-      <h4>E-Resources Access</h4>
-      <p>Deep links to e-books, journals, and databases.</p>
-    </div>
-
-    <div class="feature-card clickable">
-      <h4>Social & Community Features</h4>
-      <p>Book Reviews & Ratings.<br>Social Sharing.</p>
-    </div>
-
-    <div class="feature-card clickable" onclick="location.href='forum.html'">
-      <h4>User Forum</h4>
-      <p>Connect with Students and Teachers.</p>
-    </div>
-
-  </div>
-
-</section>
+    <!-- FEATURED RESOURCES -->
     <section class="library-grid">
       <h3>Featured Resources</h3>
-      <div class="cards">
+      <div class="cards" id="resourceCards">
         <article class="resource-card">
           <img src="https://webimages.iadb.org/Drupal_pantheon/publications/english/images/10895.png" alt="Digital Transformation">
           <div class="card-body">
             <h4>Digital Transformation in the Caribbean</h4>
-            <p class="meta">By Martínez Garza Fernández, Ricardo ; Iglesias Rodriguez, Enrique ; García Zaballos, Antonio</p>
+            <p class="meta">By Martínez Garza Fernández, Ricardo et al.</p>
             <p class="excerpt">A study on the adoption of digital technologies across Caribbean institutions.</p>
             <div class="card-actions">
-              <a class="btn ghost" href="https://publications.iadb.org/en/publications/english/viewer/Digital-Transformation-Infrastructure-Sharing-in-Latin-America-and-the-Caribbean.pdf">View</a>
-              <a class="btn" href="https://publications.iadb.org/publications/english/document/Digital-Transformation-Infrastructure-Sharing-in-Latin-America-and-the-Caribbean.pdf">Download</a>
-              <a class="btn" href="https://publications.iadb.org/en/digital-transformation-infrastructure-sharing-latin-america-and-caribbean">Source</a>
+              <a class="btn ghost" href="https://publications.iadb.org/en/publications/english/viewer/Digital-Transformation-Infrastructure-Sharing-in-Latin-America-and-the-Caribbean.pdf" target="_blank">View</a>
+              <a class="btn primary" href="https://publications.iadb.org/publications/english/document/Digital-Transformation-Infrastructure-Sharing-in-Latin-America-and-the-Caribbean.pdf" target="_blank">Download</a>
+              <a class="btn ghost" href="https://publications.iadb.org/en/digital-transformation-infrastructure-sharing-latin-america-and-caribbean" target="_blank">Source</a>
             </div>
           </div>
         </article>
@@ -127,216 +356,157 @@
             <p class="meta">By Matt Miller</p>
             <p class="excerpt">Explores the role of AI tools in teaching and learning across the world.</p>
             <div class="card-actions">
-              <a class="btn ghost" href="https://ditchthattextbook.com/ai-edu/#tve-jump-186cc04809e">View</a>
-              <a class="btn" href="https://www.amazon.com/Educators-Strategies-Efficiencies-Artificial-Intelligence-ebook/dp/B0BYPL6ZBV?_encoding=UTF8&qid=&sr=&language=en_US&ref_=as_li_ss_tl">Buy/Download</a>
+              <a class="btn ghost" href="https://ditchthattextbook.com/ai-edu/#tve-jump-186cc04809e" target="_blank">View</a>
+              <a class="btn primary" href="https://www.amazon.com/Educators-Strategies-Efficiencies-Artificial-Intelligence-ebook/dp/B0BYPL6ZBV" target="_blank">Buy / Download</a>
             </div>
           </div>
         </article>
 
         <article class="resource-card">
-          <img src="https://m.media-amazon.com/images/I/61j6+dXTjgL._SL1500_.jpg" alt="Thesis">
+          <img src="https://m.media-amazon.com/images/I/61j6+dXTjgL._SL1500_.jpg" alt="Renewable Energy">
           <div class="card-body">
             <h4>Renewable Energy: Law, Policy and Practice</h4>
             <p class="meta">By Troy A. Rule</p>
             <p class="excerpt">A thesis examining policy options and implementation challenges in Jamaica.</p>
             <div class="card-actions">
-              <a class="btn ghost" href="https://www.amazon.com/Renewable-Energy-Practice-American-Casebook/dp/1647083656">View</a>
-              <a class="btn" href="https://www.amazon.com/Renewable-Energy-Practice-American-Casebook/dp/1647083656">Buy/Download</a>
+              <a class="btn ghost" href="https://www.amazon.com/Renewable-Energy-Practice-American-Casebook/dp/1647083656" target="_blank">View</a>
+              <a class="btn primary" href="https://www.amazon.com/Renewable-Energy-Practice-American-Casebook/dp/1647083656" target="_blank">Buy / Download</a>
             </div>
           </div>
         </article>
       </div>
     </section>
 
+    <!-- AI ASSISTANT -->
     <section class="assistant">
-  <div class="assistant-wrap">
-    <div class="assistant-left">
-      <p>Type a question to get a quick summary, citation help, or related readings...</p>
-    </div>
-    <div class="assistant-right">
-      <form onsubmit="return false;">
-        <input type="text" placeholder="e.g., 'Cite this article in APA'">
-        <button class="btn primary">Generate</button>
-      </form>
-    </div>
-  </div>
-</section>
-
+      <div class="assistant-wrap">
+        <div class="assistant-left">
+          <p>🤖 <strong>AI Research Assistant</strong><br>
+          Type a question to get a quick summary, citation help, or related readings.</p>
+        </div>
+        <div class="assistant-right">
+          <form onsubmit="return false;">
+            <input type="text" placeholder="e.g., 'Cite this article in APA'">
+            <button class="btn primary">Generate</button>
+          </form>
+        </div>
+      </div>
+    </section>
 
   </main>
 
+  <!-- FOOTER -->
   <footer class="site-footer">
-  <div class="footer-inner">
-    <p>
-      <strong>University of the Commonwealth Caribbean</strong><br>
-      17 Worthington Avenue, Kingston 5, Jamaica W.I.<br>
-      <a href="https://www.ucc.edu.jm">www.ucc.edu.jm</a>
-    </p>
-    <small>© <span id="year"></span> UCC — All Rights Reserved</small>
-  </div>
+    <div class="footer-inner">
+      <p>
+        <strong>University of the Commonwealth Caribbean</strong><br>
+        17 Worthington Avenue, Kingston 5, Jamaica W.I.<br>
+        <a href="https://www.ucc.edu.jm">www.ucc.edu.jm</a>
+      </p>
+      <small>© <span id="year"></span> UCC — All Rights Reserved</small>
+    </div>
   </footer>
 
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
 
- <script>
-  document.getElementById('year').textContent = new Date().getFullYear();
-</script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("bookSearchForm");
+      const input = document.getElementById("bookQuery");
+      const resultsBox = document.getElementById("searchResults");
 
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("bookSearchForm");
-    const input = document.getElementById("bookQuery");
-    const resultsBox = document.getElementById("searchResults");
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const query = input.value.trim();
+        if (!query) return;
+        resultsBox.innerHTML = "<p style='color:var(--muted);margin-top:8px;'>Searching across sources…</p>";
 
-    form.addEventListener("submit", async function (e) {
-      e.preventDefault();
-      const query = input.value.trim();
-      if (!query) return;
+        const [openLibData, googleData, archiveData] = await Promise.all([
+          fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}`).then(r => r.json()).catch(() => null),
+          fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`).then(r => r.json()).catch(() => null),
+          fetch(`https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}&output=json`).then(r => r.json()).catch(() => null)
+        ]);
 
-      resultsBox.innerHTML = "<p>Searching across sources…</p>";
+        let results = [];
+        if (openLibData?.docs) results.push({ source: "Open Library",     books: openLibData.docs.slice(0,5).map(b => ({ title: b.title, author: b.author_name?.join(", ") || "Unknown", description: b.first_sentence || "", link: "https://openlibrary.org" + b.key })) });
+        if (googleData?.items) results.push({ source: "Google Books",     books: googleData.items.slice(0,5).map(b => ({ title: b.volumeInfo.title, author: (b.volumeInfo.authors || ["Unknown"]).join(", "), description: b.volumeInfo.description || "", link: b.volumeInfo.previewLink })) });
+        if (archiveData?.response?.docs) results.push({ source: "Internet Archive", books: archiveData.response.docs.slice(0,5).map(b => ({ title: b.title, author: b.creator || "Unknown", description: b.description || "", link: `https://archive.org/details/${b.identifier}` })) });
 
-      const [openLibData, googleData, archiveData] = await Promise.all([
-        fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}`).then(r => r.json()).catch(() => null),
-        fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`).then(r => r.json()).catch(() => null),
-        fetch(`https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}&output=json`).then(r => r.json()).catch(() => null)
-      ]);
+        if (!results.length) { resultsBox.innerHTML = "<p style='color:var(--muted);'>No results found from any source.</p>"; return; }
 
-      let results = [];
+        resultsBox.innerHTML = results.map(group => `
+          <h4>${group.source}</h4>
+          <ul class="search-section">
+            ${group.books.map(book => `
+              <li>
+                <strong>${book.title}</strong><br>
+                <span>${book.author}</span><br>
+                <a href="${book.link}" target="_blank">View →</a>&nbsp;&nbsp;
+                <button class="summary-btn btn ghost" data-title="${book.title}" data-author="${book.author}" data-description="${book.description}">✨ AI Summary</button>
+                <p class="ai-summary" style="display:none;"></p>
+              </li>`).join("")}
+          </ul>`).join("") + `
+          <div class="external-links">
+            <h4>More Sources</h4>
+            <a href="https://www.oreilly.com/search/?q=${encodeURIComponent(query)}" target="_blank">O'Reilly</a>
+            <a href="https://z-lib.id/s?q=${encodeURIComponent(query)}" target="_blank">Z-Library</a>
+            <a href="https://www.gutenberg.org/ebooks/search/?query=${encodeURIComponent(query)}" target="_blank">Project Gutenberg</a>
+          </div>`;
 
-      if (openLibData?.docs) {
-        results.push({
-          source: "Open Library",
-          books: openLibData.docs.slice(0, 5).map(b => ({
-            title: b.title,
-            author: b.author_name?.join(", ") || "Unknown",
-            description: b.first_sentence || "",
-            link: "https://openlibrary.org" + b.key
-          }))
-        });
-      }
-
-      if (googleData?.items) {
-        results.push({
-          source: "Google Books",
-          books: googleData.items.slice(0, 5).map(b => ({
-            title: b.volumeInfo.title,
-            author: (b.volumeInfo.authors || ["Unknown"]).join(", "),
-            description: b.volumeInfo.description || "",
-            link: b.volumeInfo.previewLink
-          }))
-        });
-      }
-
-      if (archiveData?.response?.docs) {
-        results.push({
-          source: "Internet Archive",
-          books: archiveData.response.docs.slice(0, 5).map(b => ({
-            title: b.title,
-            author: b.creator || "Unknown",
-            description: b.description || "",
-            link: `https://archive.org/details/${b.identifier}`
-          }))
-        });
-      }
-
-      if (!results.length) {
-        resultsBox.innerHTML = "<p>No results found from any source.</p>";
-        return;
-      }
-
-      resultsBox.innerHTML = results.map(group => `
-        <h4>${group.source}</h4>
-        <ul class="search-section">
-          ${group.books.map(book => `
-            <li>
-              <strong>${book.title}</strong><br>
-              <span>${book.author}</span><br>
-              <a href="${book.link}" target="_blank">View</a><br>
-              <button class="btn ghost summary-btn" data-title="${book.title}" data-author="${book.author}" data-description="${book.description}">
-                Generate AI Summary
-              </button>
-              <p class="ai-summary" style="display:none;"></p>
-            </li>
-          `).join("")}
-        </ul>
-      `).join("") + `
-        <div class="external-links">
-          <h4>External Search Options</h4>
-          <a href="https://www.oreilly.com/search/?q=${encodeURIComponent(query)}" target="_blank">O’Reilly</a>
-          <a href="https://z-lib.id/s?q=${encodeURIComponent(query)}" target="_blank">Z-Library</a>
-          <a href="https://www.gutenberg.org/ebooks/search/?query=${encodeURIComponent(query)}" target="_blank">Project Gutenberg</a>
-        </div>
-      `;
-
-      // Bind summary buttons
-      document.querySelectorAll('.summary-btn').forEach(button => {
-        button.addEventListener('click', async () => {
-          const title = button.dataset.title;
-          const author = button.dataset.author;
-          const description = button.dataset.description;
-          const summaryEl = button.nextElementSibling;
-
-          summaryEl.style.display = "block";
-          summaryEl.textContent = "⏳ Generating summary...";
-
-          try {
-            const res = await fetch('http://localhost:5000/api/summary', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ bookTitle: title, author, description })
-            });
-
-            const data = await res.json();
-            summaryEl.textContent = data.summary || "No summary returned.";
-          } catch (err) {
-            summaryEl.textContent = "⚠️ Failed to fetch summary.";
-          }
+        document.querySelectorAll('.summary-btn').forEach(button => {
+          button.addEventListener('click', async () => {
+            const summaryEl = button.nextElementSibling;
+            summaryEl.style.display = "block";
+            summaryEl.textContent = "⏳ Generating summary…";
+            try {
+              const res = await fetch('http://localhost:5000/api/summary', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ bookTitle: button.dataset.title, author: button.dataset.author, description: button.dataset.description })
+              });
+              const data = await res.json();
+              summaryEl.textContent = data.summary || "No summary returned.";
+            } catch { summaryEl.textContent = "⚠️ Failed to fetch summary."; }
+          });
         });
       });
     });
-  });
-</script>
+  </script>
 
-<script>
-  if (window.location.hash === "#caribbeanArchive") {
-    setTimeout(() => {
-      document.getElementById("caribbeanArchive")
-        ?.scrollIntoView({ behavior: "smooth", block: "center" });
-    }, 300);
-  }
-</script>
+  <script>
+    if (window.location.hash === "#caribbeanArchive") {
+      setTimeout(() => document.getElementById("caribbeanArchive")?.scrollIntoView({ behavior: "smooth", block: "center" }), 300);
+    }
+  </script>
 
-<script>
-  async function loadResources() {
-    const res = await fetch("http://localhost:5000/api/resources");
-    const data = await res.json();
-    const container = document.querySelector(".cards");
-    container.innerHTML = data.map(item => `
-      <article class="resource-card">
-        <img src="https://via.placeholder.com/120x160.png?text=${encodeURIComponent(item.format)}" alt="${item.title}">
-        <div class="card-body">
-          <h4>${item.title}</h4>
-          <p class="meta">By ${item.author || "Unknown"} — ${item.format}</p>
-          <p class="excerpt">${item.description || ""}</p>
-        </div>
-      </article>
-    `).join("");
-  }
+  <script>
+    async function loadResources() {
+      try {
+        const res  = await fetch("http://localhost:5000/api/resources");
+        const data = await res.json();
+        if (!data?.length) return;
+        document.getElementById("resourceCards").innerHTML = data.map(item => `
+          <article class="resource-card">
+            <img src="https://via.placeholder.com/400x160.png?text=${encodeURIComponent(item.format)}" alt="${item.title}">
+            <div class="card-body">
+              <h4>${item.title}</h4>
+              <p class="meta">By ${item.author || "Unknown"} — ${item.format}</p>
+              <p class="excerpt">${item.description || ""}</p>
+            </div>
+          </article>`).join("");
+      } catch { /* keep static cards if API unavailable */ }
+    }
+    loadResources();
+  </script>
 
-  loadResources();
-</script>
-<script>
-  function logout() {
-    localStorage.removeItem("token");
-    window.location.href = "ucc_landing_page.html";
-  }
-</script>
-<script>
-    const token = localStorage.getItem("token");
-    if (!token) {
+  <script>
+    function logout() {
+      localStorage.removeItem("token");
       window.location.href = "ucc_landing_page.html";
     }
   </script>
 
 </body>
-
 </html>

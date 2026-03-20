@@ -2,163 +2,474 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>UCC Knowledge Hub — Profile</title>
-  <link rel="stylesheet" href="main.css">
-  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-    *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
-    body{background:linear-gradient(135deg,#002b5c,#00509e);color:#fff;min-height:100vh;display:flex;flex-direction:column;}
-    header{width:100%;background:rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:space-between;padding:15px 40px;}
-    header img{height:60px;}
-    header nav a{color:#ffcc00;text-decoration:none;margin-left:25px;font-weight:600;transition:.3s;}
-    header nav a:hover{color:#fff;}
-    main{flex:1;display:flex;justify-content:center;align-items:flex-start;padding:60px 20px;}
-    .profile-container{background:rgba(255,255,255,0.1);backdrop-filter:blur(12px);padding:40px 50px;border-radius:20px;max-width:800px;width:100%;box-shadow:0 0 25px rgba(0,0,0,0.3);}
-    h1{color:#ffcc00;font-size:2rem;margin-bottom:20px;text-align:center;}
-    section{margin-top:30px;}
-    h2{font-size:1.3rem;color:#ffcc00;margin-bottom:10px;}
-    table{width:100%;border-collapse:collapse;margin-top:10px;}
-    th,td{padding:12px 10px;text-align:left;background:rgba(255,255,255,0.1);}
-    th{color:#ffcc00;}
-    tr:nth-child(even){background:rgba(255,255,255,0.15);}
-    form{margin-top:10px;}
-    input{width:100%;padding:12px;margin-bottom:10px;border:none;border-radius:8px;font-size:1rem;background:rgba(255,255,255,0.9);color:#000;}
-    button{padding:12px 20px;border:none;border-radius:8px;font-size:1rem;font-weight:700;background:#ffcc00;color:#002b5c;cursor:pointer;transition:.3s;}
-    button:hover{background:#fff;box-shadow:0 0 20px rgba(255,204,0,0.7);}
-    footer{padding:20px;text-align:center;font-size:.9rem;opacity:.8;}
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:         hsl(220, 40%, 7%);
+      --fg:         hsl(45, 30%, 92%);
+      --primary:    hsl(43, 55%, 54%);
+      --primary-fg: hsl(220, 40%, 7%);
+      --card:       hsl(220, 35%, 11%);
+      --muted:      hsl(220, 15%, 55%);
+      --border:     hsl(220, 25%, 18%);
+      --secondary:  hsl(220, 30%, 16%);
+      --green:      hsl(152, 60%, 52%);
+      --red:        hsl(0, 70%, 60%);
+      --glow-gold:  0 0 40px hsla(43, 55%, 54%, 0.25);
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-body:    'Inter', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+    }
+
+    a { text-decoration: none; color: inherit; }
+    h1,h2,h3,h4,h5,h6 { font-family: var(--font-display); }
+
+    /* ── HEADER ── */
+    .site-header {
+      position: sticky; top: 0; z-index: 50;
+      background: hsla(220, 35%, 11%, 0.7);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .header-inner {
+      max-width: 1280px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 24px;
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .ucc-logo { height: 40px; width: 40px; border-radius: 50%; }
+    .header-title { font-family: var(--font-display); font-size: 1.125rem; font-weight: 700; }
+    .main-nav { display: flex; gap: 8px; align-items: center; }
+    .main-nav a {
+      font-size: 0.875rem; color: var(--muted);
+      padding: 7px 14px; border-radius: 8px; transition: all 0.2s;
+    }
+    .main-nav a:hover { color: var(--fg); background: var(--secondary); }
+    .nav-logout {
+      font-size: 0.875rem; color: hsl(0,70%,70%);
+      padding: 7px 14px; border-radius: 8px;
+      border: 1px solid hsla(0,70%,60%,0.25);
+      background: hsla(0,70%,60%,0.08);
+      cursor: pointer; transition: all 0.2s;
+      font-family: var(--font-body);
+    }
+    .nav-logout:hover { background: hsla(0,70%,60%,0.18); color: #fff; }
+
+    /* ── MAIN ── */
+    main {
+      flex: 1;
+      max-width: 900px; width: 100%;
+      margin: 0 auto;
+      padding: 48px 24px 72px;
+      display: flex; flex-direction: column; gap: 24px;
+    }
+
+    /* ── PROFILE HERO ── */
+    .profile-hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 32px 36px;
+      display: flex; align-items: center; gap: 28px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      animation: fadeUp .45s ease both;
+    }
+    .profile-hero:hover { border-color: var(--primary); box-shadow: var(--glow-gold); }
+
+    .avatar-wrap { position: relative; flex-shrink: 0; }
+    .avatar-img, .avatar-initials {
+      width: 84px; height: 84px; border-radius: 50%;
+      border: 2px solid var(--primary); object-fit: cover;
+    }
+    .avatar-initials {
+      display: flex; align-items: center; justify-content: center;
+      background: var(--secondary);
+      font-family: var(--font-display); font-size: 1.8rem; font-weight: 700;
+      color: var(--primary);
+    }
+    .status-dot {
+      position: absolute; bottom: 3px; right: 3px;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: var(--green); border: 2px solid var(--bg);
+    }
+    .hero-info { flex: 1; }
+    .hero-info h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 4px; }
+    .hero-email  { font-size: 0.875rem; color: var(--primary); margin-bottom: 12px; }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; }
+    .badge {
+      font-size: 0.75rem; font-weight: 600; padding: 4px 12px; border-radius: 20px;
+      letter-spacing: 0.03em; font-family: var(--font-display);
+    }
+    .badge-id     { background: var(--secondary); border: 1px solid var(--border); color: var(--muted); }
+    .badge-role   { background: hsla(43,55%,54%,0.12); border: 1px solid hsla(43,55%,54%,0.3); color: var(--primary); }
+    .badge-active { background: hsla(152,60%,52%,0.12); border: 1px solid hsla(152,60%,52%,0.3); color: var(--green); }
+
+    /* ── QUICK ACTIONS ── */
+    .quick-actions {
+      display: grid; grid-template-columns: repeat(4,1fr); gap: 16px;
+      animation: fadeUp .45s .08s ease both;
+    }
+    .action-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px 16px;
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      cursor: pointer; transition: all 0.25s; text-align: center;
+      text-decoration: none; color: inherit;
+    }
+    .action-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 0 24px hsla(43,55%,54%,0.1);
+      transform: translateY(-3px);
+    }
+    .action-icon {
+      width: 44px; height: 44px; border-radius: 12px; font-size: 1.3rem;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--secondary);
+    }
+    .action-label { font-size: 0.8rem; font-weight: 600; font-family: var(--font-display); color: var(--muted); }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 28px 32px;
+      transition: border-color 0.3s;
+      animation: fadeUp .45s .15s ease both;
+    }
+    .card:hover { border-color: hsla(43,55%,54%,0.3); }
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .card-header h2 { font-size: 1.1rem; font-weight: 600; }
+
+    /* ── TABLE ── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    thead tr { border-bottom: 1px solid var(--border); }
+    th {
+      color: var(--muted); font-weight: 600; padding: 10px 14px; text-align: left;
+      font-family: var(--font-display); font-size: 0.75rem;
+      letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    td { padding: 12px 14px; border-bottom: 1px solid hsla(220,25%,18%,0.5); }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: var(--secondary); }
+
+    .pill { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; font-family: var(--font-display); }
+    .pill-active   { background: hsla(152,60%,52%,0.12); color: var(--green);   border: 1px solid hsla(152,60%,52%,0.25); }
+    .pill-returned { background: var(--secondary);       color: var(--muted);   border: 1px solid var(--border); }
+    .pill-overdue  { background: hsla(0,70%,60%,0.12);   color: var(--red);     border: 1px solid hsla(0,70%,60%,0.25); }
+    .pill-unpaid   { background: hsla(0,70%,60%,0.12);   color: var(--red);     border: 1px solid hsla(0,70%,60%,0.25); }
+    .pill-paid     { background: hsla(152,60%,52%,0.12); color: var(--green);   border: 1px solid hsla(152,60%,52%,0.25); }
+
+    /* ── FINES ── */
+    .fines-stats { display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+    .fine-stat {
+      flex: 1; min-width: 110px;
+      background: var(--secondary); border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px 18px;
+    }
+    .fine-stat .amt { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+    .fine-stat .lbl { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 10px 24px; border-radius: 8px;
+      font-family: var(--font-display); font-size: 0.875rem; font-weight: 600;
+      cursor: pointer; border: none; transition: all 0.2s;
+    }
+    .btn-primary { background: var(--primary); color: var(--primary-fg); }
+    .btn-primary:hover { opacity: 0.9; box-shadow: var(--glow-gold); }
+    .btn-outline { background: transparent; border: 1px solid hsla(45,30%,92%,0.2); color: var(--fg); }
+    .btn-outline:hover { background: var(--secondary); }
+
+    /* ── FORM ── */
+    .form-group { margin-bottom: 14px; }
+    .form-group label {
+      display: block; font-size: 0.75rem; color: var(--muted);
+      margin-bottom: 6px; font-family: var(--font-display);
+      font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .form-group input {
+      width: 100%; padding: 11px 14px;
+      background: var(--secondary); border: 1px solid var(--border);
+      border-radius: 8px; outline: none;
+      color: var(--fg); font-family: var(--font-body); font-size: 0.9rem;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus { border-color: var(--primary); }
+    .form-group input::placeholder { color: var(--muted); }
+    #passwordResult { margin-top: 10px; font-size: 0.85rem; }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 100;
+      background: hsla(220,40%,5%,0.8); backdrop-filter: blur(6px);
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 32px 36px;
+      width: 90%; max-width: 440px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      animation: scaleIn .22s ease;
+    }
+    .modal-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
+    .modal-top h3 { font-size: 1.1rem; font-weight: 600; }
+    .modal-close { background: none; border: none; color: var(--muted); font-size: 1.2rem; cursor: pointer; }
+    .modal-close:hover { color: var(--fg); }
+
+    /* ── FOOTER ── */
+    .site-footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 24px; text-align: center;
+    }
+    .site-footer p { font-family: var(--font-display); font-size: 0.875rem; color: var(--muted); }
+    .site-footer strong { color: var(--fg); }
+    .site-footer a { color: var(--primary); }
+    .site-footer a:hover { text-decoration: underline; }
+    .site-footer small { display: block; margin-top: 6px; font-size: 0.75rem; color: var(--muted); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp  { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes scaleIn { from { opacity:0; transform:scale(.94); } to { opacity:1; transform:scale(1); } }
+
+    @media (max-width: 640px) {
+      .profile-hero  { flex-direction: column; text-align: center; padding: 24px 20px; }
+      .badges        { justify-content: center; }
+      .quick-actions { grid-template-columns: repeat(2,1fr); }
+      .card          { padding: 20px 16px; }
+      .main-nav a    { display: none; }
+    }
   </style>
 </head>
 <body>
+
   <script>
-    const token = localStorage.getItem("token");
-    if (!token) {
-      window.location.href = "ucc_landing_page.html";
-    }
+    if (!localStorage.getItem("token")) window.location.href = "ucc_landing_page.html";
   </script>
 
-  <header>
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEC31GlH03Kf6NAmmiIHqInFd0q1bQz2gmDg&s" alt="UCC logo">
-    <nav>
-      <a href="ucc_knowledge_hub.html">Home</a>
-      <a href="#" id="logoutBtn">Log Out</a>
-    </nav>
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEC31GlH03Kf6NAmmiIHqInFd0q1bQz2gmDg&s" alt="UCC logo" class="ucc-logo">
+        <span class="header-title">UCC Knowledge Hub</span>
+      </div>
+      <nav class="main-nav">
+        <a href="ucc_knowledge_hub.html">Home</a>
+        <a href="Loaners.html">Borrow</a>
+        <button class="nav-logout" id="logoutBtn">Log Out</button>
+      </nav>
+    </div>
   </header>
 
+  <!-- MAIN -->
   <main>
-    <div class="profile-container">
-      <h1>My Profile</h1>
-        <div id="userInfo" style="margin-bottom:20px; text-align:center;">
-          <p><strong>Loading user info...</strong></p>
-        </div>
 
-      <section id="loanSection">
-        <h2>My Loans</h2>
-        <table id="loanTable">
-          <thead>
-            <tr><th>Book Title</th><th>Due Date</th><th>Status</th></tr>
-          </thead>
+    <!-- Profile Hero -->
+    <div class="profile-hero">
+      <div class="avatar-wrap">
+        <div class="avatar-initials" id="avatarEl">?</div>
+        <div class="status-dot"></div>
+      </div>
+      <div class="hero-info">
+        <h1 id="heroName">Loading…</h1>
+        <p class="hero-email" id="heroEmail"></p>
+        <div class="badges">
+          <span class="badge badge-id"    id="heroBadgeId"></span>
+          <span class="badge badge-role">Student</span>
+          <span class="badge badge-active">✓ Active Member</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <a class="action-card" href="#" onclick="openModal('addBookModal');return false;">
+        <div class="action-icon">📗</div>
+        <span class="action-label">Add Book</span>
+      </a>
+      <a class="action-card" href="#" onclick="openModal('removeBookModal');return false;">
+        <div class="action-icon">📕</div>
+        <span class="action-label">Return Book</span>
+      </a>
+      <a class="action-card" href="#finesCard">
+        <div class="action-icon">💰</div>
+        <span class="action-label">View Fines</span>
+      </a>
+      <a class="action-card" href="#" onclick="openModal('payFineModal');return false;">
+        <div class="action-icon">💳</div>
+        <span class="action-label">Pay Fines</span>
+      </a>
+    </div>
+
+    <!-- Loans -->
+    <div class="card">
+      <div class="card-header"><h2>📚 My Loans</h2></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Book Title</th><th>Borrowed</th><th>Due Date</th><th>Status</th></tr></thead>
           <tbody>
-            <tr><td>Introduction to AI</td><td>Nov 20, 2025</td><td>Active</td></tr>
-            <tr><td>Jamaican History Archives</td><td>Oct 30, 2025</td><td>Returned</td></tr>
+            <tr><td>Introduction to Artificial Intelligence</td><td>Nov 1, 2025</td><td>Nov 20, 2025</td><td><span class="pill pill-active">Active</span></td></tr>
+            <tr><td>Jamaican History Archives</td><td>Oct 10, 2025</td><td>Oct 30, 2025</td><td><span class="pill pill-returned">Returned</span></td></tr>
+            <tr><td>Principles of Economics</td><td>Sep 5, 2025</td><td>Sep 25, 2025</td><td><span class="pill pill-overdue">Overdue</span></td></tr>
           </tbody>
         </table>
-      </section>
-
-      <section id="passwordSection">
-        <h2>Set / Change Password</h2>
-        <form id="passwordForm">
-          <input type="password" id="currentPassword" placeholder="Current Password" required>
-          <input type="password" id="newPassword" placeholder="New Password" required>
-          <button type="submit">Update Password</button>
-        </form>
-        <p id="passwordResult"></p>
-      </section>
+      </div>
     </div>
+
+    <!-- Fines -->
+    <div class="card" id="finesCard">
+      <div class="card-header">
+        <h2>💰 Fines &amp; Fees</h2>
+        <button class="btn btn-primary" onclick="openModal('payFineModal')">Pay Now</button>
+      </div>
+      <div class="fines-stats">
+        <div class="fine-stat"><div class="amt">$4.50</div><div class="lbl">Outstanding</div></div>
+        <div class="fine-stat"><div class="amt">3</div><div class="lbl">Overdue Days</div></div>
+        <div class="fine-stat"><div class="amt">$0.00</div><div class="lbl">Paid This Month</div></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Book</th><th>Days Overdue</th><th>Amount</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Principles of Economics</td><td>3</td><td>$4.50</td><td><span class="pill pill-unpaid">Unpaid</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Change Password -->
+    <div class="card">
+      <div class="card-header"><h2>🔒 Change Password</h2></div>
+      <form id="passwordForm">
+        <div class="form-group"><label>Current Password</label><input type="password" id="currentPassword" placeholder="Enter current password" required></div>
+        <div class="form-group"><label>New Password</label><input type="password" id="newPassword" placeholder="Enter new password" required></div>
+        <div class="form-group"><label>Confirm New Password</label><input type="password" id="confirmPassword" placeholder="Repeat new password" required></div>
+        <button class="btn btn-primary" type="submit">Update Password</button>
+        <p id="passwordResult"></p>
+      </form>
+    </div>
+
   </main>
 
-  <footer>
-    © <span id="year"></span> University of the Commonwealth Caribbean — All Rights Reserved
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <p>
+      <strong>University of the Commonwealth Caribbean</strong><br>
+      17 Worthington Avenue, Kingston 5, Jamaica W.I. &nbsp;·&nbsp;
+      <a href="https://www.ucc.edu.jm">www.ucc.edu.jm</a>
+    </p>
+    <small>© <span id="year"></span> UCC — All Rights Reserved</small>
   </footer>
 
+  <!-- MODALS -->
+  <div class="modal-overlay" id="addBookModal">
+    <div class="modal">
+      <div class="modal-top"><h3>📗 Borrow a Book</h3><button class="modal-close" onclick="closeModal('addBookModal')">✕</button></div>
+      <div class="form-group"><label>ISBN or Book Title</label><input type="text" id="addBookInput" placeholder="e.g. 978-3-16-148410-0"></div>
+      <div class="form-group"><label>Due Date</label><input type="date" id="addBookDue"></div>
+      <button class="btn btn-primary" style="width:100%" onclick="handleAddBook()">Confirm Borrow</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="removeBookModal">
+    <div class="modal">
+      <div class="modal-top"><h3>📕 Return a Book</h3><button class="modal-close" onclick="closeModal('removeBookModal')">✕</button></div>
+      <div class="form-group"><label>Book Title or Loan ID</label><input type="text" placeholder="Enter book title or loan ID"></div>
+      <button class="btn btn-primary" style="width:100%" onclick="closeModal('removeBookModal')">Confirm Return</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="payFineModal">
+    <div class="modal">
+      <div class="modal-top"><h3>💳 Pay Fines</h3><button class="modal-close" onclick="closeModal('payFineModal')">✕</button></div>
+      <p style="font-size:.85rem;color:var(--muted);margin-bottom:18px;">Outstanding: <strong style="color:var(--primary)">$4.50</strong></p>
+      <div class="form-group"><label>Card Number</label><input type="text" placeholder="•••• •••• •••• ••••" maxlength="19"></div>
+      <div style="display:flex;gap:12px;">
+        <div class="form-group" style="flex:1"><label>Expiry</label><input type="text" placeholder="MM / YY" maxlength="7"></div>
+        <div class="form-group" style="flex:1"><label>CVV</label><input type="text" placeholder="•••" maxlength="3"></div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:4px" onclick="closeModal('payFineModal')">Pay $4.50</button>
+    </div>
+  </div>
+
   <script>
-document.getElementById('year').textContent = new Date().getFullYear();
+    document.getElementById('year').textContent = new Date().getFullYear();
 
-// LOAD LOGGED-IN USER USING JWT
-async function loadUser() {
-  const token = localStorage.getItem("token");
+    function openModal(id)  { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    document.querySelectorAll('.modal-overlay').forEach(o =>
+      o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); })
+    );
 
-  if (!token) {
-    // IF NOT LOGGED IN -> GO TO LOGIN PAGE
-    window.location.href = "login.html";
-    return;
-  }
-
-  try {
-    const res = await fetch("/api/user", {
-      method: "GET",
-      headers: {
-        "Authorization": "Bearer " + token
+    async function loadUser() {
+      const token = localStorage.getItem("token");
+      if (!token) { window.location.href = "login.html"; return; }
+      try {
+        const res = await fetch("/api/user", { headers: { "Authorization": "Bearer " + token } });
+        if (!res.ok) { window.location.href = "login.html"; return; }
+        const user = await res.json();
+        document.getElementById("heroName").textContent    = user.fullname  || "Unknown User";
+        document.getElementById("heroEmail").textContent   = user.email     || "";
+        document.getElementById("heroBadgeId").textContent = "ID: " + (user.school_id || "—");
+        const avatarEl = document.getElementById("avatarEl");
+        if (user.picture) {
+          avatarEl.outerHTML = `<img src="${user.picture}" alt="Profile" class="avatar-img" id="avatarEl">`;
+        } else {
+          avatarEl.textContent = (user.fullname || "?").split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase();
+        }
+      } catch {
+        document.getElementById("heroName").textContent = "Error loading profile";
       }
-    });
+    }
+    loadUser();
 
-    if (!res.ok) {
-      window.location.href = "login.html";
-      return;
+    function handleAddBook() {
+      if (!document.getElementById("addBookInput").value.trim()) return alert("Please enter a book title or ISBN.");
+      closeModal('addBookModal');
+      // TODO: wire to Supabase
     }
 
-    const user = await res.json();
-
-    document.getElementById("userInfo").innerHTML = `
-      <p><strong>Name:</strong> ${user.fullname}</p>
-      <p><strong>Email:</strong> ${user.email}</p>
-      <p><strong>Student ID:</strong> ${user.school_id}</p>
-    `;
-
-  } catch (err) {
-    document.getElementById("userInfo").innerHTML =
-      "<p style='color:#ff8080;'>Error loading user data.</p>";
-  }
-}
-
-loadUser();
-
-/* UPDATE PASSWORD*/
-document.getElementById("passwordForm").addEventListener("submit", async e => {
-  e.preventDefault();
-
-  const token = localStorage.getItem("token");
-  const current = document.getElementById("currentPassword").value;
-  const newPass = document.getElementById("newPassword").value;
-
-  try {
-    const res = await fetch("/setpassword", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + token
-      },
-      body: JSON.stringify({ current, newPass })
+    document.getElementById("passwordForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      const token   = localStorage.getItem("token");
+      const current = document.getElementById("currentPassword").value;
+      const newPass = document.getElementById("newPassword").value;
+      const confirm = document.getElementById("confirmPassword").value;
+      const result  = document.getElementById("passwordResult");
+      if (newPass !== confirm) { result.style.color="var(--red)"; result.textContent="Passwords do not match."; return; }
+      try {
+        const res  = await fetch("/setpassword", { method:"POST", headers:{"Content-Type":"application/json","Authorization":"Bearer "+token}, body:JSON.stringify({current,newPass}) });
+        const data = await res.json();
+        result.style.color = res.ok ? "var(--green)" : "var(--red)";
+        result.textContent = data.message || "Done.";
+      } catch { result.style.color="var(--red)"; result.textContent="Could not update password."; }
     });
 
-    const data = await res.json();
-
-    document.getElementById("passwordResult").textContent = data.message || "Something happened.";
-
-  } catch (err) {
-    document.getElementById("passwordResult").textContent = "Error: Could not update password.";
-  }
-});
-
-
-/*LOGOUT */
-document.getElementById("logoutBtn").addEventListener("click", () => {
-  localStorage.removeItem("token");
-  window.location.href = "ucc_landing_page.html";
-});
-</script>
-
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.removeItem("token");
+      window.location.href = "ucc_landing_page.html";
+    });
+  </script>
 
 </body>
 </html>

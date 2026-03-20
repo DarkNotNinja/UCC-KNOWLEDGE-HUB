@@ -1,211 +1,657 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Request & Borrow Books — UCC Knowledge Hub</title>
-  <link rel="stylesheet" href="main.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Request & Borrow — UCC Knowledge Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-</head>
-
-<body>
-  <script>
-    const token = localStorage.getItem("token");
-    if (!token) {
-      window.location.href = "ucc_landing_page.html";
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg:         hsl(220, 40%, 7%);
+      --fg:         hsl(45, 30%, 92%);
+      --primary:    hsl(43, 55%, 54%);
+      --primary-fg: hsl(220, 40%, 7%);
+      --card:       hsl(220, 35%, 11%);
+      --muted:      hsl(220, 15%, 55%);
+      --border:     hsl(220, 25%, 18%);
+      --secondary:  hsl(220, 30%, 16%);
+      --green:      hsl(152, 60%, 52%);
+      --red:        hsl(0, 70%, 60%);
+      --blue:       hsl(210, 80%, 65%);
+      --glow-gold:  0 0 40px hsla(43, 55%, 54%, 0.25);
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-body:    'Inter', sans-serif;
     }
-  </script>
-  <!-- HEADER -->
+    body { background:var(--bg); color:var(--fg); font-family:var(--font-body); line-height:1.6; min-height:100vh; display:flex; flex-direction:column; }
+    a { text-decoration:none; color:inherit; }
+    h1,h2,h3,h4,h5,h6 { font-family:var(--font-display); }
+    .site-header { position:sticky; top:0; z-index:50; background:hsla(220,35%,11%,0.7); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); }
+    .header-inner { max-width:1280px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:12px 24px; gap:16px; }
+    .logo-wrap { display:flex; align-items:center; gap:12px; }
+    .ucc-logo  { height:40px; width:40px; border-radius:50%; }
+    .title-wrap h1        { font-size:1.125rem; font-weight:700; }
+    .title-wrap .subtitle { font-size:0.75rem; color:var(--muted); }
+    .main-nav { display:flex; gap:8px; align-items:center; }
+    .main-nav a { font-size:0.875rem; color:var(--muted); padding:7px 14px; border-radius:8px; transition:all .2s; }
+    .main-nav a:hover { color:var(--fg); background:var(--secondary); }
+    .nav-logout { font-size:0.875rem; color:hsl(0,70%,70%); padding:7px 14px; border-radius:8px; border:1px solid hsla(0,70%,60%,0.25); background:hsla(0,70%,60%,0.08); cursor:pointer; transition:all .2s; font-family:var(--font-body); }
+    .nav-logout:hover { background:hsla(0,70%,60%,0.18); color:#fff; }
+    main { flex:1; max-width:1280px; width:100%; margin:0 auto; padding:48px 24px 80px; display:flex; flex-direction:column; gap:36px; }
+    .page-hero { padding-bottom:28px; border-bottom:1px solid var(--border); animation:fadeUp .4s ease both; }
+    .page-hero h2 { font-size:clamp(1.5rem,3vw,2.2rem); font-weight:700; letter-spacing:-0.02em; margin-bottom:8px; }
+    .page-hero > p { font-size:0.95rem; color:var(--muted); max-width:560px; margin-bottom:24px; }
+    .search-wrap { display:flex; gap:10px; max-width:620px; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:8px 8px 8px 18px; transition:border-color .2s; }
+    .search-wrap:focus-within { border-color:var(--primary); }
+    .search-wrap input { flex:1; background:none; border:none; outline:none; color:var(--fg); font-family:var(--font-body); font-size:0.9rem; }
+    .search-wrap input::placeholder { color:var(--muted); }
+    .search-results { max-width:620px; margin-top:8px; }
+    .search-section { list-style:none; display:flex; flex-direction:column; gap:6px; }
+    .search-section li { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:12px 16px; cursor:pointer; transition:all .2s; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .search-section li:hover { border-color:var(--primary); background:var(--secondary); }
+    .search-section li .book-info strong { font-size:0.9rem; display:block; }
+    .search-section li .book-info span   { font-size:0.8rem; color:var(--muted); }
+    .autofill-tag { font-size:0.72rem; color:var(--primary); font-weight:600; font-family:var(--font-display); white-space:nowrap; background:hsla(43,55%,54%,0.1); border:1px solid hsla(43,55%,54%,0.25); padding:3px 8px; border-radius:6px; }
+    .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; animation:fadeUp .4s .05s ease both; }
+    .stat-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 20px; transition:border-color .3s; }
+    .stat-card:hover { border-color:hsla(43,55%,54%,0.3); }
+    .stat-card .stat-num { font-family:var(--font-display); font-size:1.6rem; font-weight:700; color:var(--primary); }
+    .stat-card .stat-lbl { font-size:0.78rem; color:var(--muted); margin-top:2px; }
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:24px; animation:fadeUp .4s .1s ease both; }
+    .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:26px 28px; transition:border-color .3s; }
+    .card:hover { border-color:hsla(43,55%,54%,0.25); }
+    .card-title { font-size:1rem; font-weight:600; margin-bottom:18px; padding-bottom:12px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:8px; }
+    .form-group { margin-bottom:13px; }
+    .form-group label { display:block; font-size:0.72rem; color:var(--muted); margin-bottom:5px; font-family:var(--font-display); font-weight:600; letter-spacing:.05em; text-transform:uppercase; }
+    .form-group input, .form-group select, .form-group textarea { width:100%; padding:10px 13px; background:var(--secondary); border:1px solid var(--border); border-radius:8px; outline:none; color:var(--fg); font-family:var(--font-body); font-size:0.875rem; transition:border-color .2s; resize:vertical; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color:var(--primary); }
+    .form-group input::placeholder, .form-group textarea::placeholder { color:var(--muted); }
+    .form-group select option { background:var(--card); }
+    .form-group input.autofilled { border-color:hsla(43,55%,54%,0.5); background:hsla(43,55%,54%,0.07); }
+    .btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:10px 22px; border-radius:8px; font-family:var(--font-display); font-size:0.875rem; font-weight:600; cursor:pointer; border:none; transition:all .2s; }
+    .btn-primary { background:var(--primary); color:var(--primary-fg); }
+    .btn-primary:hover { opacity:.9; box-shadow:var(--glow-gold); }
+    .btn-ghost  { background:transparent; border:1px solid hsla(45,30%,92%,0.2); color:var(--fg); }
+    .btn-ghost:hover  { background:var(--secondary); }
+    .btn-green  { background:hsla(152,60%,52%,0.12); border:1px solid hsla(152,60%,52%,0.3); color:var(--green); }
+    .btn-green:hover  { background:hsla(152,60%,52%,0.22); }
+    .btn-danger { background:hsla(0,70%,60%,0.12); border:1px solid hsla(0,70%,60%,0.3); color:var(--red); }
+    .btn-danger:hover { background:hsla(0,70%,60%,0.22); }
+    .btn-sm  { padding:5px 12px; font-size:0.78rem; }
+    .btn-full { width:100%; }
+    .btn:disabled { opacity:.45; cursor:not-allowed; }
+    .status-msg { margin-top:10px; font-size:0.85rem; min-height:18px; font-family:var(--font-display); }
+    .avail-panel { min-height:120px; display:flex; flex-direction:column; gap:10px; }
+    .avail-placeholder { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:var(--muted); font-size:0.85rem; gap:8px; border:1px dashed var(--border); border-radius:10px; padding:24px; }
+    .avail-placeholder .icon { font-size:1.8rem; }
+    .avail-result { border:1px solid var(--border); border-radius:10px; padding:16px; display:none; }
+    .avail-result.visible { display:block; }
+    .avail-row { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid hsla(220,25%,18%,0.5); font-size:0.875rem; }
+    .avail-row:last-child { border-bottom:none; }
+    .avail-row .lbl { color:var(--muted); font-size:0.8rem; }
+    .pill { display:inline-block; padding:3px 10px; border-radius:20px; font-size:0.72rem; font-weight:600; font-family:var(--font-display); white-space:nowrap; }
+    .pill-active   { background:hsla(152,60%,52%,0.12); color:var(--green);   border:1px solid hsla(152,60%,52%,0.25); }
+    .pill-overdue  { background:hsla(0,70%,60%,0.12);   color:var(--red);     border:1px solid hsla(0,70%,60%,0.25); }
+    .pill-hold     { background:hsla(210,80%,65%,0.12); color:var(--blue);    border:1px solid hsla(210,80%,65%,0.25); }
+    .pill-returned { background:var(--secondary);       color:var(--muted);   border:1px solid var(--border); }
+    .pill-avail    { background:hsla(152,60%,52%,0.12); color:var(--green);   border:1px solid hsla(152,60%,52%,0.25); }
+    .pill-unavail  { background:hsla(0,70%,60%,0.12);   color:var(--red);     border:1px solid hsla(0,70%,60%,0.25); }
+    .table-wrap { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; font-size:0.875rem; }
+    thead tr { border-bottom:1px solid var(--border); }
+    th { color:var(--muted); font-weight:600; padding:10px 14px; text-align:left; font-family:var(--font-display); font-size:0.72rem; letter-spacing:.05em; text-transform:uppercase; }
+    td { padding:13px 14px; border-bottom:1px solid hsla(220,25%,18%,0.5); vertical-align:middle; }
+    tr:last-child td { border-bottom:none; }
+    tbody tr:hover td { background:var(--secondary); }
+    .action-btns { display:flex; gap:8px; flex-wrap:wrap; }
+    .empty-row td { text-align:center; padding:32px; color:var(--muted); font-size:0.875rem; }
+    .inline-input { flex:1; padding:10px 13px; background:var(--secondary); border:1px solid var(--border); border-radius:8px; outline:none; color:var(--fg); font-family:var(--font-body); font-size:.875rem; transition:border-color .2s; }
+    .inline-input:focus { border-color:var(--primary); }
+    .inline-input::placeholder { color:var(--muted); }
+    .history-list { list-style:none; display:flex; flex-direction:column; gap:8px; }
+    .history-item { background:var(--secondary); border:1px solid var(--border); border-radius:10px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; }
+    .history-item .hi-title { font-weight:600; font-size:0.875rem; }
+    .history-item .hi-date  { color:var(--muted); font-size:0.78rem; margin-top:2px; }
+    .notif-list { list-style:none; display:flex; flex-direction:column; gap:8px; }
+    .notif-item { display:flex; align-items:flex-start; gap:12px; background:var(--secondary); border:1px solid var(--border); border-radius:10px; padding:12px 16px; font-size:0.85rem; }
+    .notif-item.unread { border-color:hsla(43,55%,54%,0.35); }
+    .notif-icon { font-size:1.1rem; flex-shrink:0; margin-top:1px; }
+    .notif-text strong { display:block; font-size:0.875rem; margin-bottom:2px; }
+    .notif-text span   { color:var(--muted); font-size:0.78rem; }
+    .unread-dot { width:7px; height:7px; border-radius:50%; background:var(--primary); flex-shrink:0; margin-top:6px; margin-left:auto; }
+    .site-footer { border-top:1px solid var(--border); padding:32px 24px; margin-top:auto; }
+    .footer-inner { max-width:1280px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+    .site-footer p { font-family:var(--font-display); font-size:0.875rem; color:var(--muted); line-height:1.7; }
+    .site-footer strong { color:var(--fg); }
+    .site-footer a { color:var(--primary); }
+    .site-footer a:hover { text-decoration:underline; }
+    .site-footer small { font-size:0.75rem; color:var(--muted); }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+    .loans-section { animation:fadeUp .4s .15s ease both; }
+    .bottom-row    { animation:fadeUp .4s .20s ease both; }
+    @media (max-width:900px) { .two-col { grid-template-columns:1fr; } }
+    @media (max-width:640px) { .stats-row { grid-template-columns:repeat(2,1fr); } main { padding:32px 16px 60px; } .title-wrap .subtitle { display:none; } }
+  </style>
+</head>
+<body>
+
   <header class="site-header">
     <div class="header-inner">
       <div class="logo-wrap">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEC31GlH03Kf6NAmmiIHqInFd0q1bQz2gmDg&s" 
-             alt="UCC logo" 
-             class="ucc-logo">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEC31GlH03Kf6NAmmiIHqInFd0q1bQz2gmDg&s" alt="UCC logo" class="ucc-logo">
+        <div class="title-wrap">
+          <h1>UCC Knowledge Hub</h1>
+          <p class="subtitle">Empowering Digital Learning</p>
+        </div>
       </div>
-
-      <div class="title-wrap">
-        <h1>UCC Knowledge Hub</h1>
-        <p class="subtitle">Empowering Digital Learning</p>
-      </div>
-
       <nav class="main-nav">
         <a href="ucc_knowledge_hub.html">Home</a>
-        <a href="#">Scan Me</a>
         <a href="profile.html">Profile</a>
+        <button class="nav-logout" id="logoutBtn">Log Out</button>
       </nav>
     </div>
   </header>
 
   <main>
+    <div class="page-hero">
+      <h2>📖 Borrow Books. Place Holds. Manage Your Library.</h2>
+      <p>Search for a book to check availability, auto-fill the request form, or place a hold.</p>
+      <form class="search-wrap" id="bookFinderForm" autocomplete="off">
+        <input id="finderQuery" type="search" placeholder="Search for a book by title or author…">
+        <button class="btn btn-primary" type="submit">Search</button>
+      </form>
+      <div id="finderResults" class="search-results"></div>
+    </div>
 
-    <!-- HERO SECTION -->
-    <section class="hero">
-      <div class="hero-inner">
-        <div class="hero-copy">
-          <h2>Borrow Books. Place Holds. Manage Your Library Activity.</h2>
-          <p>Use the forms below to request books, view borrowed items, or place a hold on unavailable titles.</p>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num" id="statActive">—</div><div class="stat-lbl">Active Loans</div></div>
+      <div class="stat-card"><div class="stat-num" id="statHolds">—</div><div class="stat-lbl">Books on Hold</div></div>
+      <div class="stat-card"><div class="stat-num" id="statOverdue" style="color:var(--red)">—</div><div class="stat-lbl">Overdue</div></div>
+      <div class="stat-card"><div class="stat-num" id="statFines" style="color:var(--primary)">—</div><div class="stat-lbl">Outstanding Fines</div></div>
+    </div>
 
-          <!-- Search Bar -->
-          <form class="search-form" id="bookFinderForm" autocomplete="off">
-            <input id="finderQuery" 
-                   type="search" 
-                   placeholder="Search for a book to request…" 
-                   aria-label="Search books">
-            <button class="btn primary" type="submit">Search</button>
-          </form>
-
-          <div id="finderResults" class="search-results"></div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">📋 Request or Reserve a Book</div>
+        <div class="form-group"><label>Book Title</label><input type="text" id="reqTitle" placeholder="Auto-fill from search or type manually"></div>
+        <div class="form-group"><label>Author</label><input type="text" id="reqAuthor" placeholder="Author name"></div>
+        <div class="form-group"><label>ISBN (optional)</label><input type="text" id="reqIsbn" placeholder="e.g. 978-3-16-148410-0"></div>
+        <div class="form-group">
+          <label>Format</label>
+          <select id="reqFormat">
+            <option value="">Select format</option>
+            <option value="Physical Book">Physical Book</option>
+            <option value="E-Book / PDF">E-Book / PDF</option>
+            <option value="Research Paper">Research Paper</option>
+          </select>
         </div>
-
-        <div class="hero-visual">
-          <div class="tech-pattern"></div>
+        <div class="form-group">
+          <label>Request Type</label>
+          <select id="reqType">
+            <option value="borrow">Borrow</option>
+            <option value="hold">Place Hold</option>
+          </select>
         </div>
+        <div class="form-group"><label>Notes (optional)</label><textarea id="reqNotes" rows="2" placeholder="e.g. For Assignment 2…"></textarea></div>
+        <button class="btn btn-primary btn-full" id="submitBtn" onclick="handleSubmit()">Submit Request</button>
+        <p class="status-msg" id="requestStatus"></p>
       </div>
-    </section>
 
-
-    <!-- REQUEST FORM -->
-    <section class="features">
-      <h3>Request a Book</h3>
-
-      <div class="feature-grid">
-        <div class="feature-card" style="max-width: 650px;">
-          <h4>Request or Reserve a Book</h4>
-
-          <form id="requestForm" class="request-form">
-            <label>Book Title</label>
-            <input type="text" id="reqTitle" required placeholder="Enter or auto-fill from search">
-
-            <label>Author</label>
-            <input type="text" id="reqAuthor" required placeholder="Author name">
-
-            <label>Format</label>
-            <select id="reqFormat" required>
-              <option value="">Select format</option>
-              <option>Physical Book</option>
-              <option>E-Book / PDF</option>
-              <option>Research Paper</option>
+      <div class="card">
+        <div class="card-title">🔎 Check Availability</div>
+        <p style="font-size:.85rem;color:var(--muted);margin-bottom:14px;">Search above or type a title to check if it's in the library right now.</p>
+        <div style="display:flex;gap:8px;margin-bottom:14px;">
+          <input type="text" id="availInput" class="inline-input" placeholder="Book title or ISBN…">
+          <button class="btn btn-primary" onclick="checkAvailability()">Check</button>
+        </div>
+        <div class="avail-panel">
+          <div class="avail-placeholder" id="availPlaceholder">
+            <span class="icon">📦</span><span>Enter a title to check availability</span>
+          </div>
+          <div class="avail-result" id="availResult">
+            <div class="avail-row"><span class="lbl">Title</span><strong id="avTitle">—</strong></div>
+            <div class="avail-row"><span class="lbl">Physical Copies</span><span id="avPhysical">—</span></div>
+            <div class="avail-row"><span class="lbl">E-Book</span><span id="avEbook">—</span></div>
+            <div class="avail-row"><span class="lbl">Status</span><span id="avStatus">—</span></div>
+            <div class="avail-row"><span class="lbl">Next Available</span><span id="avNext">—</span></div>
+            <div style="margin-top:14px;display:flex;gap:8px;">
+              <button class="btn btn-green btn-sm" onclick="fillFromAvail()">↑ Fill Form</button>
+              <button class="btn btn-ghost btn-sm" id="avHoldBtn" onclick="placeHoldFromAvail()">Place Hold</button>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
+          <div style="font-size:.9rem;font-weight:600;font-family:var(--font-display);margin-bottom:10px;">🔁 Renew a Loan</div>
+          <div style="display:flex;gap:8px;">
+            <select id="renewSelect" style="flex:1;padding:10px 13px;background:var(--secondary);border:1px solid var(--border);border-radius:8px;outline:none;color:var(--fg);font-family:var(--font-body);font-size:.875rem;">
+              <option value="">Select a book to renew…</option>
             </select>
-
-            <label>Reason / Notes (optional)</label>
-            <textarea id="reqNotes" rows="3" placeholder="e.g., Assignment, Research Project…"></textarea>
-
-            <button class="btn primary" type="submit">Submit Request</button>
-          </form>
+            <button class="btn btn-primary" onclick="renewLoan()">Renew</button>
+          </div>
+          <p class="status-msg" id="renewStatus"></p>
         </div>
       </div>
-    </section>
+    </div>
 
-
-    <!-- ACTIVE LOANS -->
-    <section class="library-grid">
-      <h3>Your Borrowed Books</h3>
-
-      <div class="cards" id="loanContainer">
-
-        <!-- Example Cards -->
-        <article class="resource-card">
-          <img src="https://via.placeholder.com/120x160?text=Book" alt="">
-          <div class="card-body">
-            <h4>Introduction to Information Systems</h4>
-            <p class="meta">Due: March 14, 2025</p>
-            <p class="excerpt">A foundational text for IT governance and auditing students.</p>
-
-            <div class="card-actions">
-              <button class="btn">Renew</button>
-              <button class="btn ghost">Return</button>
-            </div>
-          </div>
-        </article>
-
-        <article class="resource-card">
-          <img src="https://via.placeholder.com/120x160?text=E-Book" alt="">
-          <div class="card-body">
-            <h4>Digital Transformation in the Caribbean</h4>
-            <p class="meta">Downloaded</p>
-            <p class="excerpt">A research study on regional digital adoption.</p>
-
-            <div class="card-actions">
-              <a class="btn" href="#">Open PDF</a>
-            </div>
-          </div>
-        </article>
-
+    <div class="card loans-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--border);">
+        <div style="font-size:1rem;font-weight:600;font-family:var(--font-display);">📚 Your Borrowed Books</div>
+        <button class="btn btn-ghost btn-sm" onclick="loadLoans()">↻ Refresh</button>
       </div>
-    </section>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Book Title</th><th>Author</th><th>Format</th><th>Due Date</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="loansTableBody"><tr class="empty-row"><td colspan="6">Loading loans…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
 
+    <div class="two-col bottom-row">
+      <div class="card">
+        <div class="card-title">🕓 Loan History</div>
+        <ul class="history-list" id="historyList">
+          <li style="color:var(--muted);font-size:.85rem;padding:8px 0;">Loading history…</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">🔔 Notifications &amp; Alerts</div>
+        <ul class="notif-list" id="notifList">
+          <li style="color:var(--muted);font-size:.85rem;padding:8px 0;">Loading notifications…</li>
+        </ul>
+      </div>
+    </div>
   </main>
 
-
-  <!-- FOOTER -->
   <footer class="site-footer">
     <div class="footer-inner">
-      <div class="contact">
-        <p><strong>University of the Commonwealth Caribbean</strong></p>
-        <p>17 Worthington Avenue, Kingston 5, Jamaica W.I.</p>
-        <p><a href="https://www.ucc.edu.jm">www.ucc.edu.jm</a></p>
-      </div>
-      <div class="copyright">
-        <small>© <span id="year"></span> UCC — All Rights Reserved</small>
-      </div>
+      <p><strong>University of the Commonwealth Caribbean</strong><br>
+        17 Worthington Avenue, Kingston 5, Jamaica W.I. &nbsp;·&nbsp;
+        <a href="https://www.ucc.edu.jm">www.ucc.edu.jm</a></p>
+      <small>© <span id="year"></span> UCC — All Rights Reserved</small>
     </div>
   </footer>
 
+  <script>
+  // ─────────────────────────────────────────────
+  // STEP 1: Replace these two values with yours
+  // Supabase Dashboard → Project Settings → API
+  // ─────────────────────────────────────────────
+  const SUPABASE_URL  = "https://bqgtuxhfqfmxvryfljya.supabase.co;"  // ← replace
+  const SUPABASE_ANON = "https://bqgtuxhfqfmxvryfljya.supabase.co;" // ← replace
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-<script>
   document.getElementById("year").textContent = new Date().getFullYear();
-</script>
 
-<!-- SEARCH LOGIC -->
-<script>
-const finderForm = document.getElementById("bookFinderForm");
-const finderInput = document.getElementById("finderQuery");
-const finderResults = document.getElementById("finderResults");
-
-finderForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const q = finderInput.value.trim();
-  if (!q) return;
-
-  finderResults.innerHTML = "<p>Searching…</p>";
-
-  // Query Open Library For Response
-  const res = await fetch("https://openlibrary.org/search.json?q=" + encodeURIComponent(q));
-  const data = await res.json();
-
-  if (!data.docs || data.docs.length === 0) {
-    finderResults.innerHTML = "<p>No results found.</p>";
-    return;
+  // ─────────────────────────────────────────────
+  // AUTH — reads token saved by YOUR login page
+  // ─────────────────────────────────────────────
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.href = "ucc_landing_page.html";
   }
 
-  const books = data.docs.slice(0, 5);
-  finderResults.innerHTML = `
-    <ul class="search-section">
-      ${books.map(b => `
-        <li onclick="fillRequestForm('${b.title.replace(/'/g, "\\'")}', '${(b.author_name ? b.author_name[0] : "Unknown").replace(/'/g, "\\'")}')">
-          <strong>${b.title}</strong><br>
-          <span>${b.author_name ? b.author_name.join(", ") : "Unknown author"}</span>
-        </li>
-      `).join("")}
-    </ul>
-  `;
-});
+  function parseJwt(t) {
+    try {
+      return JSON.parse(atob(t.split(".")[1].replace(/-/g,"+").replace(/_/g,"/")));
+    } catch { return null; }
+  }
 
-// Autofill request form when a search result is clicked
-function fillRequestForm(title, author) {
-  document.getElementById("reqTitle").value = title;
-  document.getElementById("reqAuthor").value = author;
-  finderResults.innerHTML = "";
-}
+  const jwtPayload = parseJwt(token);
 
-// Clear dropdown when search bar is cleared
-finderInput.addEventListener("input", () => {
-  if (finderInput.value.trim() === "") finderResults.innerHTML = "";
-});
-finderInput.addEventListener("search", () => finderResults.innerHTML = "");
-</script>
+  // ─────────────────────────────────────────────
+  // YOUR backend signs with { userId: user.id }
+  // so we read jwtPayload.userId  (capital U)
+  // ─────────────────────────────────────────────
+  const userId   = jwtPayload?.userId   ? String(jwtPayload.userId)   : null;
+  const fullname = jwtPayload?.fullname || "Student";
+
+  if (!userId) {
+    // Token is corrupt or expired — send back to login
+    localStorage.removeItem("token");
+    window.location.href = "ucc_landing_page.html";
+  }
+
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+    localStorage.removeItem("token");
+    window.location.href = "ucc_landing_page.html";
+  });
+
+  let activeLoans   = [];
+  let lastAvailBook = null;
+
+  window.addEventListener("DOMContentLoaded", loadAll);
+
+  async function loadAll() {
+    await Promise.all([loadLoans(), loadFines(), loadNotifications()]);
+  }
+
+  // ─────────────────────────────────────────────
+  // LOANS
+  // ─────────────────────────────────────────────
+  async function loadLoans() {
+    const tbody = document.getElementById("loansTableBody");
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="6">Loading…</td></tr>`;
+
+    const { data, error } = await sb
+      .from("loans")
+      .select("*")
+      .eq("user_id", userId)
+      .order("due_date", { ascending: true });
+
+    if (error) {
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="6" style="color:var(--red)">Error loading loans: ${error.message}</td></tr>`;
+      return;
+    }
+
+    activeLoans = data || [];
+    renderLoansTable(activeLoans);
+    updateStats(activeLoans);
+    populateRenewDropdown(activeLoans);
+    renderHistory(activeLoans);
+  }
+
+  function renderLoansTable(loans) {
+    const tbody = document.getElementById("loansTableBody");
+    if (!loans.length) {
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="6">No loans yet — use the form to request a book!</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = loans.map(l => {
+      const isOver = l.due_date && new Date(l.due_date) < new Date() && l.status === "active";
+      const status = isOver ? "overdue" : l.status;
+      const due    = l.due_date
+        ? `<span style="${isOver?"color:var(--red)":""}">${new Date(l.due_date).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"})}</span>`
+        : "—";
+      const pillMap = { active:"pill-active", overdue:"pill-overdue", hold:"pill-hold", returned:"pill-returned" };
+      const pill = `<span class="pill ${pillMap[status]||"pill-active"}">${status.charAt(0).toUpperCase()+status.slice(1)}</span>`;
+      let actions = "";
+      if (status === "active" || status === "overdue") {
+        actions = `<div class="action-btns">
+          <button class="btn btn-primary btn-sm" onclick="renewLoanById('${l.id}')">Renew</button>
+          <button class="btn btn-ghost btn-sm"   onclick="returnBook('${l.id}','${esc(l.book_title)}')">Return</button>
+        </div>`;
+      } else if (status === "hold") {
+        actions = `<button class="btn btn-danger btn-sm" onclick="cancelHold('${l.id}')">Cancel Hold</button>`;
+      } else if (l.format === "E-Book / PDF") {
+        actions = `<a class="btn btn-ghost btn-sm" href="#">Open PDF</a>`;
+      }
+      return `<tr>
+        <td><strong>${l.book_title||"—"}</strong></td>
+        <td>${l.book_author||"—"}</td>
+        <td>${l.format||"—"}</td>
+        <td>${due}</td>
+        <td>${pill}</td>
+        <td>${actions}</td>
+      </tr>`;
+    }).join("");
+  }
+
+  function updateStats(loans) {
+    document.getElementById("statActive").textContent  = loans.filter(l=>l.status==="active").length;
+    document.getElementById("statHolds").textContent   = loans.filter(l=>l.status==="hold").length;
+    document.getElementById("statOverdue").textContent = loans.filter(l=>l.due_date&&new Date(l.due_date)<new Date()&&l.status==="active").length;
+  }
+
+  function populateRenewDropdown(loans) {
+    const sel = document.getElementById("renewSelect");
+    const ok  = loans.filter(l=>l.status==="active"||l.status==="overdue");
+    sel.innerHTML = `<option value="">Select a book to renew…</option>` +
+      ok.map(l=>`<option value="${l.id}">${l.book_title}</option>`).join("");
+  }
+
+  function renderHistory(loans) {
+    const list     = document.getElementById("historyList");
+    const returned = loans.filter(l=>l.status==="returned");
+    if (!returned.length) { list.innerHTML=`<li style="color:var(--muted);font-size:.85rem;padding:8px 0;">No returned books yet.</li>`; return; }
+    list.innerHTML = returned.map(l=>`
+      <li class="history-item">
+        <div><div class="hi-title">${l.book_title}</div>
+        <div class="hi-date">Returned · ${l.returned_at?new Date(l.returned_at).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"}):"—"}</div></div>
+        <span class="pill pill-returned">Returned</span>
+      </li>`).join("");
+  }
+
+  // ─────────────────────────────────────────────
+  // FINES
+  // ─────────────────────────────────────────────
+  async function loadFines() {
+    const { data } = await sb.from("fines").select("amount").eq("user_id", userId).eq("paid", false);
+    const total = (data||[]).reduce((s,f)=>s+parseFloat(f.amount||0), 0);
+    document.getElementById("statFines").textContent = `$${total.toFixed(2)}`;
+  }
+
+  // ─────────────────────────────────────────────
+  // NOTIFICATIONS
+  // ─────────────────────────────────────────────
+  async function loadNotifications() {
+    const list = document.getElementById("notifList");
+    const [{ data: loans }, { data: fines }] = await Promise.all([
+      sb.from("loans").select("*").eq("user_id", userId),
+      sb.from("fines").select("*").eq("user_id", userId).eq("paid", false)
+    ]);
+    const notifs = [];
+    (loans||[]).forEach(l => {
+      const isOver  = l.due_date && new Date(l.due_date) < new Date() && l.status==="active";
+      const dueSoon = l.due_date && !isOver && l.status==="active" &&
+                      (new Date(l.due_date)-new Date())/(1000*60*60*24) <= 5;
+      if (isOver)              notifs.push({icon:"⚠️", unread:true,  title:`Overdue — ${l.book_title}`,    sub:`Was due ${new Date(l.due_date).toLocaleDateString()}`});
+      if (dueSoon)             notifs.push({icon:"📅", unread:false, title:`Due Soon — ${l.book_title}`,   sub:`Due ${new Date(l.due_date).toLocaleDateString()} · Consider renewing`});
+      if (l.status==="hold")   notifs.push({icon:"📬", unread:true,  title:`Hold Ready — ${l.book_title}`, sub:"Available for pickup"});
+      if (l.status==="returned") notifs.push({icon:"✅",unread:false, title:`Returned — ${l.book_title}`,  sub:`Returned on ${l.returned_at?new Date(l.returned_at).toLocaleDateString():"—"}`});
+    });
+    (fines||[]).forEach(f => notifs.push({icon:"💰",unread:true,title:`Fine — ${f.book_title}`,sub:`$${parseFloat(f.amount).toFixed(2)} outstanding`}));
+    if (!notifs.length) { list.innerHTML=`<li style="color:var(--muted);font-size:.85rem;padding:8px 0;">No notifications right now.</li>`; return; }
+    list.innerHTML = notifs.slice(0,6).map(n=>`
+      <li class="notif-item ${n.unread?"unread":""}">
+        <span class="notif-icon">${n.icon}</span>
+        <div class="notif-text"><strong>${n.title}</strong><span>${n.sub}</span></div>
+        ${n.unread?'<div class="unread-dot"></div>':''}
+      </li>`).join("");
+  }
+
+  // ─────────────────────────────────────────────
+  // BOOK SEARCH
+  // ─────────────────────────────────────────────
+  document.getElementById("bookFinderForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const q   = document.getElementById("finderQuery").value.trim();
+    const box = document.getElementById("finderResults");
+    if (!q) return;
+    box.innerHTML = `<p style="color:var(--muted);font-size:.85rem;padding:8px 0;">Searching…</p>`;
+    try {
+      const res  = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=6`);
+      const data = await res.json();
+      if (!data.docs?.length) { box.innerHTML=`<p style="color:var(--muted);font-size:.85rem;padding:8px 0;">No results found.</p>`; return; }
+      box.innerHTML = `<ul class="search-section">${data.docs.slice(0,6).map(b=>{
+        const title=b.title||"Unknown", author=b.author_name?b.author_name[0]:"Unknown", isbn=b.isbn?b.isbn[0]:"";
+        return `<li onclick="fillForm('${esc(title)}','${esc(author)}','${esc(isbn)}')">
+          <div class="book-info"><strong>${title}</strong><span>${author}</span></div>
+          <span class="autofill-tag">↑ Auto-fill</span></li>`;
+      }).join("")}</ul>`;
+    } catch { box.innerHTML=`<p style="color:var(--red);font-size:.85rem;">Search failed.</p>`; }
+  });
+
+  document.getElementById("finderQuery").addEventListener("input", e => {
+    if (!e.target.value.trim()) document.getElementById("finderResults").innerHTML = "";
+  });
+
+  function esc(s){ return (s||"").replace(/'/g,"\\'").replace(/"/g,"&quot;"); }
+
+  function fillForm(title, author, isbn) {
+    setField("reqTitle", title, true);
+    setField("reqAuthor", author, true);
+    if (isbn) setField("reqIsbn", isbn, true);
+    document.getElementById("availInput").value = title;
+    document.getElementById("finderResults").innerHTML = "";
+    document.getElementById("finderQuery").value = "";
+    checkAvailability();
+    document.getElementById("reqTitle").scrollIntoView({behavior:"smooth",block:"center"});
+  }
+
+  function setField(id, val, highlight) {
+    const el = document.getElementById(id);
+    el.value = val;
+    if (highlight) { el.classList.add("autofilled"); setTimeout(()=>el.classList.remove("autofilled"),3000); }
+  }
+
+  // ─────────────────────────────────────────────
+  // AVAILABILITY
+  // ─────────────────────────────────────────────
+  async function checkAvailability() {
+    const q  = document.getElementById("availInput").value.trim();
+    if (!q) return;
+    const ph = document.getElementById("availPlaceholder");
+    ph.innerHTML = "<span class='icon'>⏳</span><span>Checking…</span>";
+    ph.style.display = "flex";
+    document.getElementById("availResult").classList.remove("visible");
+
+    const { data } = await sb.from("books").select("*").ilike("title",`%${q}%`).limit(1).maybeSingle();
+
+    ph.style.display = "none";
+    lastAvailBook = data || { title: q, available: 0, copies: 0 };
+
+    document.getElementById("avTitle").textContent   = data?.title || q;
+    document.getElementById("avPhysical").innerHTML  = data?.format==="Physical Book"
+      ? `<span class="pill ${data.available>0?"pill-avail":"pill-unavail"}">${data.available>0?data.available+" available":"None in stock"}</span>`
+      : `<span style="color:var(--muted);font-size:.8rem;">N/A</span>`;
+    document.getElementById("avEbook").innerHTML     = data?.format==="E-Book / PDF"
+      ? `<span class="pill ${data.available>0?"pill-avail":"pill-unavail"}">${data.available>0?"Available":"Not available"}</span>`
+      : `<span style="color:var(--muted);font-size:.8rem;">N/A</span>`;
+    document.getElementById("avStatus").innerHTML    = data&&data.available>0
+      ? `<span class="pill pill-avail">✓ In Library</span>`
+      : `<span class="pill pill-unavail">✗ ${data?"Unavailable":"Not in catalogue"}</span>`;
+    document.getElementById("avNext").textContent    = data?.available>0 ? "Now" : "Check with librarian";
+    document.getElementById("avHoldBtn").textContent = data?.available>0 ? "Place Hold" : data?"Join Waitlist":"Request Book";
+    document.getElementById("availResult").classList.add("visible");
+  }
+
+  function fillFromAvail() {
+    if (!lastAvailBook) return;
+    setField("reqTitle", lastAvailBook.title, true);
+    if (lastAvailBook.author) setField("reqAuthor", lastAvailBook.author, true);
+    if (lastAvailBook.format) document.getElementById("reqFormat").value = lastAvailBook.format;
+  }
+
+  function placeHoldFromAvail() {
+    if (!lastAvailBook) return;
+    fillFromAvail();
+    document.getElementById("reqType").value = "hold";
+    document.getElementById("reqTitle").scrollIntoView({behavior:"smooth",block:"center"});
+  }
+
+  // ─────────────────────────────────────────────
+  // SUBMIT REQUEST
+  // ─────────────────────────────────────────────
+  async function handleSubmit() {
+    const title    = document.getElementById("reqTitle").value.trim();
+    const author   = document.getElementById("reqAuthor").value.trim();
+    const format   = document.getElementById("reqFormat").value;
+    const type     = document.getElementById("reqType").value;
+    const isbn     = document.getElementById("reqIsbn").value.trim();
+    const notes    = document.getElementById("reqNotes").value.trim();
+    const statusEl = document.getElementById("requestStatus");
+    const btn      = document.getElementById("submitBtn");
+
+    if (!title||!author||!format) {
+      statusEl.style.color="var(--red)";
+      statusEl.textContent="⚠️ Please fill in Title, Author and Format.";
+      return;
+    }
+
+    btn.disabled = true;
+    statusEl.style.color = "var(--muted)";
+    statusEl.textContent = "Submitting…";
+
+    const { error: reqErr } = await sb.from("book_requests").insert({
+      user_id: userId, title, author,
+      isbn: isbn||null, format, type,
+      notes: notes||null, status: "pending"
+    });
+
+    if (reqErr) {
+      btn.disabled = false;
+      statusEl.style.color = "var(--red)";
+      statusEl.textContent = "✗ " + reqErr.message;
+      return;
+    }
+
+    const dueDate = new Date();
+    dueDate.setDate(dueDate.getDate() + 14);
+
+    await sb.from("loans").insert({
+      user_id:     userId,
+      book_title:  title,
+      book_author: author,
+      format,
+      status:   type==="hold" ? "hold" : "active",
+      due_date: type==="borrow" ? dueDate.toISOString() : null
+    });
+
+    btn.disabled = false;
+    statusEl.style.color = "var(--green)";
+    statusEl.textContent = `✓ "${title}" submitted successfully!`;
+    ["reqTitle","reqAuthor","reqIsbn","reqNotes"].forEach(id => document.getElementById(id).value = "");
+    document.getElementById("reqFormat").value = "";
+    document.getElementById("reqType").value   = "borrow";
+    await loadAll();
+  }
+
+  // ─────────────────────────────────────────────
+  // RENEW
+  // ─────────────────────────────────────────────
+  async function renewLoan() {
+    const id = document.getElementById("renewSelect").value;
+    if (!id) { setRenewMsg("Please select a book.", "var(--red)"); return; }
+    setRenewMsg("Renewing…", "var(--muted)");
+    await renewLoanById(id);
+    document.getElementById("renewSelect").value = "";
+  }
+
+  async function renewLoanById(id) {
+    const due = new Date();
+    due.setDate(due.getDate() + 14);
+    const { error } = await sb.from("loans")
+      .update({ due_date: due.toISOString() })
+      .eq("id", id)
+      .eq("user_id", userId);
+    if (error) { setRenewMsg("✗ "+error.message, "var(--red)"); return; }
+    setRenewMsg(`✓ Renewed! New due: ${due.toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"})}`, "var(--green)");
+    await loadLoans();
+  }
+
+  function setRenewMsg(msg, color) {
+    const el = document.getElementById("renewStatus");
+    el.style.color = color; el.textContent = msg;
+  }
+
+  // ─────────────────────────────────────────────
+  // RETURN
+  // ─────────────────────────────────────────────
+  async function returnBook(id, title) {
+    if (!confirm(`Return "${title}"?`)) return;
+    const { error } = await sb.from("loans")
+      .update({ status: "returned", returned_at: new Date().toISOString() })
+      .eq("id", id).eq("user_id", userId);
+    if (error) { alert("Return failed: "+error.message); return; }
+    await loadAll();
+  }
+
+  // ─────────────────────────────────────────────
+  // CANCEL HOLD
+  // ─────────────────────────────────────────────
+  async function cancelHold(id) {
+    if (!confirm("Cancel this hold?")) return;
+    const { error } = await sb.from("loans")
+      .delete()
+      .eq("id", id).eq("user_id", userId);
+    if (error) { alert("Cancel failed: "+error.message); return; }
+    await loadAll();
+  }
+  </script>
 
 </body>
 </html>

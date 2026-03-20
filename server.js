@@ -60,7 +60,34 @@ const pool = new Pool({
         category TEXT NOT NULL,
         message TEXT NOT NULL,
         author TEXT DEFAULT 'Anonymous',
+        user_id TEXT,
+        type TEXT DEFAULT 'discussion',
+        book_ref TEXT,
+        likes INT DEFAULT 0,
+        is_lecturer BOOLEAN DEFAULT FALSE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS replies (
+        id SERIAL PRIMARY KEY,
+        thread_id INTEGER NOT NULL REFERENCES threads(id) ON DELETE CASCADE,
+        user_id TEXT,
+        author TEXT DEFAULT 'Anonymous',
+        message TEXT NOT NULL,
+        is_lecturer BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS likes (
+        id        SERIAL PRIMARY KEY,
+        thread_id INTEGER NOT NULL REFERENCES threads(id) ON DELETE CASCADE,
+        user_id   TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(thread_id, user_id)
       );
     `);
 
@@ -168,7 +195,7 @@ app.post('/setpassword', authenticateToken, async (req, res) => {
   }
 });
 
-// AI CITE (NOT WORKING)
+// AI CITE
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 app.post('/api/citation', async (req, res) => {
@@ -196,31 +223,11 @@ app.post('/api/citation', async (req, res) => {
   }
 });
 
-// CREATE FORUM THREAD (WORKING)
-app.post('/api/threads', authenticateToken, async (req, res) => {
-  const { title, category, message, author } = req.body;
-
-  if (!title || !category || !message) {
-    return res.status(400).json({ error: "Missing required fields" });
-  }
-
-  try {
-    await pool.query(
-      'INSERT INTO threads (title, category, message, author) VALUES ($1, $2, $3, $4)',
-      [title, category, message, author || "Anonymous"]
-    );
-    res.json({ message: "Thread posted successfully!" });
-  } catch (err) {
-    console.error('Error inserting thread:', err);
-    res.status(500).json({ error: "Server error posting thread" });
-  }
-});
-
 // GET ALL THREADS (WORKING)
 app.get('/api/threads', async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT id, title, category, message, author, created_at FROM threads ORDER BY created_at DESC'
+      'SELECT id, title, category, message, author, user_id, type, book_ref, likes, is_lecturer, created_at FROM threads ORDER BY created_at DESC'
     );
     res.json(result.rows);
   } catch (err) {
@@ -229,7 +236,196 @@ app.get('/api/threads', async (req, res) => {
   }
 });
 
-// SERVER START (WORKING)
+// CREATE FORUM THREAD (WORKING)
+app.post('/api/threads', authenticateToken, async (req, res) => {
+  const { title, category, message, type, book_ref } = req.body;
+
+  if (!title || !category || !message) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  try {
+    await pool.query(
+      `INSERT INTO threads (title, category, message, author, user_id, type, book_ref, likes, is_lecturer)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, 0, false)`,
+      [title, category, message, req.user.fullname, String(req.user.userId), type || 'discussion', book_ref || null]
+    );
+    res.json({ message: "Thread posted successfully!" });
+  } catch (err) {
+    console.error('Error inserting thread:', err);
+    res.status(500).json({ error: "Server error posting thread" });
+  }
+});
+
+// DELETE THREAD — only owner can delete
+app.delete('/api/threads/:id', authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query('SELECT user_id FROM threads WHERE id = $1', [req.params.id]);
+    if (!result.rows.length) return res.status(404).json({ error: 'Thread not found' });
+
+    const owner = String(result.rows[0].user_id);
+    const userId = String(req.user.userId);
+
+    if (owner !== userId) return res.status(403).json({ error: 'Not your post' });
+
+    await pool.query('DELETE FROM threads WHERE id = $1', [req.params.id]);
+    res.json({ success: true });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error deleting thread' });
+  }
+});
+
+// EDIT THREAD — only owner can edit
+app.put('/api/threads/:id', authenticateToken, async (req, res) => {
+  const { title, category, message, book_ref, type } = req.body;
+
+  try {
+    const result = await pool.query('SELECT user_id FROM threads WHERE id = $1', [req.params.id]);
+    if (!result.rows.length) return res.status(404).json({ error: 'Thread not found' });
+
+    const owner = String(result.rows[0].user_id);
+    const userId = String(req.user.userId);
+
+    if (owner !== userId) return res.status(403).json({ error: 'Not your post' });
+
+    await pool.query(
+      'UPDATE threads SET title=$1, category=$2, message=$3, book_ref=$4, type=$5 WHERE id=$6',
+      [title, category, message, book_ref || null, type || 'discussion', req.params.id]
+    );
+    res.json({ success: true });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error updating thread' });
+  }
+});
+
+// GET REPLIES FOR A THREAD
+app.get('/api/replies/:threadId', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM replies WHERE thread_id = $1 ORDER BY created_at ASC',
+      [req.params.threadId]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to load replies' });
+  }
+});
+
+// POST A REPLY
+app.post('/api/replies', authenticateToken, async (req, res) => {
+  const { thread_id, message } = req.body;
+
+  if (!thread_id || !message) {
+    return res.status(400).json({ error: 'Missing thread_id or message' });
+  }
+
+  try {
+    await pool.query(
+      'INSERT INTO replies (thread_id, user_id, author, message) VALUES ($1, $2, $3, $4)',
+      [thread_id, String(req.user.userId), req.user.fullname, message]
+    );
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error posting reply' });
+  }
+});
+
+// DELETE REPLY — only owner can delete
+app.delete('/api/replies/:id', authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query('SELECT user_id FROM replies WHERE id = $1', [req.params.id]);
+    if (!result.rows.length) return res.status(404).json({ error: 'Reply not found' });
+
+    const owner = String(result.rows[0].user_id);
+    const userId = String(req.user.userId);
+
+    if (owner !== userId) return res.status(403).json({ error: 'Not your reply' });
+
+    await pool.query('DELETE FROM replies WHERE id = $1', [req.params.id]);
+    res.json({ success: true });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error deleting reply' });
+  }
+});
+
+// EDIT REPLY — only owner can edit
+app.put('/api/replies/:id', authenticateToken, async (req, res) => {
+  const { message } = req.body;
+
+  try {
+    const result = await pool.query('SELECT user_id FROM replies WHERE id = $1', [req.params.id]);
+    if (!result.rows.length) return res.status(404).json({ error: 'Reply not found' });
+
+    const owner = String(result.rows[0].user_id);
+    const userId = String(req.user.userId);
+
+    if (owner !== userId) return res.status(403).json({ error: 'Not your reply' });
+
+    await pool.query('UPDATE replies SET message = $1 WHERE id = $2', [message, req.params.id]);
+    res.json({ success: true });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error updating reply' });
+  }
+});
+
+
+// LIKE A THREAD
+app.post('/api/threads/:id/like', authenticateToken, async (req, res) => {
+  const userId = String(req.user.userId);
+  const threadId = req.params.id;
+
+  try {
+    // Insert like — UNIQUE constraint prevents duplicates
+    await pool.query(
+      'INSERT INTO likes (thread_id, user_id) VALUES ($1, $2)',
+      [threadId, userId]
+    );
+
+    // Increment likes count on thread
+    await pool.query(
+      'UPDATE threads SET likes = likes + 1 WHERE id = $1',
+      [threadId]
+    );
+
+    // Return new like count
+    const result = await pool.query('SELECT likes FROM threads WHERE id = $1', [threadId]);
+    res.json({ success: true, likes: result.rows[0].likes });
+
+  } catch (err) {
+    if (err.code === '23505') {
+      // Unique violation — already liked
+      return res.status(409).json({ error: 'Already liked' });
+    }
+    console.error(err);
+    res.status(500).json({ error: 'Server error liking thread' });
+  }
+});
+
+// GET LIKES FOR CURRENT USER (to restore liked state on load)
+app.get('/api/likes', authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT thread_id FROM likes WHERE user_id = $1',
+      [String(req.user.userId)]
+    );
+    res.json(result.rows.map(r => r.thread_id));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error loading likes' });
+  }
+});
+
+// SERVER START
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => 
   console.log(`Server running on port ${PORT} - ${process.env.NODE_ENV || 'development'}`)
