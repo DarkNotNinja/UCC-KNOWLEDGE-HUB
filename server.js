@@ -8,7 +8,11 @@ const { Pool } = require('pg');
 const { OpenAI } = require('openai');
 const path = require('path');
 
-const app = express();
+const app    = express();
+const http   = require('http');
+const { Server } = require('socket.io');
+const server = http.createServer(app);
+const io     = new Server(server, { cors: { origin: "*" } });
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -88,6 +92,31 @@ const pool = new Pool({
         user_id   TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         UNIQUE(thread_id, user_id)
+      );
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS study_rooms (
+        id             SERIAL PRIMARY KEY,
+        name           TEXT NOT NULL,
+        topic          TEXT,
+        book_ref       TEXT,
+        category       TEXT DEFAULT 'General',
+        created_by     TEXT NOT NULL,
+        created_by_name TEXT,
+        is_active      BOOLEAN DEFAULT TRUE,
+        created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS room_messages (
+        id         SERIAL PRIMARY KEY,
+        room_id    INTEGER NOT NULL REFERENCES study_rooms(id) ON DELETE CASCADE,
+        user_id    TEXT NOT NULL,
+        author     TEXT NOT NULL,
+        message    TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
 
@@ -425,8 +454,179 @@ app.get('/api/likes', authenticateToken, async (req, res) => {
   }
 });
 
+
+
+// GET USER LOANS
+app.get('/api/loans/user', authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM loans WHERE user_id = $1 ORDER BY borrowed_at DESC',
+      [String(req.user.userId)]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to load loans' });
+  }
+});
+
+// ADD A LOAN (from digital library search)
+app.post('/api/loans', authenticateToken, async (req, res) => {
+  const { book_title, book_author, format, status, source_url, pdf_url, due_date } = req.body;
+  if (!book_title) return res.status(400).json({ error: 'book_title required' });
+  try {
+    // Check if already saved
+    const exists = await pool.query(
+      'SELECT id FROM loans WHERE user_id=$1 AND book_title=$2 AND status=$3',
+      [String(req.user.userId), book_title, 'active']
+    );
+    if (exists.rows.length) return res.json({ message: 'Already in library', exists: true });
+
+    await pool.query(
+      `INSERT INTO loans (user_id, book_title, book_author, format, status, source_url, pdf_url, due_date)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+      [String(req.user.userId), book_title, book_author||null, format||'E-Book / PDF',
+       status||'active', source_url||null, pdf_url||null, due_date||null]
+    );
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to save loan' });
+  }
+});
+
+// ── STUDY ROOMS ──────────────────────────────────────
+
+// GET ALL ACTIVE ROOMS
+app.get('/api/rooms', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM study_rooms WHERE is_active = TRUE ORDER BY created_at DESC'
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to load rooms' });
+  }
+});
+
+// CREATE ROOM
+app.post('/api/rooms', authenticateToken, async (req, res) => {
+  const { name, topic, book_ref, category } = req.body;
+  if (!name) return res.status(400).json({ error: 'Room name required' });
+  try {
+    const result = await pool.query(
+      `INSERT INTO study_rooms (name, topic, book_ref, category, created_by, created_by_name)
+       VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
+      [name, topic||null, book_ref||null, category||'General',
+       String(req.user.userId), req.user.fullname]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to create room' });
+  }
+});
+
+// GET MESSAGES FOR A ROOM (history)
+app.get('/api/rooms/:id/messages', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM room_messages WHERE room_id = $1 ORDER BY created_at ASC LIMIT 100',
+      [req.params.id]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to load messages' });
+  }
+});
+
+// DELETE ROOM — creator only
+app.delete('/api/rooms/:id', authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query('SELECT created_by FROM study_rooms WHERE id = $1', [req.params.id]);
+    if (!result.rows.length) return res.status(404).json({ error: 'Room not found' });
+
+    if (String(result.rows[0].created_by) !== String(req.user.userId)) {
+      return res.status(403).json({ error: 'Only the creator can end this room' });
+    }
+
+    await pool.query('DELETE FROM study_rooms WHERE id = $1', [req.params.id]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error ending room' });
+  }
+});
+
+// ── SOCKET.IO ─────────────────────────────────────────
+const roomUsers = {}; // { roomId: Set of { userId, fullname, socketId } }
+
+io.on('connection', (socket) => {
+
+  socket.on('join_room', async ({ roomId, userId, fullname }) => {
+    socket.join(String(roomId));
+    socket.roomId   = roomId;
+    socket.userId   = userId;
+    socket.fullname = fullname;
+
+    if (!roomUsers[roomId]) roomUsers[roomId] = new Map();
+    roomUsers[roomId].set(socket.id, { userId, fullname });
+
+    const count = roomUsers[roomId].size;
+    io.to(String(roomId)).emit('user_joined', { fullname, count });
+  });
+
+  socket.on('send_message', async ({ roomId, userId, author, message }) => {
+    const created_at = new Date().toISOString();
+    // Save to DB
+    try {
+      await pool.query(
+        'INSERT INTO room_messages (room_id, user_id, author, message) VALUES ($1,$2,$3,$4)',
+        [roomId, userId, author, message]
+      );
+    } catch (err) { console.error('Error saving message:', err); }
+
+    // Broadcast to room
+    io.to(String(roomId)).emit('new_message', { roomId, userId, author, message, created_at });
+  });
+
+  socket.on('typing', ({ roomId, fullname }) => {
+    socket.to(String(roomId)).emit('typing', { fullname });
+  });
+
+  socket.on('stop_typing', ({ roomId }) => {
+    socket.to(String(roomId)).emit('stop_typing');
+  });
+
+  socket.on('leave_room', ({ roomId, fullname }) => {
+    socket.leave(String(roomId));
+    if (roomUsers[roomId]) {
+      roomUsers[roomId].delete(socket.id);
+      const count = roomUsers[roomId].size;
+      io.to(String(roomId)).emit('user_left', { fullname, count });
+    }
+  });
+
+  socket.on('room_ended', ({ roomId }) => {
+    io.to(String(roomId)).emit('room_ended');
+  });
+
+  socket.on('disconnect', () => {
+    if (socket.roomId && roomUsers[socket.roomId]) {
+      roomUsers[socket.roomId].delete(socket.id);
+      const count = roomUsers[socket.roomId].size;
+      io.to(String(socket.roomId)).emit('user_left', {
+        fullname: socket.fullname || 'Someone',
+        count
+      });
+    }
+  });
+});
+
 // SERVER START
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => 
+server.listen(PORT, () =>
   console.log(`Server running on port ${PORT} - ${process.env.NODE_ENV || 'development'}`)
 );

@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Study Rooms — UCC Knowledge Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="/socket.io/socket.io.js"></script>
+
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --bg:         hsl(220, 40%, 7%);
+      --fg:         hsl(45, 30%, 92%);
+      --primary:    hsl(43, 55%, 54%);
+      --primary-fg: hsl(220, 40%, 7%);
+      --card:       hsl(220, 35%, 11%);
+      --muted:      hsl(220, 15%, 55%);
+      --border:     hsl(220, 25%, 18%);
+      --secondary:  hsl(220, 30%, 16%);
+      --green:      hsl(152, 60%, 52%);
+      --red:        hsl(0, 70%, 60%);
+      --blue:       hsl(210, 80%, 65%);
+      --glow-gold:  0 0 40px hsla(43, 55%, 54%, 0.25);
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-body:    'Inter', sans-serif;
+    }
+    body { background:var(--bg); color:var(--fg); font-family:var(--font-body); line-height:1.6; min-height:100vh; display:flex; flex-direction:column; }
+    a { text-decoration:none; color:inherit; }
+    h1,h2,h3,h4 { font-family:var(--font-display); }
+
+    /* HEADER */
+    .site-header { position:sticky; top:0; z-index:50; background:hsla(220,35%,11%,0.75); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); }
+    .header-inner { max-width:1280px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:12px 24px; gap:16px; }
+    .logo-wrap { display:flex; align-items:center; gap:12px; }
+    .ucc-logo  { height:40px; width:40px; border-radius:50%; }
+    .title-wrap h1        { font-size:1.125rem; font-weight:700; }
+    .title-wrap .subtitle { font-size:0.75rem; color:var(--muted); }
+    .main-nav { display:flex; gap:8px; align-items:center; }
+    .main-nav a { font-size:0.875rem; color:var(--muted); padding:7px 14px; border-radius:8px; transition:all .2s; }
+    .main-nav a:hover, .main-nav a.active { color:var(--fg); background:var(--secondary); }
+    .main-nav a.active { color:var(--primary); }
+    .nav-logout { font-size:0.875rem; color:hsl(0,70%,70%); padding:7px 14px; border-radius:8px; border:1px solid hsla(0,70%,60%,0.25); background:hsla(0,70%,60%,0.08); cursor:pointer; transition:all .2s; font-family:var(--font-body); }
+    .nav-logout:hover { background:hsla(0,70%,60%,0.18); color:#fff; }
+
+    /* LAYOUT — rooms list vs chat view */
+    .page-wrap { max-width:1280px; width:100%; margin:0 auto; padding:40px 24px 80px; flex:1; }
+
+    /* ── ROOMS LIST VIEW ── */
+    #roomsView { display:flex; flex-direction:column; gap:24px; animation:fadeUp .4s ease both; }
+
+    .rooms-hero { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:28px 32px; display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; }
+    .rooms-hero-text h2 { font-size:1.6rem; font-weight:700; margin-bottom:6px; }
+    .rooms-hero-text p  { color:var(--muted); font-size:0.9rem; }
+    .create-room-btn { padding:12px 24px; border:none; border-radius:10px; background:var(--primary); color:var(--primary-fg); font-family:var(--font-display); font-size:0.9rem; font-weight:700; cursor:pointer; transition:all .2s; white-space:nowrap; }
+    .create-room-btn:hover { opacity:.9; box-shadow:var(--glow-gold); }
+
+    .rooms-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:16px; }
+    .room-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:22px 24px; cursor:pointer; transition:all .25s; position:relative; overflow:hidden; }
+    .room-card::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg, hsla(43,55%,54%,0.04), transparent); opacity:0; transition:opacity .25s; }
+    .room-card:hover { border-color:hsla(43,55%,54%,0.4); transform:translateY(-3px); box-shadow:0 12px 28px rgba(0,0,0,0.3); }
+    .room-card:hover::before { opacity:1; }
+    .room-card-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:10px; }
+    .room-icon { width:42px; height:42px; border-radius:12px; background:var(--secondary); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:1.3rem; }
+    .room-live-dot { display:flex; align-items:center; gap:5px; font-size:0.72rem; color:var(--green); font-family:var(--font-display); font-weight:600; }
+    .live-dot { width:7px; height:7px; border-radius:50%; background:var(--green); animation:pulse 1.5s infinite; }
+    .room-name { font-size:1rem; font-weight:700; margin-bottom:4px; }
+    .room-topic { font-size:0.82rem; color:var(--muted); margin-bottom:12px; }
+    .room-footer { display:flex; align-items:center; justify-content:space-between; }
+    .room-meta { font-size:0.75rem; color:var(--muted); display:flex; align-items:center; gap:10px; }
+    .room-book { font-size:0.72rem; color:var(--primary); background:hsla(43,55%,54%,0.1); border:1px solid hsla(43,55%,54%,0.25); padding:3px 9px; border-radius:20px; }
+    .member-count { font-size:0.75rem; color:var(--muted); display:flex; align-items:center; gap:4px; }
+    .join-btn { padding:6px 16px; border:none; border-radius:8px; background:var(--primary); color:var(--primary-fg); font-family:var(--font-display); font-size:0.78rem; font-weight:700; cursor:pointer; transition:all .2s; }
+    .join-btn:hover { opacity:.9; }
+
+    .empty-rooms { text-align:center; padding:60px 20px; color:var(--muted); }
+    .empty-rooms .icon { font-size:3rem; margin-bottom:12px; }
+
+    /* ── CHAT VIEW ── */
+    #chatView { display:none; height:calc(100vh - 140px); flex-direction:column; gap:0; animation:fadeUp .3s ease both; }
+    #chatView.active { display:flex; }
+
+    .chat-header { background:var(--card); border:1px solid var(--border); border-radius:14px 14px 0 0; padding:16px 24px; display:flex; align-items:center; gap:14px; }
+    .back-btn { padding:7px 14px; border:1px solid var(--border); border-radius:8px; background:var(--secondary); color:var(--muted); font-family:var(--font-display); font-size:0.82rem; font-weight:600; cursor:pointer; transition:all .2s; }
+    .back-btn:hover { color:var(--fg); border-color:var(--primary); }
+    .chat-room-info { flex:1; }
+    .chat-room-name  { font-size:1.05rem; font-weight:700; }
+    .chat-room-topic { font-size:0.8rem; color:var(--muted); }
+    .online-indicator { display:flex; align-items:center; gap:6px; font-size:0.78rem; color:var(--green); font-family:var(--font-display); font-weight:600; }
+
+    .chat-body { flex:1; background:var(--card); border-left:1px solid var(--border); border-right:1px solid var(--border); overflow-y:auto; padding:20px 24px; display:flex; flex-direction:column; gap:12px; }
+    .chat-body::-webkit-scrollbar { width:4px; }
+    .chat-body::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+    /* Messages */
+    .msg-wrap { display:flex; gap:10px; align-items:flex-end; }
+    .msg-wrap.own { flex-direction:row-reverse; }
+    .msg-avatar { width:32px; height:32px; border-radius:50%; flex-shrink:0; background:var(--secondary); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:0.75rem; font-weight:700; color:var(--primary); }
+    .msg-bubble { max-width:65%; }
+    .msg-wrap.own .msg-bubble { align-items:flex-end; display:flex; flex-direction:column; }
+    .msg-author { font-size:0.72rem; color:var(--muted); margin-bottom:3px; font-family:var(--font-display); }
+    .msg-wrap.own .msg-author { text-align:right; }
+    .msg-text {
+      padding:10px 14px; border-radius:14px; font-size:0.875rem; line-height:1.5;
+      background:var(--secondary); border:1px solid var(--border); word-break:break-word;
+    }
+    .msg-wrap.own .msg-text { background:hsla(43,55%,54%,0.15); border-color:hsla(43,55%,54%,0.3); border-radius:14px 14px 4px 14px; }
+    .msg-wrap:not(.own) .msg-text { border-radius:14px 14px 14px 4px; }
+    .msg-time { font-size:0.65rem; color:var(--muted); margin-top:3px; }
+
+    /* System messages */
+    .msg-system { text-align:center; font-size:0.75rem; color:var(--muted); padding:4px 0; font-style:italic; }
+
+    /* Typing indicator */
+    .typing-indicator { font-size:0.75rem; color:var(--muted); padding:4px 0; min-height:20px; font-style:italic; }
+
+    .chat-footer { background:var(--card); border:1px solid var(--border); border-radius:0 0 14px 14px; border-top:none; padding:14px 20px; display:flex; gap:10px; align-items:flex-end; }
+    .chat-input { flex:1; padding:11px 14px; background:var(--secondary); border:1px solid var(--border); border-radius:10px; outline:none; color:var(--fg); font-family:var(--font-body); font-size:0.875rem; resize:none; max-height:100px; transition:border-color .2s; line-height:1.5; }
+    .chat-input:focus { border-color:var(--primary); }
+    .chat-input::placeholder { color:var(--muted); }
+    .send-btn { padding:11px 20px; border:none; border-radius:10px; background:var(--primary); color:var(--primary-fg); font-family:var(--font-display); font-size:0.875rem; font-weight:700; cursor:pointer; transition:all .2s; white-space:nowrap; }
+    .send-btn:hover { opacity:.9; box-shadow:var(--glow-gold); }
+
+    /* MODAL */
+    .modal-overlay { display:none; position:fixed; inset:0; z-index:100; background:hsla(220,40%,5%,0.8); backdrop-filter:blur(6px); align-items:center; justify-content:center; }
+    .modal-overlay.open { display:flex; }
+    .modal { background:var(--card); border:1px solid var(--border); border-radius:18px; padding:30px 34px; width:90%; max-width:480px; box-shadow:0 20px 60px rgba(0,0,0,0.6); animation:scaleIn .22s ease; }
+    .modal-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+    .modal-top h3 { font-size:1.1rem; font-weight:700; }
+    .modal-close { background:none; border:none; color:var(--muted); font-size:1.2rem; cursor:pointer; }
+    .modal-close:hover { color:var(--fg); }
+    .form-group { margin-bottom:13px; }
+    .form-group label { display:block; font-size:0.72rem; color:var(--muted); margin-bottom:5px; font-family:var(--font-display); font-weight:600; letter-spacing:.05em; text-transform:uppercase; }
+    .form-group input, .form-group select, .form-group textarea { width:100%; padding:10px 13px; background:var(--secondary); border:1px solid var(--border); border-radius:8px; outline:none; color:var(--fg); font-family:var(--font-body); font-size:0.875rem; transition:border-color .2s; }
+    .form-group input:focus, .form-group select:focus { border-color:var(--primary); }
+    .form-group input::placeholder { color:var(--muted); }
+    .form-group select option { background:var(--card); }
+    .btn-primary { width:100%; padding:11px; border:none; border-radius:9px; background:var(--primary); color:var(--primary-fg); font-family:var(--font-display); font-size:0.9rem; font-weight:700; cursor:pointer; transition:all .2s; }
+    .btn-primary:hover { opacity:.9; box-shadow:var(--glow-gold); }
+    .status-msg { margin-top:8px; font-size:0.82rem; min-height:16px; }
+
+    /* FOOTER */
+    .site-footer { border-top:1px solid var(--border); padding:28px 24px; margin-top:auto; }
+    .footer-inner { max-width:1280px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+    .site-footer p { font-family:var(--font-display); font-size:0.875rem; color:var(--muted); line-height:1.7; }
+    .site-footer strong { color:var(--fg); }
+    .site-footer a { color:var(--primary); }
+    .site-footer a:hover { text-decoration:underline; }
+    .site-footer small { font-size:0.75rem; color:var(--muted); }
+
+    /* TABS */
+    .tab-bar { display:flex; gap:8px; margin-bottom:24px; border-bottom:1px solid var(--border); padding-bottom:0; }
+    .tab-btn { padding:10px 22px; border:none; border-radius:10px 10px 0 0; background:transparent; color:var(--muted); font-family:var(--font-display); font-size:0.875rem; font-weight:600; cursor:pointer; transition:all .2s; border-bottom:2px solid transparent; margin-bottom:-1px; }
+    .tab-btn:hover { color:var(--fg); background:var(--secondary); }
+    .tab-btn.active { color:var(--primary); border-bottom-color:var(--primary); background:var(--secondary); }
+
+    /* CREATE FORM */
+    .create-form-wrap { display:flex; justify-content:center; padding:20px 0; }
+    .create-form-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:32px 36px; width:100%; max-width:520px; }
+    .create-form-card h3 { font-size:1.1rem; font-weight:700; margin-bottom:6px; }
+    .create-sub { font-size:0.85rem; color:var(--muted); margin-bottom:22px; }
+
+    .end-room-btn { padding:7px 14px; border:1px solid hsla(0,70%,60%,0.3); border-radius:8px; background:hsla(0,70%,60%,0.1); color:var(--red); font-family:var(--font-display); font-size:0.78rem; font-weight:600; cursor:pointer; transition:all .2s; }
+    .end-room-btn:hover { background:hsla(0,70%,60%,0.22); }
+
+    @keyframes fadeUp  { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes scaleIn { from { opacity:0; transform:scale(.94); }        to { opacity:1; transform:scale(1); } }
+    @keyframes pulse   { 0%,100% { opacity:1; } 50% { opacity:.4; } }
+
+    @media (max-width:640px) {
+      .page-wrap { padding:24px 14px 60px; }
+      .rooms-hero { flex-direction:column; }
+      #chatView { height:calc(100vh - 120px); }
+    }
+  </style>
+</head>
+<body>
+
+  <script>
+    if (!localStorage.getItem("token")) window.location.href = "ucc_landing_page.html";
+  </script>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo-wrap">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEC31GlH03Kf6NAmmiIHqInFd0q1bQz2gmDg&s" alt="UCC logo" class="ucc-logo">
+        <div class="title-wrap">
+          <h1>UCC Knowledge Hub</h1>
+          <p class="subtitle">Empowering Digital Learning</p>
+        </div>
+      </div>
+      <nav class="main-nav">
+        <a href="ucc_knowledge_hub.html">Home</a>
+        <a href="Loaners.html">Borrow</a>
+        <a href="forum.html">Forum</a>
+        <a href="study_rooms.html" class="active">Study Rooms</a>
+        <a href="profile.html">Profile</a>
+        <button class="nav-logout" id="logoutBtn">Log Out</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="page-wrap">
+
+    <!-- ROOMS LIST -->
+    <div id="roomsView">
+      <div class="rooms-hero">
+        <div class="rooms-hero-text">
+          <h2>🏫 Live Study Rooms</h2>
+          <p>Join an active room or create your own to study with classmates in real time.</p>
+        </div>
+      </div>
+
+      <!-- TABS -->
+      <div class="tab-bar">
+        <button class="tab-btn active" id="tab-browse" onclick="switchTab('browse')">🔍 Browse Rooms</button>
+        <button class="tab-btn"        id="tab-create" onclick="switchTab('create')">✏️ Create a Room</button>
+      </div>
+
+      <!-- BROWSE TAB -->
+      <div id="browseTab">
+        <div class="rooms-grid" id="roomsGrid">
+          <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">Loading rooms…</div>
+        </div>
+      </div>
+
+      <!-- CREATE TAB -->
+      <div id="createTab" style="display:none;">
+        <div class="create-form-wrap">
+          <div class="create-form-card">
+            <h3>Start a New Study Room</h3>
+            <p class="create-sub">Your room will be visible to all students. Anyone can join.</p>
+            <div class="form-group"><label>Room Name</label><input type="text" id="roomName" placeholder="e.g. COMP101 Study Group"></div>
+            <div class="form-group"><label>Topic</label><input type="text" id="roomTopic" placeholder="e.g. Midterm prep, Chapter 5 review"></div>
+            <div class="form-group"><label>Linked Book (optional)</label><input type="text" id="roomBook" placeholder="e.g. Introduction to Information Systems"></div>
+            <div class="form-group">
+              <label>Category</label>
+              <select id="roomCategory">
+                <option value="General">General</option>
+                <option value="IT">IT</option>
+                <option value="Business">Business</option>
+                <option value="Research">Research</option>
+                <option value="Caribbean Studies">Caribbean Studies</option>
+              </select>
+            </div>
+            <button class="btn-primary" onclick="createRoom()">🚀 Create & Join Room</button>
+            <p class="status-msg" id="createStatus"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAT VIEW -->
+    <div id="chatView">
+      <div class="chat-header">
+        <button class="back-btn" onclick="leaveRoom()">← Leave</button>
+        <div class="chat-room-info">
+          <div class="chat-room-name"  id="chatRoomName">Room</div>
+          <div class="chat-room-topic" id="chatRoomTopic"></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="online-indicator">
+            <div class="live-dot"></div>
+            <span id="onlineCount">1</span> online
+          </div>
+          <button class="end-room-btn" id="endRoomBtn" style="display:none" onclick="endRoom()">🗑 End Room</button>
+        </div>
+      </div>
+      <div class="chat-body" id="chatBody">
+      </div>
+      <div class="typing-indicator" id="typingIndicator"></div>
+      <div class="chat-footer">
+        <textarea class="chat-input" id="chatInput" placeholder="Type a message… (Enter to send)" rows="1"
+          onkeydown="handleKey(event)" oninput="handleTyping()"></textarea>
+        <button class="send-btn" onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>University of the Commonwealth Caribbean</strong><br>
+        17 Worthington Avenue, Kingston 5, Jamaica W.I. &nbsp;·&nbsp;
+        <a href="https://www.ucc.edu.jm">www.ucc.edu.jm</a></p>
+      <small>© <span id="year"></span> UCC — All Rights Reserved</small>
+    </div>
+  </footer>
+
+
+
+  <script>
+  const API_BASE = "http://localhost:3000/api";
+  const token    = localStorage.getItem("token");
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  // AUTH
+  function parseJwt(t) {
+    try { return JSON.parse(atob(t.split(".")[1].replace(/-/g,"+").replace(/_/g,"/"))); }
+    catch { return null; }
+  }
+  const jwt      = parseJwt(token);
+  const userId   = jwt?.userId   ? String(jwt.userId) : null;
+  const fullname = jwt?.fullname || "Student";
+
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+    localStorage.removeItem("token");
+    window.location.href = "ucc_landing_page.html";
+  });
+
+  // SOCKET
+  const socket = io({ auth: { token } });
+
+  let currentRoom    = null;
+  let currentCreator = null;
+  let onlineUsers    = new Set();
+  let typingTimeout  = null;
+
+  // ── LOAD ROOMS ──────────────────────────────────────
+  async function loadRooms() {
+    try {
+      const res  = await fetch(`${API_BASE}/rooms`);
+      const data = await res.json();
+      renderRooms(data);
+    } catch {
+      document.getElementById("roomsGrid").innerHTML =
+        `<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">Could not load rooms. Is your server running?</div>`;
+    }
+  }
+
+  function renderRooms(rooms) {
+    const grid = document.getElementById("roomsGrid");
+    if (!rooms.length) {
+      grid.innerHTML = `<div class="empty-rooms" style="grid-column:1/-1"><div class="icon">🏫</div><p>No rooms yet. Create one to get started!</p></div>`;
+      return;
+    }
+    const icons = { General:"📚", IT:"💻", Business:"📊", Research:"🔬", "Caribbean Studies":"🌴" };
+    grid.innerHTML = rooms.map(r => `
+      <div class="room-card" onclick="joinRoom(${r.id},'${esc(r.name)}','${esc(r.topic||"")}','${r.created_by||""}')">
+        <div class="room-card-top">
+          <div class="room-icon">${icons[r.category]||"📚"}</div>
+          <div class="room-live-dot"><div class="live-dot"></div>Live</div>
+        </div>
+        <div class="room-name">${r.name}</div>
+        <div class="room-topic">${r.topic||"Open discussion"}</div>
+        <div class="room-footer">
+          <div class="room-meta">
+            ${r.book_ref?`<span class="room-book">📖 ${r.book_ref}</span>`:""}
+            <span>by ${r.created_by_name||"Student"}</span>
+          </div>
+          <button class="join-btn">Join →</button>
+        </div>
+      </div>`).join("");
+  }
+
+  // ── CREATE ROOM ─────────────────────────────────────
+  function switchTab(tab) {
+    document.getElementById("browseTab").style.display = tab === "browse" ? "" : "none";
+    document.getElementById("createTab").style.display = tab === "create" ? "" : "none";
+    document.getElementById("tab-browse").classList.toggle("active", tab === "browse");
+    document.getElementById("tab-create").classList.toggle("active", tab === "create");
+    if (tab === "browse") loadRooms();
+  }
+
+  async function createRoom() {
+    const name     = document.getElementById("roomName").value.trim();
+    const topic    = document.getElementById("roomTopic").value.trim();
+    const book     = document.getElementById("roomBook").value.trim();
+    const category = document.getElementById("roomCategory").value;
+    const status   = document.getElementById("createStatus");
+
+    if (!name) { status.style.color="var(--red)"; status.textContent="⚠️ Room name is required."; return; }
+
+    status.style.color="var(--muted)"; status.textContent="Creating…";
+
+    try {
+      const res  = await fetch(`${API_BASE}/rooms`, {
+        method: "POST",
+        headers: { "Content-Type":"application/json", "Authorization":"Bearer "+token },
+        body: JSON.stringify({ name, topic, book_ref: book||null, category })
+      });
+      const data = await res.json();
+      if (!res.ok) { status.style.color="var(--red)"; status.textContent="✗ "+data.error; return; }
+      document.getElementById("roomName").value  = "";
+      document.getElementById("roomTopic").value = "";
+      document.getElementById("roomBook").value  = "";
+      switchTab("browse");
+      await loadRooms();
+      joinRoom(data.id, name, topic, String(userId));
+    } catch { status.style.color="var(--red)"; status.textContent="✗ Could not reach server."; }
+  }
+
+  // ── JOIN ROOM ────────────────────────────────────────
+  async function joinRoom(roomId, name, topic, createdBy) {
+    currentRoom    = roomId;
+    currentCreator = createdBy || null;
+
+    // Update header
+    document.getElementById("chatRoomName").textContent  = name;
+    document.getElementById("chatRoomTopic").textContent = topic || "Open discussion";
+
+    // Show End Room btn only to creator
+    const endBtn = document.getElementById("endRoomBtn");
+    endBtn.style.display = (createdBy && String(createdBy) === String(userId)) ? "inline-flex" : "none";
+
+    // Switch views
+    document.getElementById("roomsView").style.display = "none";
+    document.getElementById("chatView").classList.add("active");
+
+    // Clear chat
+    document.getElementById("chatBody").innerHTML = "";
+
+    // Load history
+    try {
+      const res  = await fetch(`${API_BASE}/rooms/${roomId}/messages`);
+      const msgs = await res.json();
+      msgs.forEach(m => appendMessage(m, false));
+      scrollToBottom();
+    } catch { appendSystemMessage("Could not load message history."); }
+
+    // Join socket room
+    socket.emit("join_room", { roomId, userId, fullname });
+
+    // Focus input
+    setTimeout(() => document.getElementById("chatInput").focus(), 200);
+  }
+
+  // ── LEAVE ROOM ───────────────────────────────────────
+  function leaveRoom() {
+    if (currentRoom) {
+      socket.emit("leave_room", { roomId: currentRoom, userId, fullname });
+      currentRoom    = null;
+      currentCreator = null;
+    }
+    document.getElementById("chatView").classList.remove("active");
+    document.getElementById("endRoomBtn").style.display = "none";
+    document.getElementById("roomsView").style.display = "";
+    loadRooms();
+  }
+
+  // ── END ROOM (creator only) ──────────────────────────
+  async function endRoom() {
+    if (!confirm("End this room? All messages will be deleted and the room will be closed.")) return;
+    try {
+      const res  = await fetch(`${API_BASE}/rooms/${currentRoom}`, {
+        method: "DELETE",
+        headers: { "Authorization": "Bearer " + token }
+      });
+      const data = await res.json();
+      if (!res.ok) { alert("Could not end room: " + (data.error||"Unknown error")); return; }
+      socket.emit("room_ended", { roomId: currentRoom });
+      leaveRoom();
+    } catch { alert("Could not reach server."); }
+  }
+
+  // ── SEND MESSAGE ─────────────────────────────────────
+  function sendMessage() {
+    const input   = document.getElementById("chatInput");
+    const message = input.value.trim();
+    if (!message || !currentRoom) return;
+
+    socket.emit("send_message", {
+      roomId:  currentRoom,
+      userId,
+      author:  fullname,
+      message
+    });
+
+    input.value = "";
+    input.style.height = "auto";
+    clearTimeout(typingTimeout);
+    socket.emit("stop_typing", { roomId: currentRoom, fullname });
+  }
+
+  function handleKey(e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  }
+
+  // ── TYPING INDICATOR ─────────────────────────────────
+  function handleTyping() {
+    if (!currentRoom) return;
+    socket.emit("typing", { roomId: currentRoom, fullname });
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(() => {
+      socket.emit("stop_typing", { roomId: currentRoom, fullname });
+    }, 1500);
+  }
+
+  // ── RENDER MESSAGE ───────────────────────────────────
+  function appendMessage(msg, scroll = true) {
+    const body    = document.getElementById("chatBody");
+    const isOwn   = String(msg.user_id) === String(userId);
+    const initials= (msg.author||"?").split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase();
+    const time    = new Date(msg.created_at).toLocaleTimeString("en-JM",{hour:"2-digit",minute:"2-digit"});
+
+    const div = document.createElement("div");
+    div.className = `msg-wrap ${isOwn?"own":""}`;
+    div.innerHTML = `
+      <div class="msg-avatar">${initials}</div>
+      <div class="msg-bubble">
+        <div class="msg-author">${isOwn?"You":msg.author}</div>
+        <div class="msg-text">${escHtml(msg.message)}</div>
+        <div class="msg-time">${time}</div>
+      </div>`;
+    body.appendChild(div);
+    if (scroll) scrollToBottom();
+  }
+
+  function appendSystemMessage(text) {
+    const body = document.getElementById("chatBody");
+    const div  = document.createElement("div");
+    div.className = "msg-system";
+    div.textContent = text;
+    body.appendChild(div);
+    scrollToBottom();
+  }
+
+  function scrollToBottom() {
+    const body = document.getElementById("chatBody");
+    body.scrollTop = body.scrollHeight;
+  }
+
+  // ── SOCKET EVENTS ────────────────────────────────────
+  socket.on("new_message", msg => {
+    if (msg.roomId === currentRoom) {
+      appendMessage(msg);
+    }
+  });
+
+  socket.on("user_joined", ({ fullname: name, count }) => {
+    document.getElementById("onlineCount").textContent = count;
+    appendSystemMessage(`${name} joined the room`);
+  });
+
+  socket.on("user_left", ({ fullname: name, count }) => {
+    document.getElementById("onlineCount").textContent = count;
+    appendSystemMessage(`${name} left the room`);
+  });
+
+  socket.on("typing", ({ fullname: name }) => {
+    document.getElementById("typingIndicator").textContent = `${name} is typing…`;
+  });
+
+  socket.on("stop_typing", () => {
+    document.getElementById("typingIndicator").textContent = "";
+  });
+
+  socket.on("room_ended", () => {
+    appendSystemMessage("The room creator has ended this room.");
+    setTimeout(leaveRoom, 2000);
+  });
+
+  socket.on("connect_error", () => {
+    console.warn("Socket connection failed — real-time disabled");
+  });
+
+  // ── HELPERS ──────────────────────────────────────────
+  function esc(s)    { return (s||"").replace(/'/g,"\\'").replace(/"/g,"&quot;"); }
+  function escHtml(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+  // ── INIT ─────────────────────────────────────────────
+  loadRooms();
+  </script>
+
+</body>
+</html>
