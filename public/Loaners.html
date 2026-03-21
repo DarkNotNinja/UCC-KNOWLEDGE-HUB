@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="auth.js"></script>
 
   <style>
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
@@ -102,6 +103,8 @@
     .ba-add.added { background:hsla(152,60%,52%,0.15); color:var(--green); border:1px solid hsla(152,60%,52%,0.3); }
     .ba-dl { background:hsla(210,80%,65%,0.12); border:1px solid hsla(210,80%,65%,0.25); color:var(--blue); }
     .ba-dl:hover { background:hsla(210,80%,65%,0.22); }
+    .ba-borrow { background:hsla(152,60%,52%,0.12); border:1px solid hsla(152,60%,52%,0.25); color:var(--green); }
+    .ba-borrow:hover { background:hsla(152,60%,52%,0.22); }
 
     /* LOADING / EMPTY */
     .search-placeholder { text-align:center; padding:60px 20px; color:var(--muted); }
@@ -179,16 +182,13 @@
     .site-footer a:hover { text-decoration:underline; }
     .site-footer small { font-size:0.75rem; color:var(--muted); }
 
-    @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeUp  { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes scaleIn { from{opacity:0;transform:scale(.94)} to{opacity:1;transform:scale(1)} }
     @media (max-width:900px) { .two-col { grid-template-columns:1fr; } }
     @media (max-width:640px) { .stats-row { grid-template-columns:repeat(2,1fr); } main { padding:32px 16px 60px; } .title-wrap .subtitle { display:none; } }
   </style>
 </head>
 <body>
-
-  <script>
-    if (!localStorage.getItem("token")) window.location.href = "ucc_landing_page.html";
-  </script>
 
   <header class="site-header">
     <div class="header-inner">
@@ -326,30 +326,54 @@
   <!-- TOAST -->
   <div class="toast" id="toast"></div>
 
+  <!-- BORROW MODAL -->
+  <div class="modal-overlay" id="borrowModal" style="display:none;position:fixed;inset:0;z-index:200;background:hsla(220,40%,5%,0.85);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:32px 36px;width:90%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,0.6);animation:scaleIn .22s ease;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <h3 style="font-family:var(--font-display);font-size:1.1rem;font-weight:700;">📥 Borrow Resource</h3>
+        <button onclick="closeBorrowModal()" style="background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;">✕</button>
+      </div>
+
+      <div id="borrowBookInfo" style="background:var(--secondary);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:20px;">
+        <div id="borrowTitle" style="font-weight:600;font-size:0.95rem;margin-bottom:4px;"></div>
+        <div id="borrowAuthor" style="font-size:0.8rem;color:var(--muted);"></div>
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <label style="display:block;font-size:0.72rem;color:var(--muted);margin-bottom:6px;font-family:var(--font-display);font-weight:600;letter-spacing:.05em;text-transform:uppercase;">Borrow From</label>
+        <input type="date" id="borrowFrom" style="width:100%;padding:10px 13px;background:var(--secondary);border:1px solid var(--border);border-radius:8px;outline:none;color:var(--fg);font-family:var(--font-body);font-size:0.875rem;">
+      </div>
+
+      <div style="margin-bottom:20px;">
+        <label style="display:block;font-size:0.72rem;color:var(--muted);margin-bottom:6px;font-family:var(--font-display);font-weight:600;letter-spacing:.05em;text-transform:uppercase;">Return By (Due Date)</label>
+        <input type="date" id="borrowTo" style="width:100%;padding:10px 13px;background:var(--secondary);border:1px solid var(--border);border-radius:8px;outline:none;color:var(--fg);font-family:var(--font-body);font-size:0.875rem;" oninput="updateFineNote()">
+      </div>
+
+      <!-- FINE NOTE -->
+      <div id="fineNote" style="display:none;background:hsla(43,55%,54%,0.08);border:1px solid hsla(43,55%,54%,0.25);border-radius:10px;padding:14px 16px;margin-bottom:20px;font-size:0.85rem;">
+        <div style="font-family:var(--font-display);font-weight:700;color:var(--primary);margin-bottom:6px;">⚠️ Fine Policy</div>
+        <div id="fineText" style="color:var(--muted);line-height:1.6;"></div>
+      </div>
+
+      <button onclick="confirmBorrow()" style="width:100%;padding:12px;border:none;border-radius:10px;background:var(--primary);color:var(--primary-fg);font-family:var(--font-display);font-size:0.9rem;font-weight:700;cursor:pointer;transition:all .2s;">✓ Confirm Borrow</button>
+      <p id="borrowStatus" style="margin-top:10px;font-size:0.82rem;text-align:center;min-height:16px;font-family:var(--font-display);"></p>
+    </div>
+  </div>
+
   <script>
   // ─── CONFIG ───────────────────────────────────────────
-  const SUPABASE_URL   = "https://bqgtuxhfqfmxvryfljya.supabase.co"; // ← replace
-  const SUPABASE_ANON  = "sb_publishable_y71RZ0UCDxkcmFQQHGEf-Q_davD0hbm";                       // ← replace
-  const GOOGLE_API_KEY = "AIzaSyAjZt96cL-gnZxuT9nLU0d0HTXVDs2m2_4";           // ← replace
-  const API_BASE       = "http://localhost:3000/api";
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+  const GOOGLE_API_KEY = "AIzaSyAjZt96cL-gnZxuT9nLU0d0HTXVDs2m2_4"; // your key
+  const API_BASE       = "/api";
 
   document.getElementById("year").textContent = new Date().getFullYear();
 
   // ─── AUTH ─────────────────────────────────────────────
-  const token = localStorage.getItem("token");
-  function parseJwt(t) {
-    try { return JSON.parse(atob(t.split(".")[1].replace(/-/g,"+").replace(/_/g,"/"))); }
-    catch { return null; }
-  }
-  const jwt      = parseJwt(token);
-  const userId   = jwt?.userId ? String(jwt.userId) : null;
-  const fullname = jwt?.fullname || "Student";
+  const token    = getToken();
+  const _user    = getCurrentUser();
+  const userId   = _user?.userId   || null;
+  const fullname = _user?.fullname || "Student";
 
-  document.getElementById("logoutBtn").addEventListener("click", () => {
-    localStorage.removeItem("token");
-    window.location.href = "ucc_landing_page.html";
-  });
+  document.getElementById("logoutBtn").addEventListener("click", () => logout());
 
   // ─── STATE ────────────────────────────────────────────
   let allResults  = [];   // all fetched books
@@ -510,6 +534,7 @@
         ${b.hasPdf && b.pdfLink
           ? `<button class="ba-btn ba-dl" onclick="downloadPdf('${esc(b.pdfLink)}','${esc(b.title)}','${b.id}')">⬇ PDF</button>`
           : `<a class="ba-btn ba-view" href="${b.viewLink||"#"}" target="_blank">👁 View</a>`}
+        <button class="ba-btn ba-borrow" onclick="openBorrowModal(${JSON.stringify(b).replace(/"/g,"&quot;")})">📥 Borrow</button>
         <button class="ba-btn ba-add ${isAdded?"added":""}" id="addbtn-${b.id}"
           onclick="addToLibrary(${JSON.stringify(b).replace(/"/g,"&quot;")})">
           ${isAdded ? "✓ Saved" : "+ Add"}
