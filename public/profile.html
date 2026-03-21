@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="auth.js"></script>
 
   <style>
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
@@ -169,10 +169,6 @@
 </head>
 <body>
 
-  <script>
-    if (!localStorage.getItem("token")) window.location.href = "ucc_landing_page.html";
-  </script>
-
   <!-- HEADER -->
   <header class="site-header">
     <div class="header-inner">
@@ -322,76 +318,49 @@
   </div>
 
   <script>
-  const SUPABASE_URL  = "https://YOUR_PROJECT_ID.supabase.co"; // ← replace
-  const SUPABASE_ANON = "YOUR_ANON_KEY";                       // ← replace
-  const API_BASE      = "http://localhost:3000/api";
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+  const API_BASE = "/api";
 
   document.getElementById("year").textContent = new Date().getFullYear();
 
-  // ── AUTH ──────────────────────────────────────────────
-  const token = localStorage.getItem("token");
-  function parseJwt(t) {
-    try { return JSON.parse(atob(t.split(".")[1].replace(/-/g,"+").replace(/_/g,"/"))); }
-    catch { return null; }
-  }
-  const jwt      = parseJwt(token);
-  const userId   = jwt?.userId ? String(jwt.userId) : null;
-  const fullname = jwt?.fullname || "Student";
+  const token    = getToken();
+  const _user    = getCurrentUser();
+  const userId   = _user?.userId   || null;
+  const fullname = _user?.fullname || "Student";
 
-  document.getElementById("logoutBtn").addEventListener("click", () => {
-    localStorage.removeItem("token");
-    window.location.href = "ucc_landing_page.html";
-  });
+  document.getElementById("logoutBtn").addEventListener("click", () => logout());
 
-  // ── MODALS ────────────────────────────────────────────
   function openModal(id)  { document.getElementById(id).classList.add("open"); }
   function closeModal(id) { document.getElementById(id).classList.remove("open"); }
   document.querySelectorAll(".modal-overlay").forEach(o =>
     o.addEventListener("click", e => { if (e.target===o) o.classList.remove("open"); })
   );
 
-  // ── LOAD USER ─────────────────────────────────────────
   async function loadUser() {
-    if (!token) { window.location.href = "login.html"; return; }
     try {
       const res  = await fetch("/api/user", { headers: { "Authorization":"Bearer "+token } });
-      if (!res.ok) { window.location.href = "login.html"; return; }
+      if (!res.ok) return;
       const user = await res.json();
-
       document.getElementById("heroName").textContent    = user.fullname  || "Unknown";
       document.getElementById("heroEmail").textContent   = user.email     || "";
       document.getElementById("heroBadgeId").textContent = "ID: " + (user.school_id || "—");
-
       const avatarEl = document.getElementById("avatarEl");
-      if (user.picture) {
-        avatarEl.outerHTML = `<img src="${user.picture}" alt="Profile" class="avatar-img" id="avatarEl">`;
-      } else {
-        avatarEl.textContent = (user.fullname||"?").split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase();
-      }
+      avatarEl.textContent = (user.fullname||"?").split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase();
     } catch {
       document.getElementById("heroName").textContent = "Error loading profile";
     }
   }
 
-  // ── LOAD LOANS ────────────────────────────────────────
   async function loadLoans() {
     const tbody = document.getElementById("loansTableBody");
     try {
       const res   = await fetch(`${API_BASE}/loans/user`, { headers:{ "Authorization":"Bearer "+token } });
       if (!res.ok) throw new Error();
       const loans = await res.json();
-
-      // Update stats
-      const active   = loans.filter(l=>l.status==="active").length;
-      document.getElementById("statLoans").textContent = active;
-
-      // Render table
+      document.getElementById("statLoans").textContent = loans.filter(l=>l.status==="active").length;
       if (!loans.length) {
         tbody.innerHTML = `<tr class="empty-row"><td colspan="7">No loans yet. <a href="Loaners.html" style="color:var(--primary)">Browse the library</a> to get started.</td></tr>`;
         return;
       }
-
       tbody.innerHTML = loans.map(l => {
         const isOver = l.due_date && new Date(l.due_date) < new Date() && l.status==="active";
         const status = isOver ? "overdue" : l.status;
@@ -411,27 +380,21 @@
           </td>
         </tr>`;
       }).join("");
-
     } catch {
       tbody.innerHTML = `<tr class="empty-row"><td colspan="7">Could not load loans.</td></tr>`;
     }
   }
 
-  // ── READING LIST (from localStorage synced in Loaners) ─
   function loadReadingList() {
     const list    = JSON.parse(localStorage.getItem(`rl_${userId}`) || "[]");
     const content = document.getElementById("readingListContent");
-
-    // Update stats
     document.getElementById("statSaved").textContent    = list.length;
     document.getElementById("statReading").textContent  = list.filter(b=>b.status==="reading").length;
     document.getElementById("statFinished").textContent = list.filter(b=>b.status==="finished").length;
-
     if (!list.length) {
       content.innerHTML = `<p style="color:var(--muted);font-size:.875rem;">No books saved yet. <a href="Loaners.html" style="color:var(--primary);">Browse the library</a> to add resources.</p>`;
       return;
     }
-
     content.innerHTML = `<div class="reading-grid">${list.slice(0,12).map(b => `
       <div class="rl-card">
         <div class="rl-title">${escHtml(b.title)}</div>
@@ -456,23 +419,21 @@
     book.status = status;
     localStorage.setItem(`rl_${userId}`, JSON.stringify(list));
     loadReadingList();
-    // Sync to Supabase
-    sb.from("reading_progress").update({ status }).eq("user_id", userId).eq("book_title", book.title).catch(()=>{});
   }
 
-  // ── FINES ─────────────────────────────────────────────
   async function loadFines() {
     try {
-      const { data } = await sb.from("fines").select("amount,days_overdue").eq("user_id", userId).eq("paid", false);
+      const res = await fetch(`${API_BASE}/fines/user`, { headers:{ "Authorization":"Bearer "+token } });
+      if (!res.ok) return;
+      const data = await res.json();
       const total = (data||[]).reduce((s,f)=>s+parseFloat(f.amount||0), 0);
       const days  = (data||[]).reduce((s,f)=>s+(f.days_overdue||0), 0);
-      document.getElementById("fineTotal").textContent = `$${total.toFixed(2)}`;
-      document.getElementById("fineDays").textContent  = days;
-      document.getElementById("payFineAmt").textContent= `$${total.toFixed(2)}`;
+      document.getElementById("fineTotal").textContent  = `$${total.toFixed(2)}`;
+      document.getElementById("fineDays").textContent   = days;
+      document.getElementById("payFineAmt").textContent = `$${total.toFixed(2)}`;
     } catch { /* silent */ }
   }
 
-  // ── CHANGE PASSWORD ───────────────────────────────────
   document.getElementById("passwordForm").addEventListener("submit", async e => {
     e.preventDefault();
     const current = document.getElementById("currentPassword").value;
@@ -488,15 +449,13 @@
     } catch { result.style.color="var(--red)"; result.textContent="Could not update password."; }
   });
 
-  // ── HELPERS ───────────────────────────────────────────
   function escHtml(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
-  // ── INIT ──────────────────────────────────────────────
   loadUser();
   loadLoans();
   loadReadingList();
   loadFines();
-  </script>
+</script>
 
 </body>
 </html>

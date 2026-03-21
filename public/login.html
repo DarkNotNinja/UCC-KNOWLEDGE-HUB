@@ -2,91 +2,248 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>UCC Knowledge Hub — Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <!-- NOTE: No auth.js here — login page is public -->
+
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-    *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
-    body{background:linear-gradient(135deg,#002b5c,#00509e);color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;}
-    header{width:100%;background:rgba(0,0,0,0.2);display:flex;align-items:center;padding:15px 40px;}
-    header img{height:60px;}
-    .login-box{margin-top:80px;background:rgba(255,255,255,0.1);backdrop-filter:blur(12px);padding:45px 40px;border-radius:20px;width:400px;text-align:center;box-shadow:0 0 25px rgba(0,0,0,0.3);}
-    .login-box h1{color:#ffcc00;font-size:2rem;margin-bottom:25px;}
-    input{width:100%;padding:14px;margin:10px 0;border:none;border-radius:10px;font-size:1rem;background:rgba(255,255,255,0.9);color:#000;}
-    button{width:100%;padding:14px;margin-top:15px;border:none;border-radius:10px;font-size:1.1rem;font-weight:700;background:#ffcc00;color:#002b5c;cursor:pointer;transition:.3s;}
-    button:hover{background:#fff;box-shadow:0 0 20px rgba(255,204,0,0.7);}
-    .extra{text-align:center;margin-top:20px;}
-    .extra a{color:#ffcc00;text-decoration:none;font-weight:600;}
-    footer{margin-top:auto;padding:20px;text-align:center;font-size:.9rem;opacity:.8;}
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --bg:         hsl(220, 40%, 7%);
+      --fg:         hsl(45, 30%, 92%);
+      --primary:    hsl(43, 55%, 54%);
+      --primary-fg: hsl(220, 40%, 7%);
+      --card:       hsl(220, 35%, 11%);
+      --muted:      hsl(220, 15%, 55%);
+      --border:     hsl(220, 25%, 18%);
+      --secondary:  hsl(220, 30%, 16%);
+      --red:        hsl(0, 70%, 60%);
+      --glow-gold:  0 0 40px hsla(43, 55%, 54%, 0.3);
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-body:    'Inter', sans-serif;
+    }
+    body { background:var(--bg); color:var(--fg); font-family:var(--font-body); min-height:100vh; display:flex; flex-direction:column; position:relative; overflow-x:hidden; }
+
+    /* CAMPUS BACKGROUND */
+    .bg-image { position:fixed; inset:0; z-index:0; background-image:url('https://www.ucc.edu.jm/sites/default/files/Campus%20Image%202.jpg'); background-size:cover; background-position:center; opacity:0; animation:bgFadeIn 1.8s ease forwards; }
+    .bg-overlay { position:fixed; inset:0; z-index:1; background:linear-gradient(to right, hsla(220,40%,5%,0.92) 0%, hsla(220,40%,5%,0.75) 50%, hsla(220,40%,5%,0.88) 100%); }
+
+    /* HEADER */
+    .site-header { position:relative; z-index:10; background:hsla(220,35%,11%,0.6); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); }
+    .header-inner { max-width:1280px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:12px 24px; gap:16px; }
+    .logo-wrap { display:flex; align-items:center; gap:12px; }
+    .ucc-logo  { height:40px; width:40px; border-radius:50%; }
+    .title-wrap h1       { font-family:var(--font-display); font-size:1.125rem; font-weight:700; }
+    .title-wrap .subtitle { font-size:0.75rem; color:var(--muted); }
+    .main-nav { display:flex; gap:8px; }
+    .main-nav a { font-size:0.875rem; color:var(--muted); padding:7px 14px; border-radius:8px; text-decoration:none; transition:all .2s; }
+    .main-nav a:hover { color:var(--fg); background:var(--secondary); }
+
+    /* PAGE BODY */
+    .page-body { position:relative; z-index:10; flex:1; display:flex; align-items:center; justify-content:center; padding:48px 24px; }
+
+    /* LOGIN CARD */
+    .login-card { background:hsla(220,35%,11%,0.75); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border:1px solid var(--border); border-radius:20px; padding:42px 44px; width:100%; max-width:420px; box-shadow:0 24px 64px rgba(0,0,0,0.5); animation:cardUp .6s ease both; }
+    .login-card-top { text-align:center; margin-bottom:32px; }
+    .login-card-top h2 { font-family:var(--font-display); font-size:1.7rem; font-weight:700; margin-bottom:6px; }
+    .login-card-top h2 span { color:var(--primary); }
+    .login-card-top p { font-size:0.875rem; color:var(--muted); }
+
+    /* DIVIDER */
+    .divider { display:flex; align-items:center; gap:12px; margin:20px 0; color:var(--muted); font-size:0.78rem; }
+    .divider::before, .divider::after { content:''; flex:1; height:1px; background:var(--border); }
+
+    /* GOOGLE BUTTON */
+    .google-btn { width:100%; padding:12px 20px; display:flex; align-items:center; justify-content:center; gap:12px; background:var(--secondary); border:1px solid var(--border); border-radius:10px; color:var(--fg); font-family:var(--font-display); font-size:0.9rem; font-weight:600; cursor:pointer; transition:all .2s; margin-bottom:4px; }
+    .google-btn:hover { background:hsl(220,30%,20%); border-color:hsla(43,55%,54%,0.3); }
+    .google-btn:disabled { opacity:.6; cursor:not-allowed; }
+    .google-icon { width:20px; height:20px; flex-shrink:0; }
+
+    /* FORM */
+    .form-group { margin-bottom:14px; }
+    .form-group label { display:block; font-size:0.75rem; color:var(--muted); margin-bottom:6px; font-family:var(--font-display); font-weight:600; letter-spacing:.04em; text-transform:uppercase; }
+    .form-group input { width:100%; padding:12px 14px; background:var(--secondary); border:1px solid var(--border); border-radius:10px; outline:none; color:var(--fg); font-family:var(--font-body); font-size:0.9rem; transition:border-color .2s; }
+    .form-group input:focus { border-color:var(--primary); }
+    .form-group input::placeholder { color:var(--muted); }
+
+    /* LOGIN BUTTON */
+    .login-btn { width:100%; padding:13px; border:none; border-radius:10px; background:var(--primary); color:var(--primary-fg); font-family:var(--font-display); font-size:0.95rem; font-weight:700; cursor:pointer; transition:all .2s; margin-top:4px; }
+    .login-btn:hover { opacity:.9; box-shadow:var(--glow-gold); }
+    .login-btn:disabled { opacity:.5; cursor:not-allowed; }
+
+    #result { margin-top:12px; font-size:0.85rem; text-align:center; min-height:18px; font-family:var(--font-display); }
+
+    .card-footer { text-align:center; margin-top:22px; font-size:0.85rem; color:var(--muted); }
+    .card-footer a { color:var(--primary); font-weight:600; text-decoration:none; }
+    .card-footer a:hover { text-decoration:underline; }
+
+    /* FOOTER */
+    .site-footer { position:relative; z-index:10; border-top:1px solid var(--border); padding:20px 24px; text-align:center; }
+    .site-footer p { font-family:var(--font-display); font-size:0.8rem; color:var(--muted); }
+    .site-footer a { color:var(--primary); text-decoration:none; }
+
+    @keyframes bgFadeIn { from{opacity:0} to{opacity:.55} }
+    @keyframes cardUp   { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+    @media (max-width:480px) { .login-card{padding:32px 24px;} .title-wrap .subtitle{display:none;} }
   </style>
-<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<header class="site-header">
+
+  <div class="bg-image"></div>
+  <div class="bg-overlay"></div>
+
+  <header class="site-header">
     <div class="header-inner">
       <div class="logo-wrap">
-        <!-- Official UCC logo (if unavailable, replace with local file 'ucc-logo.png') -->
         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEC31GlH03Kf6NAmmiIHqInFd0q1bQz2gmDg&s" alt="UCC logo" class="ucc-logo">
-      </div>
-      <div class="title-wrap">
-        <h1>UCC Knowledge Hub</h1>
-        <p class="subtitle">Empowering Digital Learning</p>
+        <div class="title-wrap">
+          <h1>UCC Knowledge Hub</h1>
+          <p class="subtitle">Empowering Digital Learning</p>
+        </div>
       </div>
       <nav class="main-nav">
-        <a href="ucc_knowledge_hub.html">Home</a>
         <a href="ucc_landing_page.html">About</a>
-       
+        <a href="signup.html">Sign Up</a>
       </nav>
     </div>
   </header>
- 
-  <div class="login-box">
-    <h1>Student Login</h1>
-    <form id="loginForm">
-      <input type="number" id="schoolId" placeholder="School ID" required>
-      <input type="password" id="password" placeholder="Password" required>
-      <button type="submit">Login</button>
-    </form>
-    <div class="extra">
-      <p>Don’t have an account? <a href="signup.html">SignUp</a></p>
+
+  <div class="page-body">
+    <div class="login-card">
+
+      <div class="login-card-top">
+        <h2>Welcome <span>Back</span></h2>
+        <p>Sign in to your UCC Knowledge Hub account</p>
+      </div>
+
+      <!-- GOOGLE LOGIN -->
+      <button class="google-btn" id="googleBtn" onclick="handleGoogleLogin()">
+        <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        Continue with Google
+      </button>
+
+      <div class="divider">or sign in with School ID</div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label>School ID</label>
+          <input type="number" id="schoolId" placeholder="Enter your School ID" autocomplete="username" required>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password" required>
+        </div>
+        <button class="login-btn" type="submit" id="loginBtn">Sign In</button>
+      </form>
+
+      <p id="result"></p>
+
+      <div class="card-footer">
+        <p>Don't have an account? <a href="signup.html">Create one →</a></p>
+      </div>
+
     </div>
-    <p id="result"></p>
   </div>
 
-  <footer>© <span id="year"></span> UCC — All Rights Reserved</footer>
+  <footer class="site-footer">
+    <p>© <span id="year"></span> University of the Commonwealth Caribbean &nbsp;·&nbsp; <a href="https://www.ucc.edu.jm">www.ucc.edu.jm</a></p>
+  </footer>
+
   <script>
-document.getElementById('year').textContent = new Date().getFullYear();
+    document.getElementById("year").textContent = new Date().getFullYear();
 
-document.getElementById("loginForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  
-  const schoolId = document.getElementById("schoolId").value;
-  const password = document.getElementById("password").value;
+    // If already logged in, skip login page
+    if (localStorage.getItem("token")) {
+      window.location.href = "ucc_knowledge_hub.html";
+    }
 
-  const res = await fetch("/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ schoolId, password })
-  });
+    // ── SCHOOL ID LOGIN ──────────────────────────────────
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const schoolId = document.getElementById("schoolId").value;
+      const password = document.getElementById("password").value;
+      const resultEl = document.getElementById("result");
+      const loginBtn = document.getElementById("loginBtn");
 
-  const data = await res.json();
-  document.getElementById("result").textContent = data.message;
-  
-// Store token
-if (data.success) {
-  localStorage.setItem("token", data.token); 
-   // Redirect to home/dashboard
-  window.location.href = "ucc_knowledge_hub.html";
-}
+      loginBtn.disabled    = true;
+      loginBtn.textContent = "Signing in…";
+      resultEl.textContent = "";
 
-// redirect to dashboard
-  if (data.token) {
-    localStorage.setItem("token", data.token);
-    window.location.href = "ucc_knowledge_hub.html"; 
-  }
-});
-</script>
+      try {
+        const res  = await fetch("/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ schoolId, password })
+        });
+        const data = await res.json();
 
+        if (data.success && data.token) {
+          localStorage.setItem("token", data.token);
+          resultEl.style.color = "#3ecf8e";
+          resultEl.textContent  = "✓ Login successful! Redirecting…";
+          setTimeout(() => window.location.href = "ucc_knowledge_hub.html", 800);
+        } else {
+          resultEl.style.color = "var(--red)";
+          resultEl.textContent  = data.message || "Login failed. Please try again.";
+          loginBtn.disabled     = false;
+          loginBtn.textContent  = "Sign In";
+        }
+      } catch {
+        resultEl.style.color = "var(--red)";
+        resultEl.textContent  = "Could not reach server. Please try again.";
+        loginBtn.disabled     = false;
+        loginBtn.textContent  = "Sign In";
+      }
+    });
+
+    // ── GOOGLE LOGIN ─────────────────────────────────────
+    // Loads Supabase SDK only when needed (on click)
+    async function handleGoogleLogin() {
+      const btn      = document.getElementById("googleBtn");
+      const resultEl = document.getElementById("result");
+
+      btn.disabled    = true;
+      btn.textContent = "Loading…";
+
+      // Dynamically load Supabase SDK if not already loaded
+      if (!window.supabase) {
+        await new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+          script.onload = resolve;
+          script.onerror = reject;
+          document.head.appendChild(script);
+        });
+      }
+
+      const sb = supabase.createClient(
+        "https://bqgtuxhfqfmxvryfljya.supabase.co",
+        "sb_publishable_y71RZ0UCDxkcmFQQHGEf-Q_davD0hbm"
+      );
+
+      btn.textContent = "Redirecting to Google…";
+
+      const { error } = await sb.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: window.location.origin + "/ucc_knowledge_hub.html" }
+      });
+
+      if (error) {
+        resultEl.style.color = "var(--red)";
+        resultEl.textContent  = "Google login failed: " + error.message;
+        btn.disabled    = false;
+        btn.textContent = "Continue with Google";
+      }
+    }
+  </script>
 
 </body>
 </html>
