@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="auth.js"></script>
 
@@ -88,7 +89,7 @@
     .book-cover img { width:100%; height:100%; object-fit:cover; }
     .book-cover-placeholder { width:100%; height:160px; background:linear-gradient(135deg,var(--secondary),var(--card)); display:flex; align-items:center; justify-content:center; font-size:2.5rem; }
     .book-info { padding:14px 16px; flex:1; display:flex; flex-direction:column; gap:4px; }
-    .book-title  { font-size:0.88rem; font-weight:600; line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .book-title  { font-size:0.88rem; font-weight:600; line-height:1.35; display:-webkit-box; -webkit-lineclamp:2; -webkit-box-orient:vertical; overflow:hidden; }
     .book-author { font-size:0.78rem; color:var(--muted); }
     .book-meta   { display:flex; gap:6px; flex-wrap:wrap; margin-top:4px; }
     .book-tag    { font-size:0.68rem; padding:2px 8px; border-radius:10px; background:var(--secondary); color:var(--muted); border:1px solid var(--border); font-family:var(--font-display); }
@@ -375,6 +376,47 @@
 
   document.getElementById("logoutBtn").addEventListener("click", () => logout());
 
+  // ─── POINTS ──────────────────────────────────────────
+  const _sbPts = supabase.createClient(
+    "https://bqgtuxhfqfmxvryfljya.supabase.co",
+    "sb_publishable_y71RZ0UCDxkcmFQQHGEf-Q_davD0hbm"
+  );
+
+  async function awardPoints(pts, action, note) {
+    if (!userId) return;
+    try {
+      const { data: existing } = await _sbPts.from("points").select("total,books_read").eq("user_id", userId).single();
+      const current   = existing?.total || 0;
+      const booksRead = existing?.books_read || 0;
+      const newBooks  = action === "finish_book" ? booksRead + 1 : booksRead;
+      const newTotal  = current + pts;
+      await _sbPts.from("points").upsert({ user_id: userId, fullname, total: newTotal, books_read: newBooks, updated_at: new Date().toISOString() }, { onConflict: "user_id" });
+      await _sbPts.from("point_events").insert({ user_id: userId, action, points: pts, note: note||action });
+      const weekStart = (() => { const d=new Date(); const day=d.getDay(); const diff=d.getDate()-day+(day===0?-6:1); d.setDate(diff); return d.toISOString().split("T")[0]; })();
+      const objUpdate = {};
+      if (action === "borrow_book") objUpdate.obj_borrow = true;
+      if (action === "finish_book") objUpdate.obj_finish = true;
+      if (Object.keys(objUpdate).length) {
+        await _sbPts.from("weekly_objectives").upsert({ user_id: userId, week_start: weekStart, ...objUpdate }, { onConflict: "user_id,week_start" });
+      }
+      showPtsToast(pts, action, newTotal);
+    } catch(e) { console.warn("Points:", e); }
+  }
+
+  function showPtsToast(pts, action, newTotal) {
+    const messages = {
+      borrow_book: { title:"Book Borrowed! 📚", msg:`You now have ${newTotal} total points` },
+      finish_book: { title:"Book Finished! 🎉",  msg:`You now have ${newTotal} total points` }
+    };
+    const m = messages[action] || { title:"Points Earned!", msg:`You now have ${newTotal} total points` };
+    document.getElementById("ptsToastTitle").textContent = m.title;
+    document.getElementById("ptsToastMsg").textContent   = m.msg;
+    document.getElementById("ptsToastPts").textContent   = `+${pts} pts`;
+    const toast = document.getElementById("ptsToast");
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 3500);
+  }
+
   // ─── STATE ────────────────────────────────────────────
   let allResults  = [];   // all fetched books
   let activeSource = "all";
@@ -599,10 +641,10 @@
   }
 
   async function saveToLoans(book) {
-    // Save to backend loans table so it appears on profile
+    // Try real backend — silent fail for demo
     try {
       const dueDate = new Date();
-      dueDate.setDate(dueDate.getDate() + 30); // 30-day access
+      dueDate.setDate(dueDate.getDate() + 30);
       await fetch(`${API_BASE}/loans`, {
         method: "POST",
         headers: { "Content-Type":"application/json", "Authorization":"Bearer "+token },
@@ -616,19 +658,6 @@
           due_date:    dueDate.toISOString()
         })
       });
-    } catch { /* silent — localStorage still saved */ }
-
-    // Also save reading progress to Supabase
-    try {
-      await sb.from("reading_progress").upsert({
-        user_id:    userId,
-        book_title: book.title,
-        book_author: book.author,
-        cover_url:  book.cover || null,
-        source_url: book.viewLink || "",
-        pdf_url:    book.pdfLink || null,
-        status:     "want_to_read"
-      }, { onConflict: "user_id,book_title" });
     } catch { /* silent */ }
   }
 
@@ -665,6 +694,7 @@
     book.status = status;
     localStorage.setItem(`rl_${userId}`, JSON.stringify(readingList));
     updateStats();
+    if (status === 'finished') awardPoints(20, 'finish_book', book.title);
     // Sync to Supabase
     sb.from("reading_progress").update({ status }).eq("user_id", userId).eq("book_title", book.title).catch(()=>{});
   }
@@ -690,19 +720,24 @@
   // ─── LOAD LOANS ───────────────────────────────────────
   async function loadLoans() {
     const tbody = document.getElementById("loansTableBody");
+
+    // Always load simulated loans from localStorage
+    const simLoans = JSON.parse(localStorage.getItem(`sim_loans_${userId}`) || "[]");
+
+    let realLoans = [];
     try {
-      const res  = await fetch(`${API_BASE}/loans/user`, {
-        headers: { "Authorization":"Bearer "+token }
-      });
-      if (!res.ok) throw new Error();
-      const loans = await res.json();
-      document.getElementById("statLoans").textContent = loans.filter(l=>l.status==="active").length;
-      renderLoansTable(loans);
-      renderHistory(loans);
-      loadNotifications(loans);
-    } catch {
-      tbody.innerHTML = `<tr class="empty-row"><td colspan="6">Could not load loans.</td></tr>`;
-    }
+      const res = await fetch(`${API_BASE}/loans/user`, { headers: { "Authorization":"Bearer "+token } });
+      if (res.ok) realLoans = await res.json();
+    } catch { /* silent — use sim only */ }
+
+    // Merge: real loans first, then sim loans (avoid duplicates by title)
+    const realTitles = new Set(realLoans.map(l => l.book_title));
+    const merged = [...realLoans, ...simLoans.filter(l => !realTitles.has(l.book_title))];
+
+    document.getElementById("statLoans").textContent = merged.filter(l=>l.status==="active").length;
+    renderLoansTable(merged);
+    renderHistory(merged);
+    loadNotifications(merged);
   }
 
   function renderLoansTable(loans) {
@@ -762,6 +797,16 @@
   function esc(s)    { return (s||"").replace(/'/g,"\\'").replace(/"/g,"&quot;"); }
   function escHtml(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
   </script>
+
+  <!-- POINTS TOAST -->
+  <div class="pts-toast" id="ptsToast">
+    <div class="pts-toast-icon">⭐</div>
+    <div class="pts-toast-body">
+      <div class="pts-toast-title" id="ptsToastTitle">Points Earned!</div>
+      <div class="pts-toast-msg"  id="ptsToastMsg">Keep it up!</div>
+    </div>
+    <div class="pts-toast-pts" id="ptsToastPts">+0</div>
+  </div>
 
 </body>
 </html>
