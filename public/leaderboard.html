@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leaderboard — UCC Knowledge Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="auth.js"></script>
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --bg:hsl(220,40%,7%);--fg:hsl(45,30%,92%);--primary:hsl(43,55%,54%);
+      --primary-fg:hsl(220,40%,7%);--card:hsl(220,35%,11%);--muted:hsl(220,15%,55%);
+      --border:hsl(220,25%,18%);--secondary:hsl(220,30%,16%);--green:hsl(152,60%,52%);
+      --red:hsl(0,70%,60%);--blue:hsl(210,80%,65%);--gold:hsl(43,90%,60%);
+      --silver:hsl(220,15%,70%);--bronze:hsl(25,70%,55%);
+      --glow-gold:0 0 40px hsla(43,55%,54%,0.25);
+      --font-display:'Space Grotesk',sans-serif;--font-body:'Inter',sans-serif;
+    }
+    body{background:var(--bg);color:var(--fg);font-family:var(--font-body);line-height:1.6;min-height:100vh;display:flex;flex-direction:column;}
+    a{text-decoration:none;color:inherit;}
+    h1,h2,h3,h4{font-family:var(--font-display);}
+
+    .site-header{position:sticky;top:0;z-index:50;background:hsla(220,35%,11%,0.7);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+    .header-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:12px 24px;gap:16px;}
+    .logo-wrap{display:flex;align-items:center;gap:12px;}
+    .ucc-logo{height:40px;width:40px;border-radius:50%;}
+    .title-wrap h1{font-size:1.125rem;font-weight:700;}
+    .title-wrap .subtitle{font-size:0.75rem;color:var(--muted);}
+    .main-nav{display:flex;gap:8px;align-items:center;}
+    .main-nav a{font-size:0.875rem;color:var(--muted);padding:7px 14px;border-radius:8px;transition:all .2s;}
+    .main-nav a:hover{color:var(--fg);background:var(--secondary);}
+    .nav-logout{font-size:0.875rem;color:hsl(0,70%,70%);padding:7px 14px;border-radius:8px;border:1px solid hsla(0,70%,60%,0.25);background:hsla(0,70%,60%,0.08);cursor:pointer;transition:all .2s;font-family:var(--font-body);}
+    .nav-logout:hover{background:hsla(0,70%,60%,0.18);color:#fff;}
+
+    main{flex:1;max-width:1100px;width:100%;margin:0 auto;padding:48px 24px 80px;display:flex;flex-direction:column;gap:28px;}
+
+    /* PAGE HERO */
+    .page-hero{text-align:center;padding-bottom:8px;animation:fadeUp .4s ease both;}
+    .page-hero h2{font-size:2rem;font-weight:700;margin-bottom:8px;}
+    .page-hero p{color:var(--muted);font-size:0.9rem;}
+
+    /* TOP 3 PODIUM */
+    .podium{display:flex;align-items:flex-end;justify-content:center;gap:16px;margin:8px 0 28px;animation:fadeUp .4s .05s ease both;}
+    .podium-slot{display:flex;flex-direction:column;align-items:center;gap:8px;}
+    .podium-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px 24px;text-align:center;min-width:160px;transition:all .3s;}
+    .podium-card.first{border-color:hsla(43,90%,60%,0.5);box-shadow:0 0 30px hsla(43,90%,60%,0.15);transform:translateY(-16px);}
+    .podium-card.second{border-color:hsla(220,15%,70%,0.4);}
+    .podium-card.third{border-color:hsla(25,70%,55%,0.4);}
+    .podium-rank{font-size:1.8rem;margin-bottom:4px;}
+    .podium-avatar{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:1.2rem;font-weight:700;margin:0 auto 8px;}
+    .podium-card.first .podium-avatar{background:hsla(43,90%,60%,0.15);border:2px solid var(--gold);color:var(--gold);}
+    .podium-card.second .podium-avatar{background:hsla(220,15%,70%,0.1);border:2px solid var(--silver);color:var(--silver);}
+    .podium-card.third .podium-avatar{background:hsla(25,70%,55%,0.1);border:2px solid var(--bronze);color:var(--bronze);}
+    .podium-name{font-family:var(--font-display);font-size:0.9rem;font-weight:700;margin-bottom:2px;}
+    .podium-pts{font-size:0.78rem;color:var(--muted);}
+    .podium-badge{font-size:0.7rem;padding:2px 8px;border-radius:10px;font-family:var(--font-display);font-weight:700;margin-top:4px;display:inline-block;}
+    .podium-card.first .podium-badge{background:hsla(43,90%,60%,0.15);color:var(--gold);}
+    .podium-card.second .podium-badge{background:hsla(220,15%,70%,0.1);color:var(--silver);}
+    .podium-card.third .podium-badge{background:hsla(25,70%,55%,0.1);color:var(--bronze);}
+
+    /* TWO COL LAYOUT */
+    .two-col{display:grid;grid-template-columns:1fr 340px;gap:24px;animation:fadeUp .4s .1s ease both;}
+
+    /* LEADERBOARD TABLE */
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px 28px;}
+    .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+    .card-header h3{font-size:1rem;font-weight:700;}
+    .lb-tabs{display:flex;gap:6px;}
+    .lb-tab{padding:5px 14px;border-radius:8px;border:1px solid var(--border);background:var(--secondary);color:var(--muted);font-size:0.78rem;font-weight:600;cursor:pointer;transition:all .2s;font-family:var(--font-display);}
+    .lb-tab.active{border-color:var(--primary);color:var(--primary);background:hsla(43,55%,54%,0.1);}
+
+    .lb-row{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:10px;transition:background .2s;}
+    .lb-row:hover{background:var(--secondary);}
+    .lb-row.me{background:hsla(43,55%,54%,0.07);border:1px solid hsla(43,55%,54%,0.2);border-radius:10px;}
+    .lb-rank{font-family:var(--font-display);font-size:0.85rem;font-weight:700;width:28px;text-align:center;flex-shrink:0;}
+    .lb-rank.gold{color:var(--gold);}
+    .lb-rank.silver{color:var(--silver);}
+    .lb-rank.bronze{color:var(--bronze);}
+    .lb-avatar{width:36px;height:36px;border-radius:50%;background:var(--secondary);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:0.8rem;font-weight:700;color:var(--primary);flex-shrink:0;}
+    .lb-info{flex:1;min-width:0;}
+    .lb-name{font-size:0.875rem;font-weight:600;}
+    .lb-sub{font-size:0.72rem;color:var(--muted);}
+    .lb-pts{font-family:var(--font-display);font-size:0.9rem;font-weight:700;color:var(--primary);flex-shrink:0;}
+    .lb-level{font-size:0.68rem;padding:2px 8px;border-radius:8px;font-family:var(--font-display);font-weight:700;flex-shrink:0;}
+
+    /* RIGHT PANEL */
+    .right-panel{display:flex;flex-direction:column;gap:20px;}
+
+    /* MY STATS */
+    .my-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px;}
+    .ms-card{background:var(--secondary);border:1px solid var(--border);border-radius:10px;padding:12px 14px;text-align:center;}
+    .ms-num{font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:var(--primary);}
+    .ms-lbl{font-size:0.7rem;color:var(--muted);margin-top:2px;}
+
+    /* LEVEL BAR */
+    .level-wrap{margin-top:4px;}
+    .level-label{display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:6px;}
+    .level-label span:first-child{font-family:var(--font-display);font-weight:700;}
+    .level-label span:last-child{color:var(--muted);}
+    .level-bar{height:8px;background:var(--secondary);border-radius:4px;overflow:hidden;}
+    .level-fill{height:100%;background:linear-gradient(90deg,var(--primary),hsl(43,80%,65%));border-radius:4px;transition:width .8s ease;}
+
+    /* BADGES */
+    .badges-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;}
+    .badge-item{display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--secondary);border:1px solid var(--border);border-radius:10px;padding:10px 12px;min-width:72px;text-align:center;transition:all .2s;}
+    .badge-item.earned{border-color:hsla(43,55%,54%,0.4);background:hsla(43,55%,54%,0.08);}
+    .badge-item.locked{opacity:.4;}
+    .badge-icon{font-size:1.4rem;}
+    .badge-name{font-size:0.65rem;font-family:var(--font-display);font-weight:700;color:var(--muted);}
+    .badge-item.earned .badge-name{color:var(--primary);}
+
+    /* WEEKLY OBJECTIVES */
+    .obj-list{display:flex;flex-direction:column;gap:10px;margin-top:4px;}
+    .obj-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--secondary);border:1px solid var(--border);border-radius:10px;transition:all .2s;}
+    .obj-item.done{border-color:hsla(152,60%,52%,0.3);background:hsla(152,60%,52%,0.06);}
+    .obj-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.75rem;}
+    .obj-item.done .obj-check{background:var(--green);border-color:var(--green);color:#fff;}
+    .obj-text{flex:1;}
+    .obj-title{font-size:0.85rem;font-weight:600;}
+    .obj-sub{font-size:0.72rem;color:var(--muted);}
+    .obj-pts{font-size:0.72rem;font-family:var(--font-display);font-weight:700;color:var(--primary);}
+
+    /* FOOTER */
+    .site-footer{border-top:1px solid var(--border);padding:28px 24px;margin-top:auto;}
+    .footer-inner{max-width:1280px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+    .site-footer p{font-family:var(--font-display);font-size:0.875rem;color:var(--muted);line-height:1.7;}
+    .site-footer strong{color:var(--fg);}
+    .site-footer a{color:var(--primary);}
+    .site-footer small{font-size:0.75rem;color:var(--muted);}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+    @media(max-width:900px){.two-col{grid-template-columns:1fr;}.podium{gap:8px;}.podium-card{min-width:120px;padding:14px 16px;}}
+    @media(max-width:640px){main{padding:28px 16px 60px;}.podium-card.first{transform:none;}}
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo-wrap">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEC31GlH03Kf6NAmmiIHqInFd0q1bQz2gmDg&s" alt="UCC logo" class="ucc-logo">
+        <div class="title-wrap">
+          <h1>UCC Knowledge Hub</h1>
+          <p class="subtitle">Empowering Digital Learning</p>
+        </div>
+      </div>
+      <nav class="main-nav">
+        <a href="ucc_knowledge_hub.html">Home</a>
+        <a href="Loaners.html">Library</a>
+        <a href="forum.html">Forum</a>
+        <a href="study_rooms.html">Study Rooms</a>
+        <a href="profile.html">Profile</a>
+        <button class="nav-logout" onclick="logout()">Log Out</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="page-hero">
+      <h2>🏆 Leaderboard</h2>
+      <p>Top readers and most active students this week. Keep earning points to climb the ranks!</p>
+    </div>
+
+    <!-- TOP 3 PODIUM -->
+    <div class="podium" id="podium">
+      <div class="podium-slot">
+        <div class="podium-card second">
+          <div class="podium-rank">🥈</div>
+          <div class="podium-avatar" id="p2avatar">—</div>
+          <div class="podium-name" id="p2name">—</div>
+          <div class="podium-pts" id="p2pts">0 pts</div>
+          <div class="podium-badge">Silver</div>
+        </div>
+      </div>
+      <div class="podium-slot">
+        <div class="podium-card first">
+          <div class="podium-rank">🥇</div>
+          <div class="podium-avatar" id="p1avatar">—</div>
+          <div class="podium-name" id="p1name">—</div>
+          <div class="podium-pts" id="p1pts">0 pts</div>
+          <div class="podium-badge">👑 Top Reader</div>
+        </div>
+      </div>
+      <div class="podium-slot">
+        <div class="podium-card third">
+          <div class="podium-rank">🥉</div>
+          <div class="podium-avatar" id="p3avatar">—</div>
+          <div class="podium-name" id="p3name">—</div>
+          <div class="podium-pts" id="p3pts">0 pts</div>
+          <div class="podium-badge">Bronze</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+
+      <!-- FULL LEADERBOARD -->
+      <div class="card">
+        <div class="card-header">
+          <h3>📊 All Rankings</h3>
+          <div class="lb-tabs">
+            <button class="lb-tab active" onclick="switchTab('all',this)">All Time</button>
+            <button class="lb-tab" onclick="switchTab('week',this)">This Week</button>
+          </div>
+        </div>
+        <div id="lbList"><p style="color:var(--muted);font-size:.875rem;">Loading…</p></div>
+      </div>
+
+      <!-- RIGHT PANEL -->
+      <div class="right-panel">
+
+        <!-- MY STATS -->
+        <div class="card">
+          <div class="card-header"><h3>⭐ My Progress</h3></div>
+          <div class="my-stats">
+            <div class="ms-card"><div class="ms-num" id="myPoints">0</div><div class="ms-lbl">Total Points</div></div>
+            <div class="ms-card"><div class="ms-num" id="myRank">#—</div><div class="ms-lbl">My Rank</div></div>
+            <div class="ms-card"><div class="ms-num" id="myFinished">0</div><div class="ms-lbl">Books Finished</div></div>
+            <div class="ms-card"><div class="ms-num" id="myPosts">0</div><div class="ms-lbl">Forum Posts</div></div>
+          </div>
+          <div class="level-wrap">
+            <div class="level-label">
+              <span id="levelName">Beginner</span>
+              <span id="levelProgress">0 / 50 pts</span>
+            </div>
+            <div class="level-bar"><div class="level-fill" id="levelFill" style="width:0%"></div></div>
+          </div>
+        </div>
+
+        <!-- BADGES -->
+        <div class="card">
+          <div class="card-header"><h3>🎖 Badges</h3></div>
+          <div class="badges-grid" id="badgesGrid">
+            <div class="badge-item locked"><div class="badge-icon">📚</div><div class="badge-name">Bookworm</div></div>
+            <div class="badge-item locked"><div class="badge-icon">🏆</div><div class="badge-name">Top Reader</div></div>
+            <div class="badge-item locked"><div class="badge-icon">💬</div><div class="badge-name">Contributor</div></div>
+            <div class="badge-item locked"><div class="badge-icon">⚡</div><div class="badge-name">On Fire</div></div>
+            <div class="badge-item locked"><div class="badge-icon">🎓</div><div class="badge-name">Scholar</div></div>
+            <div class="badge-item locked"><div class="badge-icon">👑</div><div class="badge-name">Legend</div></div>
+          </div>
+        </div>
+
+        <!-- WEEKLY OBJECTIVES -->
+        <div class="card">
+          <div class="card-header">
+            <h3>🎯 Weekly Objectives</h3>
+            <span style="font-size:0.72rem;color:var(--muted);" id="weekLabel"></span>
+          </div>
+          <div class="obj-list" id="objList">
+            <div class="obj-item" id="obj-forum">
+              <div class="obj-check">✓</div>
+              <div class="obj-text">
+                <div class="obj-title">Post in the Forum</div>
+                <div class="obj-sub">Start or reply to a discussion</div>
+              </div>
+              <div class="obj-pts">+15 pts</div>
+            </div>
+            <div class="obj-item" id="obj-borrow">
+              <div class="obj-check">✓</div>
+              <div class="obj-text">
+                <div class="obj-title">Borrow a Book</div>
+                <div class="obj-sub">Add a resource to your library</div>
+              </div>
+              <div class="obj-pts">+10 pts</div>
+            </div>
+            <div class="obj-item" id="obj-finish">
+              <div class="obj-check">✓</div>
+              <div class="obj-text">
+                <div class="obj-title">Finish a Book</div>
+                <div class="obj-sub">Mark a book as Finished ✓</div>
+              </div>
+              <div class="obj-pts">+25 pts</div>
+            </div>
+            <div class="obj-item" id="obj-login">
+              <div class="obj-check">✓</div>
+              <div class="obj-text">
+                <div class="obj-title">Login This Week</div>
+                <div class="obj-sub">Stay active on the platform</div>
+              </div>
+              <div class="obj-pts">+5 pts</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>University of the Commonwealth Caribbean</strong><br>
+        17 Worthington Avenue, Kingston 5, Jamaica W.I. &nbsp;·&nbsp;
+        <a href="https://www.ucc.edu.jm">www.ucc.edu.jm</a></p>
+      <small>© <span id="year"></span> UCC — All Rights Reserved</small>
+    </div>
+  </footer>
+
+  <script>
+  const SUPABASE_URL  = "https://bqgtuxhfqfmxvryfljya.supabase.co";
+  const SUPABASE_ANON = "sb_publishable_y71RZ0UCDxkcmFQQHGEf-Q_davD0hbm";
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  const token    = getToken();
+  const _user    = getCurrentUser();
+  const userId   = _user?.userId   || null;
+  const fullname = _user?.fullname || "Student";
+
+  // ── LEVELS ───────────────────────────────────────────
+  const LEVELS = [
+    { name:"Beginner",  min:0,   max:50,  color:"var(--muted)" },
+    { name:"Reader",    min:50,  max:150, color:"var(--blue)" },
+    { name:"Scholar",   min:150, max:300, color:"var(--green)" },
+    { name:"Expert",    min:300, max:500, color:"var(--primary)" },
+    { name:"Master",    min:500, max:800, color:"hsl(270,60%,65%)" },
+    { name:"Legend",    min:800, max:999999, color:"var(--gold)" }
+  ];
+
+  function getLevel(pts) {
+    return LEVELS.find(l => pts >= l.min && pts < l.max) || LEVELS[0];
+  }
+
+  // ── WEEK HELPERS ─────────────────────────────────────
+  function getWeekStart() {
+    const d = new Date();
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+    d.setDate(diff);
+    return d.toISOString().split("T")[0];
+  }
+
+  // ── LOAD LEADERBOARD ─────────────────────────────────
+
+  loadLeaderboard();
+// Auto-refresh every 30 seconds
+setInterval(loadLeaderboard, 30000);
+
+  let allPlayers = [];
+  let activeTab  = "all";
+
+  async function loadLeaderboard() {
+    const { data, error } = await sb.from("points").select("*").order("total", { ascending: false });
+    if (error || !data) { document.getElementById("lbList").innerHTML = `<p style="color:var(--muted);font-size:.875rem;">Could not load leaderboard.</p>`; return; }
+    allPlayers = data;
+    renderLeaderboard(data);
+    renderPodium(data);
+    loadMyStats(data);
+  }
+
+  function renderPodium(players) {
+    const top3 = players.slice(0, 3);
+    const slots = [
+      { id:"p1", player: top3[0] },
+      { id:"p2", player: top3[1] },
+      { id:"p3", player: top3[2] }
+    ];
+    slots.forEach(({ id, player }) => {
+      if (!player) return;
+      const initials = (player.fullname||"?").split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase();
+      document.getElementById(`${id}avatar`).textContent = initials;
+      document.getElementById(`${id}name`).textContent   = player.fullname;
+      document.getElementById(`${id}pts`).textContent    = `${player.total} pts`;
+    });
+  }
+
+  function renderLeaderboard(players) {
+    const list = document.getElementById("lbList");
+    if (!players.length) { list.innerHTML = `<p style="color:var(--muted);font-size:.875rem;">No rankings yet. Start reading to appear here!</p>`; return; }
+    const rankColors = ["gold","silver","bronze"];
+    list.innerHTML = players.map((p, i) => {
+      const isMe    = String(p.user_id) === String(userId);
+      const initials= (p.fullname||"?").split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase();
+      const level   = getLevel(p.total);
+      return `<div class="lb-row ${isMe?"me":""}">
+        <div class="lb-rank ${rankColors[i]||""}">${i < 3 ? ["🥇","🥈","🥉"][i] : `#${i+1}`}</div>
+        <div class="lb-avatar">${initials}</div>
+        <div class="lb-info">
+          <div class="lb-name">${p.fullname}${isMe?" (You)":""}</div>
+          <div class="lb-sub">${p.books_read||0} books read</div>
+        </div>
+        <div class="lb-level" style="background:hsla(43,55%,54%,0.1);color:${level.color}">${level.name}</div>
+        <div class="lb-pts">${p.total} pts</div>
+      </div>`;
+    }).join("");
+  }
+
+  function loadMyStats(players) {
+    const me    = players.find(p => String(p.user_id) === String(userId));
+    const rank  = players.findIndex(p => String(p.user_id) === String(userId)) + 1;
+    const pts   = me?.total || 0;
+    const level = getLevel(pts);
+    const next  = LEVELS[LEVELS.indexOf(level) + 1];
+    const pct   = next ? Math.round(((pts - level.min) / (next.min - level.min)) * 100) : 100;
+
+    document.getElementById("myPoints").textContent  = pts;
+    document.getElementById("myRank").textContent    = rank > 0 ? `#${rank}` : "#—";
+    document.getElementById("myFinished").textContent = me?.books_read || 0;
+    document.getElementById("levelName").textContent  = level.name;
+    document.getElementById("levelProgress").textContent = next ? `${pts} / ${next.min} pts` : "MAX";
+    document.getElementById("levelFill").style.width  = `${Math.min(pct, 100)}%`;
+
+    // Badges
+    updateBadges(pts, me?.books_read||0);
+
+    // Load forum post count
+    loadMyForumCount();
+
+    // Weekly objectives
+    loadWeeklyObjectives(me);
+  }
+
+  async function loadMyForumCount() {
+    try {
+      const res  = await fetch(`/api/threads`);
+      const data = await res.json();
+      const mine = data.filter(t => String(t.user_id) === String(userId)).length;
+      document.getElementById("myPosts").textContent = mine;
+    } catch {}
+  }
+
+  function updateBadges(pts, booksRead) {
+    const grid  = document.getElementById("badgesGrid");
+    const earned = [];
+    if (booksRead >= 1)  earned.push("Bookworm");
+    if (pts >= 500)      earned.push("Top Reader");
+    if (pts >= 50)       earned.push("Contributor");
+    if (pts >= 200)      earned.push("On Fire");
+    if (pts >= 300)      earned.push("Scholar");
+    if (pts >= 800)      earned.push("Legend");
+
+    grid.querySelectorAll(".badge-item").forEach(el => {
+      const name = el.querySelector(".badge-name").textContent;
+      if (earned.includes(name)) {
+        el.classList.remove("locked");
+        el.classList.add("earned");
+      }
+    });
+  }
+
+  function loadWeeklyObjectives(me) {
+    const weekStart = getWeekStart();
+    const d = new Date(weekStart);
+    const end = new Date(d); end.setDate(d.getDate() + 6);
+    document.getElementById("weekLabel").textContent =
+      `${d.toLocaleDateString("en-JM",{month:"short",day:"numeric"})} – ${end.toLocaleDateString("en-JM",{month:"short",day:"numeric"})}`;
+
+    // Load objectives from Supabase
+    sb.from("weekly_objectives")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("week_start", weekStart)
+      .single()
+      .then(({ data }) => {
+        if (data) {
+          if (data.obj_forum)  markObj("obj-forum");
+          if (data.obj_borrow) markObj("obj-borrow");
+          if (data.obj_finish) markObj("obj-finish");
+        }
+      });
+
+    // Login objective — always mark as done since they're logged in
+    markObj("obj-login");
+    saveObjective(weekStart, "obj_login");
+  }
+
+  function markObj(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.add("done");
+  }
+
+  async function saveObjective(weekStart, field) {
+    await sb.from("weekly_objectives").upsert({
+      user_id: userId,
+      week_start: weekStart,
+      [field]: true
+    }, { onConflict: "user_id,week_start" }).catch(()=>{});
+  }
+
+  function switchTab(tab, btn) {
+    activeTab = tab;
+    document.querySelectorAll(".lb-tab").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    if (tab === "week") {
+      const weekStart = new Date(getWeekStart());
+      // Filter by this week using point_events (approximate with updated_at)
+      const weekPlayers = allPlayers.filter(p => new Date(p.updated_at) >= weekStart);
+      renderLeaderboard(weekPlayers.length ? weekPlayers : allPlayers);
+    } else {
+      renderLeaderboard(allPlayers);
+    }
+  }
+
+  // ── POINTS HELPERS (called from other pages) ─────────
+  async function awardPoints(pts, action, note) {
+    if (!userId) return;
+    try {
+      // Upsert points row
+      const { data: existing } = await sb.from("points").select("total,books_read").eq("user_id", userId).single();
+      const current = existing?.total || 0;
+      const booksRead = existing?.books_read || 0;
+      const newBooks  = action === "finish_book" ? booksRead + 1 : booksRead;
+
+      await sb.from("points").upsert({
+        user_id:    userId,
+        fullname:   fullname,
+        total:      current + pts,
+        books_read: newBooks,
+        updated_at: new Date().toISOString()
+      }, { onConflict: "user_id" });
+
+      // Log event
+      await sb.from("point_events").insert({
+        user_id: userId,
+        action,
+        points:  pts,
+        note:    note || action
+      });
+
+      // Update weekly objective
+      const weekStart = getWeekStart();
+      if (action === "forum_post" || action === "forum_reply") saveObjective(weekStart, "obj_forum");
+      if (action === "borrow_book")  saveObjective(weekStart, "obj_borrow");
+      if (action === "finish_book")  saveObjective(weekStart, "obj_finish");
+
+    } catch (e) { console.warn("Points error:", e); }
+  }
+
+  // Expose globally so other pages can call it
+  window.awardPoints = awardPoints;
+
+  // ── INIT ─────────────────────────────────────────────
+  loadLeaderboard();
+  </script>
+
+</body>
+</html>

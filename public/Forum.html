@@ -7,7 +7,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="auth.js"></script>
 
   <style>
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
@@ -180,15 +182,20 @@
 
     @keyframes fadeUp  { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
     @keyframes scaleIn { from { opacity:0; transform:scale(.94); }       to { opacity:1; transform:scale(1); } }
+
+    /* POINTS TOAST */
+    .pts-toast { position:fixed; bottom:28px; right:28px; z-index:300; background:var(--card); border:1px solid hsla(43,55%,54%,0.5); border-radius:14px; padding:14px 20px; display:flex; align-items:center; gap:12px; box-shadow:0 8px 32px rgba(0,0,0,0.4),var(--glow-gold); transform:translateY(80px); opacity:0; transition:all .4s cubic-bezier(.175,.885,.32,1.275); pointer-events:none; min-width:220px; }
+    .pts-toast.show { transform:translateY(0); opacity:1; pointer-events:auto; }
+    .pts-toast-icon { font-size:1.6rem; flex-shrink:0; }
+    .pts-toast-body { flex:1; }
+    .pts-toast-title { font-family:var(--font-display); font-size:0.82rem; font-weight:700; color:var(--primary); margin-bottom:2px; }
+    .pts-toast-msg   { font-size:0.78rem; color:var(--muted); }
+    .pts-toast-pts   { font-family:var(--font-display); font-size:1.1rem; font-weight:700; color:var(--primary); flex-shrink:0; }
     @media (max-width:900px) { .page-wrap { grid-template-columns:1fr; } .sidebar { position:static; } }
     @media (max-width:640px) { .page-wrap { padding:24px 16px 60px; } .hero-stats { display:none; } .type-grid { grid-template-columns:repeat(2,1fr); } }
   </style>
 </head>
 <body>
-
-  <script>
-    if (!localStorage.getItem("token")) window.location.href = "ucc_landing_page.html";
-  </script>
 
   <header class="site-header">
     <div class="header-inner">
@@ -324,36 +331,78 @@
     </div>
   </div>
 
+
   <script>
   // ── CONFIG ──────────────────────────────────────────
-  const SUPABASE_URL  = "https://YOUR_PROJECT_ID.supabase.co"; // ← replace
-  const SUPABASE_ANON = "YOUR_ANON_KEY";                       // ← replace
+  const SUPABASE_URL  = "https://bqgtuxhfqfmxvryfljya.supabase.co"; // ← replace
+  const SUPABASE_ANON = "sb_publishable_y71RZ0UCDxkcmFQQHGEf-Q_davD0hbm";                       // ← replace
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-  const API_BASE = "http://localhost:3000/api";
+  const API_BASE = "/api";
 
   document.getElementById("year").textContent = new Date().getFullYear();
+  
 
   // ── AUTH ────────────────────────────────────────────
-  const token = localStorage.getItem("token");
-  function parseJwt(t) {
-    try { return JSON.parse(atob(t.split(".")[1].replace(/-/g,"+").replace(/_/g,"/"))); }
-    catch { return null; }
-  }
-  const jwt      = parseJwt(token);
-  const userId   = jwt?.userId   ? String(jwt.userId) : null;
-  const fullname = jwt?.fullname || "Anonymous";
+  const token    = getToken();
+  const _user    = getCurrentUser();
+  const userId   = _user?.userId   || null;
+  const fullname = _user?.fullname || "Anonymous";
 
-  document.getElementById("logoutBtn").addEventListener("click", () => {
-    localStorage.removeItem("token");
-    window.location.href = "ucc_landing_page.html";
-  });
+  document.getElementById("logoutBtn").addEventListener("click", () => logout());
+
+  // ── POINTS ──────────────────────────────────────────
+  const _sb2 = supabase.createClient(
+    "https://bqgtuxhfqfmxvryfljya.supabase.co",
+    "sb_publishable_y71RZ0UCDxkcmFQQHGEf-Q_davD0hbm"
+  );
+
+  async function awardPoints(pts, action, note) {
+    if (!userId) return;
+    try {
+      const { data: existing } = await _sb2.from("points").select("total,books_read").eq("user_id", userId).single();
+      const current = existing?.total || 0;
+      const newTotal = current + pts;
+      await _sb2.from("points").upsert({ user_id: userId, fullname, total: newTotal, books_read: existing?.books_read||0, updated_at: new Date().toISOString() }, { onConflict: "user_id" });
+      await _sb2.from("point_events").insert({ user_id: userId, action, points: pts, note: note||action });
+      const weekStart = (() => { const d=new Date(); const day=d.getDay(); const diff=d.getDate()-day+(day===0?-6:1); d.setDate(diff); return d.toISOString().split("T")[0]; })();
+      await _sb2.from("weekly_objectives").upsert({ user_id: userId, week_start: weekStart, obj_forum: true }, { onConflict: "user_id,week_start" });
+
+      // Show points toast
+      showPtsToast(pts, action, newTotal);
+    } catch(e) { console.warn("Points:", e); }
+  }
+
+  function showPtsToast(pts, action, newTotal) {
+    const messages = {
+      forum_post:  { title:"Discussion Posted! 💬", msg:`You now have ${newTotal} total points` },
+      forum_reply: { title:"Reply Posted! 💬",      msg:`You now have ${newTotal} total points` }
+    };
+    const m = messages[action] || { title:"Points Earned!", msg:`You now have ${newTotal} total points` };
+    document.getElementById("ptsToastTitle").textContent = m.title;
+    document.getElementById("ptsToastMsg").textContent   = m.msg;
+    document.getElementById("ptsToastPts").textContent   = `+${pts} pts`;
+
+    const toast = document.getElementById("ptsToast");
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 3500);
+  }
 
   // ── STATE ───────────────────────────────────────────
   let allThreads   = [];
   let activeCat    = "all";
   let selectedType = "discussion";
   let editingId    = null;  // null = new post, number = editing existing
-  let likedIds     = JSON.parse(localStorage.getItem("liked_threads") || "[]");
+  let likedIds = [];
+
+  // Load which threads this user has already liked from backend
+  async function loadLikedIds() {
+    try {
+      const res = await fetch(`${API_BASE}/likes`, {
+        headers: { "Authorization": "Bearer " + token }
+      });
+      if (res.ok) likedIds = (await res.json()).map(String);
+    } catch { likedIds = []; }
+  }
 
   // ── LOAD THREADS — uses Express backend only ─────────
   async function loadThreads() {
@@ -486,6 +535,7 @@
       if (!res.ok) { alert("Failed to post reply: " + (data.error || "Unknown error")); return; }
       input.value = "";
       await loadReplies(threadId);
+      awardPoints(5, 'forum_reply', 'Posted a reply');
     } catch { alert("Failed to post reply: Could not reach server."); }
   }
 
@@ -520,15 +570,21 @@
   // ── LIKE ────────────────────────────────────────────
   async function likeThread(id, btn) {
     if (likedIds.includes(String(id))) return;
-    const thread = allThreads.find(t=>String(t.id)===String(id));
-    if (!thread) return;
-    const newLikes = (thread.likes||0) + 1;
-    await sb.from("threads").update({ likes: newLikes }).eq("id", id);
-    thread.likes = newLikes;
-    likedIds.push(String(id));
-    localStorage.setItem("liked_threads", JSON.stringify(likedIds));
-    btn.classList.add("liked");
-    const likeBtn = document.querySelector(`#thread-${id} .like-count`); if(likeBtn) likeBtn.textContent = newLikes;
+    try {
+      const res = await fetch(`${API_BASE}/threads/${id}/like`, {
+        method: "POST",
+        headers: { "Authorization": "Bearer " + token }
+      });
+      const data = await res.json();
+      if (res.status === 409) return; // already liked
+      if (!res.ok) return;
+      likedIds.push(String(id));
+      const thread = allThreads.find(t=>String(t.id)===String(id));
+      if (thread) thread.likes = data.likes;
+      btn.classList.add("liked");
+      const likeBtn = document.querySelector(`#thread-${id} .like-count`);
+      if (likeBtn) likeBtn.textContent = data.likes;
+    } catch { /* silent fail */ }
   }
 
   // ── DELETE THREAD — goes through backend to verify ownership ──
@@ -636,6 +692,7 @@
         }
       }
       statusEl.style.color="var(--green)"; statusEl.textContent="✓ Discussion posted!";
+      awardPoints(10, 'forum_post', 'Posted a discussion');
     }
 
     btn.disabled=false;
@@ -700,6 +757,16 @@
   // ── INIT ────────────────────────────────────────────
   loadThreads();
   </script>
+
+  <!-- POINTS TOAST -->
+  <div class="pts-toast" id="ptsToast">
+    <div class="pts-toast-icon">⭐</div>
+    <div class="pts-toast-body">
+      <div class="pts-toast-title" id="ptsToastTitle">Points Earned!</div>
+      <div class="pts-toast-msg"  id="ptsToastMsg">Keep it up!</div>
+    </div>
+    <div class="pts-toast-pts" id="ptsToastPts">+0</div>
+  </div>
 
 </body>
 </html>

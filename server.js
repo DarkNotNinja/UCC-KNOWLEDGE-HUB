@@ -119,6 +119,24 @@ const pool = new Pool({
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
+    await pool.query(`
+  CREATE TABLE IF NOT EXISTS loans (
+    id SERIAL PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    book_title TEXT,
+    book_author TEXT,
+    format TEXT,
+    status TEXT DEFAULT 'active',
+    source_url TEXT,
+    pdf_url TEXT,
+    borrowed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    due_date TIMESTAMP,
+    returned_at TIMESTAMP
+  );
+`);
+await pool.query('ALTER TABLE loans ADD COLUMN IF NOT EXISTS source_url TEXT').catch(()=>{});
+await pool.query('ALTER TABLE loans ADD COLUMN IF NOT EXISTS pdf_url TEXT').catch(()=>{});
+await pool.query('ALTER TABLE loans ADD COLUMN IF NOT EXISTS due_date TIMESTAMP').catch(()=>{});
 
     console.log("Database tables checked/created successfully!");
   } catch (err) {
@@ -624,7 +642,29 @@ io.on('connection', (socket) => {
     }
   });
 });
-
+// AI RESEARCH ASSISTANT
+app.post('/api/ai', authenticateToken, async (req, res) => {
+  const { question } = req.body;
+  if (!question) return res.status(400).json({ error: 'Question is required' });
+  try {
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: `You are an academic research assistant for the University of the Commonwealth Caribbean (UCC) Knowledge Hub. Help students with summarizing topics, generating APA 7th edition citations, explaining academic concepts, study tips, and research guidance. Keep responses clear and academic. Use plain text without markdown symbols.`
+        },
+        { role: "user", content: question }
+      ],
+      temperature: 0.5,
+      max_tokens: 600
+    });
+    res.json({ answer: completion.choices[0].message.content.trim() });
+  } catch (err) {
+    console.error('AI error:', err);
+    res.status(500).json({ error: 'AI assistant failed. Check your OpenAI API key.' });
+  }
+});
 // SERVER START
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () =>

@@ -106,7 +106,7 @@
     .assistant-left { flex:1; min-width:180px; }
     .assistant-left p { color:var(--muted); font-size:0.9rem; line-height:1.65; }
     .assistant-left p strong { color:var(--primary); }
-    .assistant-right { flex:2; min-width:260px; }
+    .assistant-right { flex:2; min-width:260px; display:flex; flex-direction:column; gap:12px; }
     .assistant-right form { display:flex; gap:10px; }
     .assistant-right input { flex:1; padding:11px 14px; background:var(--secondary); border:1px solid var(--border); border-radius:8px; outline:none; color:var(--fg); font-family:var(--font-body); font-size:0.875rem; transition:border-color .2s; }
     .assistant-right input:focus { border-color:var(--primary); }
@@ -144,9 +144,10 @@
         </div>
       </div>
       <nav class="main-nav">
-        <!--a href="Loaners.html">Library</a-->
-        <!--a href="forum.html">Forum</a-->
-        <!--a href="study_rooms.html">Study Rooms</a-->
+        <a href="Loaners.html">Library</a>
+        <a href="forum.html">Forum</a>
+        <a href="study_rooms.html">Study Rooms</a>
+        <a href="leaderboard.html">🏆 Leaderboard</a>
         <a href="profile.html">Profile</a>
         <button class="logout-btn" onclick="logout()">Log Out</button>
       </nav>
@@ -180,8 +181,8 @@
         <div class="feature-card clickable" onclick="location.href='Loaners.html'"><h4>📚 Borrowing &amp; Renewing</h4><p>View borrowed items, renew loans, check availability, place holds.</p></div>
         <div class="feature-card clickable"><h4>🔔 Notifications &amp; Alerts</h4><p>Due date reminders, new arrivals, and hold alerts.</p></div>
         <div class="feature-card clickable"><h4>📰 E-Resources Access</h4><p>Deep links to e-books, journals, and databases.</p></div>
-        <div class="feature-card clickable" onclick="location.href='Study rooms.html'"><h4>⭐ Study Rooms</h4><p>Live study rooms — study together in real time with classmates.</p></div>
-        <div class="feature-card clickable" onclick="location.href='Forum.html'"><h4>💬 User Forum</h4><p>Connect with Students and Teachers.</p></div>
+        <div class="feature-card clickable" onclick="location.href='study_rooms.html'"><h4>⭐ Study Rooms</h4><p>Live study rooms — study together in real time with classmates.</p></div>
+        <div class="feature-card clickable" onclick="location.href='forum.html'"><h4>💬 User Forum</h4><p>Connect with Students and Teachers.</p></div>
       </div>
     </section>
 
@@ -232,13 +233,21 @@
     <section class="assistant">
       <div class="assistant-wrap">
         <div class="assistant-left">
-          <p>🤖 <strong>AI Research Assistant</strong><br>Type a question to get a quick summary, citation help, or related readings.</p>
+          <p>🤖 <strong>AI Research Assistant</strong><br>
+          Ask for summaries, APA citations, study tips, or research help on any topic.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;">
+            <span onclick="setAiPrompt('Summarize the importance of digital transformation in the Caribbean')" style="font-size:0.72rem;padding:4px 10px;border-radius:12px;background:var(--secondary);border:1px solid var(--border);color:var(--muted);cursor:pointer;font-family:var(--font-display);">📝 Summarize a topic</span>
+            <span onclick="setAiPrompt('Generate an APA 7th edition citation for: ')" style="font-size:0.72rem;padding:4px 10px;border-radius:12px;background:var(--secondary);border:1px solid var(--border);color:var(--muted);cursor:pointer;font-family:var(--font-display);">📑 APA Citation</span>
+            <span onclick="setAiPrompt('Give me 5 study tips for CompTIA A+ exam')" style="font-size:0.72rem;padding:4px 10px;border-radius:12px;background:var(--secondary);border:1px solid var(--border);color:var(--muted);cursor:pointer;font-family:var(--font-display);">📚 Study Tips</span>
+            <span onclick="setAiPrompt('Explain the concept of: ')" style="font-size:0.72rem;padding:4px 10px;border-radius:12px;background:var(--secondary);border:1px solid var(--border);color:var(--muted);cursor:pointer;font-family:var(--font-display);">💡 Explain a concept</span>
+          </div>
         </div>
-        <div class="assistant-right">
-          <form onsubmit="return false;">
-            <input type="text" placeholder="e.g., 'Cite this article in APA'">
-            <button class="btn primary">Generate</button>
+        <div class="assistant-right" style="display:flex;flex-direction:column;gap:12px;">
+          <form id="aiForm" onsubmit="askAI(event)" style="display:flex;gap:10px;">
+            <input type="text" id="aiInput" placeholder="e.g., 'Cite this article in APA' or 'Summarize photosynthesis'">
+            <button class="btn primary" type="submit" id="aiBtn">Generate</button>
           </form>
+          <div id="aiResponse" style="display:none;background:var(--secondary);border:1px solid var(--border);border-radius:10px;padding:16px;font-size:0.875rem;line-height:1.7;color:var(--fg);white-space:pre-wrap;max-height:300px;overflow-y:auto;"></div>
         </div>
       </div>
     </section>
@@ -257,6 +266,48 @@
 
     if (window.location.hash === "#caribbeanArchive") {
       setTimeout(() => document.getElementById("caribbeanArchive")?.scrollIntoView({ behavior:"smooth", block:"center" }), 300);
+    }
+
+    // ── AI RESEARCH ASSISTANT ────────────────────────────
+    function setAiPrompt(text) {
+      const input = document.getElementById("aiInput");
+      input.value = text;
+      input.focus();
+      // Place cursor at end
+      input.setSelectionRange(text.length, text.length);
+    }
+
+    async function askAI(e) {
+      e.preventDefault();
+      const input    = document.getElementById("aiInput");
+      const btn      = document.getElementById("aiBtn");
+      const response = document.getElementById("aiResponse");
+      const question = input.value.trim();
+      if (!question) return;
+
+      btn.disabled    = true;
+      btn.textContent = "Thinking…";
+      response.style.display = "block";
+      response.style.color   = "var(--muted)";
+      response.textContent   = "⏳ Generating response…";
+
+      try {
+        const res  = await fetch("/api/ai", {
+          method:  "POST",
+          headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
+          body:    JSON.stringify({ question })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed");
+        response.style.color = "var(--fg)";
+        response.textContent = data.answer;
+      } catch (err) {
+        response.style.color = "var(--red)";
+        response.textContent = "⚠️ " + (err.message || "Could not reach AI. Is your server running?");
+      }
+
+      btn.disabled    = false;
+      btn.textContent = "Generate";
     }
   </script>
 
@@ -337,6 +388,49 @@
       } catch { /* keep static cards */ }
     }
     loadResources();
+  </script>
+
+  <!-- TOP READER POPUP -->
+  <div id="topReaderPopup" style="display:none;position:fixed;bottom:24px;right:24px;z-index:200;background:var(--card);border:1px solid hsla(43,55%,54%,0.4);border-radius:16px;padding:20px 24px;max-width:300px;box-shadow:0 8px 32px rgba(0,0,0,0.4);animation:slideUp .4s ease;">
+    <div style="display:flex;align-items:flex-start;gap:12px;">
+      <div style="font-size:1.8rem;flex-shrink:0;">🏆</div>
+      <div style="flex:1;">
+        <div style="font-family:var(--font-display);font-size:0.82rem;font-weight:700;color:var(--primary);margin-bottom:4px;">TOP READER THIS WEEK</div>
+        <div id="topReaderName" style="font-family:var(--font-display);font-size:1rem;font-weight:700;margin-bottom:2px;">—</div>
+        <div id="topReaderPts" style="font-size:0.78rem;color:var(--muted);"></div>
+        <a href="leaderboard.html" style="display:inline-block;margin-top:10px;font-size:0.75rem;font-family:var(--font-display);font-weight:700;color:var(--primary-fg);background:var(--primary);padding:5px 14px;border-radius:8px;text-decoration:none;">View Leaderboard →</a>
+      </div>
+      <button onclick="document.getElementById('topReaderPopup').style.display='none'" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;flex-shrink:0;">✕</button>
+    </div>
+  </div>
+
+  <style>
+    @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+  // Top Reader of the Week popup
+  (async () => {
+    // Only show once per session
+    if (sessionStorage.getItem("top_reader_shown")) return;
+    sessionStorage.setItem("top_reader_shown", "1");
+
+    try {
+      const sb = supabase.createClient(
+        "https://bqgtuxhfqfmxvryfljya.supabase.co",
+        "sb_publishable_y71RZ0UCDxkcmFQQHGEf-Q_davD0hbm"
+      );
+      const { data } = await sb.from("points").select("fullname,total").order("total", { ascending: false }).limit(1);
+      if (data && data.length && data[0].total > 0) {
+        document.getElementById("topReaderName").textContent = data[0].fullname;
+        document.getElementById("topReaderPts").textContent  = `${data[0].total} points this week`;
+        const popup = document.getElementById("topReaderPopup");
+        popup.style.display = "block";
+        setTimeout(() => { popup.style.display = "none"; }, 6000);
+      }
+    } catch {}
+  })();
   </script>
 
 </body>
