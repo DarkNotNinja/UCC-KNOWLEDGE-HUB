@@ -9,132 +9,127 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="auth.js"></script>
-
   <style>
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
     :root {
-      --bg:         hsl(220, 40%, 7%);
-      --fg:         hsl(45, 30%, 92%);
-      --primary:    hsl(43, 55%, 54%);
-      --primary-fg: hsl(220, 40%, 7%);
-      --card:       hsl(220, 35%, 11%);
-      --muted:      hsl(220, 15%, 55%);
-      --border:     hsl(220, 25%, 18%);
-      --secondary:  hsl(220, 30%, 16%);
-      --green:      hsl(152, 60%, 52%);
-      --red:        hsl(0, 70%, 60%);
-      --blue:       hsl(210, 80%, 65%);
-      --glow-gold:  0 0 40px hsla(43, 55%, 54%, 0.25);
-      --font-display: 'Space Grotesk', sans-serif;
-      --font-body:    'Inter', sans-serif;
+      --bg: hsl(220,40%,7%); --fg: hsl(45,30%,92%); --primary: hsl(43,55%,54%);
+      --primary-fg: hsl(220,40%,7%); --card: hsl(220,35%,11%); --muted: hsl(220,15%,55%);
+      --border: hsl(220,25%,18%); --secondary: hsl(220,30%,16%);
+      --green: hsl(152,60%,52%); --red: hsl(0,70%,60%); --blue: hsl(210,80%,65%);
+      --orange: hsl(30,90%,58%); --glow-gold: 0 0 40px hsla(43,55%,54%,0.25);
+      --font-display: 'Space Grotesk', sans-serif; --font-body: 'Inter', sans-serif;
     }
     body { background:var(--bg); color:var(--fg); font-family:var(--font-body); line-height:1.6; min-height:100vh; display:flex; flex-direction:column; }
     a { text-decoration:none; color:inherit; }
     h1,h2,h3,h4,h5,h6 { font-family:var(--font-display); }
 
-    /* HEADER */
-    .site-header { position:sticky; top:0; z-index:50; background:hsla(220,35%,11%,0.7); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); }
+    .site-header { position:sticky; top:0; z-index:50; background:hsla(220,35%,11%,0.75); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); }
     .header-inner { max-width:1280px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:12px 24px; gap:16px; }
     .logo-wrap { display:flex; align-items:center; gap:12px; }
-    .ucc-logo  { height:40px; width:40px; border-radius:50%; }
-    .title-wrap h1        { font-size:1.125rem; font-weight:700; }
+    .ucc-logo { height:40px; width:40px; border-radius:50%; }
+    .title-wrap h1 { font-size:1.125rem; font-weight:700; }
     .title-wrap .subtitle { font-size:0.75rem; color:var(--muted); }
     .main-nav { display:flex; gap:8px; align-items:center; }
     .main-nav a { font-size:0.875rem; color:var(--muted); padding:7px 14px; border-radius:8px; transition:all .2s; }
-    .main-nav a:hover { color:var(--fg); background:var(--secondary); }
+    .main-nav a:hover, .main-nav a.active { color:var(--fg); background:var(--secondary); }
     .nav-logout { font-size:0.875rem; color:hsl(0,70%,70%); padding:7px 14px; border-radius:8px; border:1px solid hsla(0,70%,60%,0.25); background:hsla(0,70%,60%,0.08); cursor:pointer; transition:all .2s; font-family:var(--font-body); }
     .nav-logout:hover { background:hsla(0,70%,60%,0.18); color:#fff; }
 
-    /* LAYOUT */
-    main { flex:1; max-width:1280px; width:100%; margin:0 auto; padding:48px 24px 80px; display:flex; flex-direction:column; gap:36px; }
+    main { flex:1; max-width:1280px; width:100%; margin:0 auto; padding:48px 24px 80px; display:flex; flex-direction:column; gap:32px; }
 
-    /* HERO SEARCH */
+    /* HERO */
     .page-hero { padding-bottom:28px; border-bottom:1px solid var(--border); animation:fadeUp .4s ease both; }
     .page-hero h2 { font-size:clamp(1.5rem,3vw,2.2rem); font-weight:700; letter-spacing:-0.02em; margin-bottom:8px; }
     .page-hero > p { font-size:0.95rem; color:var(--muted); max-width:600px; margin-bottom:24px; }
-
     .search-bar { display:flex; gap:10px; max-width:700px; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:8px 8px 8px 18px; transition:border-color .2s; }
     .search-bar:focus-within { border-color:var(--primary); }
     .search-bar input { flex:1; background:none; border:none; outline:none; color:var(--fg); font-family:var(--font-body); font-size:0.9rem; }
     .search-bar input::placeholder { color:var(--muted); }
     .search-bar select { background:var(--secondary); border:none; border-left:1px solid var(--border); color:var(--muted); font-family:var(--font-body); font-size:0.82rem; padding:0 10px; outline:none; cursor:pointer; border-radius:0 8px 8px 0; }
-    .search-bar select option { background:var(--card); }
-
-    /* QUICK TAGS */
     .quick-tags { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
     .qtag { padding:5px 14px; border-radius:20px; background:var(--secondary); border:1px solid var(--border); color:var(--muted); font-size:0.78rem; font-weight:600; cursor:pointer; transition:all .2s; font-family:var(--font-display); }
     .qtag:hover { border-color:var(--primary); color:var(--primary); }
 
     /* STATS */
-    .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; animation:fadeUp .4s .05s ease both; }
+    .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
     .stat-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 20px; transition:border-color .3s; }
     .stat-card:hover { border-color:hsla(43,55%,54%,0.3); }
-    .stat-card .stat-num { font-family:var(--font-display); font-size:1.6rem; font-weight:700; color:var(--primary); }
-    .stat-card .stat-lbl { font-size:0.78rem; color:var(--muted); margin-top:2px; }
+    .stat-num { font-family:var(--font-display); font-size:1.6rem; font-weight:700; color:var(--primary); }
+    .stat-lbl { font-size:0.78rem; color:var(--muted); margin-top:2px; }
 
-    /* SEARCH RESULTS GRID */
+    /* RESULTS */
     .results-section { animation:fadeUp .4s .1s ease both; }
-    .results-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+    .results-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:10px; }
     .results-header h3 { font-size:1rem; font-weight:600; }
     .results-count { font-size:0.82rem; color:var(--muted); }
     .source-tabs { display:flex; gap:6px; }
     .source-tab { padding:5px 12px; border-radius:8px; border:1px solid var(--border); background:var(--secondary); color:var(--muted); font-size:0.78rem; font-weight:600; cursor:pointer; transition:all .2s; font-family:var(--font-display); }
     .source-tab.active { border-color:var(--primary); color:var(--primary); background:hsla(43,55%,54%,0.1); }
 
-    .books-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
+    .books-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:16px; }
     .book-card { background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; transition:all .25s; display:flex; flex-direction:column; }
     .book-card:hover { border-color:hsla(43,55%,54%,0.4); transform:translateY(-3px); box-shadow:0 12px 28px rgba(0,0,0,0.3); }
-    .book-cover { width:100%; height:160px; object-fit:cover; background:var(--secondary); display:flex; align-items:center; justify-content:center; font-size:3rem; }
-    .book-cover img { width:100%; height:100%; object-fit:cover; }
-    .book-cover-placeholder { width:100%; height:160px; background:linear-gradient(135deg,var(--secondary),var(--card)); display:flex; align-items:center; justify-content:center; font-size:2.5rem; }
-    .book-info { padding:14px 16px; flex:1; display:flex; flex-direction:column; gap:4px; }
-    .book-title  { font-size:0.88rem; font-weight:600; line-height:1.35; display:-webkit-box; -webkit-lineclamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .book-cover-placeholder { width:100%; height:160px; background:linear-gradient(135deg,var(--secondary),var(--card)); display:flex; align-items:center; justify-content:center; font-size:2.5rem; position:relative; }
+    .book-cover-placeholder img { width:100%; height:100%; object-fit:cover; }
+    .book-info { padding:14px 16px; flex:1; display:flex; flex-direction:column; gap:5px; }
+    .book-title { font-size:0.88rem; font-weight:600; line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
     .book-author { font-size:0.78rem; color:var(--muted); }
-    .book-meta   { display:flex; gap:6px; flex-wrap:wrap; margin-top:4px; }
-    .book-tag    { font-size:0.68rem; padding:2px 8px; border-radius:10px; background:var(--secondary); color:var(--muted); border:1px solid var(--border); font-family:var(--font-display); }
-    .book-tag.pdf-tag  { background:hsla(152,60%,52%,0.1); color:var(--green); border-color:hsla(152,60%,52%,0.25); }
-    .book-tag.free-tag { background:hsla(43,55%,54%,0.1); color:var(--primary); border-color:hsla(43,55%,54%,0.25); }
-    .book-actions { display:flex; gap:6px; padding:0 16px 14px; margin-top:auto; }
-    .ba-btn { flex:1; padding:7px 10px; border-radius:8px; font-family:var(--font-display); font-size:0.75rem; font-weight:700; cursor:pointer; border:none; transition:all .2s; text-align:center; }
-    .ba-view { background:var(--secondary); border:1px solid var(--border); color:var(--fg); }
+    .book-meta { display:flex; gap:6px; flex-wrap:wrap; margin-top:4px; }
+    .book-tag { font-size:0.68rem; padding:2px 8px; border-radius:10px; background:var(--secondary); color:var(--muted); border:1px solid var(--border); font-family:var(--font-display); }
+    .book-tag.avail-tag  { background:hsla(152,60%,52%,0.1); color:var(--green); border-color:hsla(152,60%,52%,0.25); }
+    .book-tag.unavail-tag{ background:hsla(0,70%,60%,0.1);   color:var(--red);   border-color:hsla(0,70%,60%,0.25); }
+    .book-tag.hold-tag   { background:hsla(30,90%,58%,0.1);  color:var(--orange);border-color:hsla(30,90%,58%,0.25); }
+    .book-tag.pdf-tag    { background:hsla(210,80%,65%,0.1); color:var(--blue);  border-color:hsla(210,80%,65%,0.25); }
+
+    /* AVAILABILITY BAR */
+    .avail-bar { margin:8px 0 4px; }
+    .avail-bar-label { display:flex; justify-content:space-between; font-size:0.68rem; color:var(--muted); margin-bottom:4px; font-family:var(--font-display); }
+    .avail-bar-track { height:4px; background:var(--secondary); border-radius:4px; overflow:hidden; }
+    .avail-bar-fill { height:100%; border-radius:4px; transition:width .5s ease; }
+
+    .book-actions { display:flex; gap:6px; padding:0 16px 14px; margin-top:auto; flex-wrap:wrap; }
+    .ba-btn { flex:1; padding:7px 10px; border-radius:8px; font-family:var(--font-display); font-size:0.75rem; font-weight:700; cursor:pointer; border:none; transition:all .2s; text-align:center; white-space:nowrap; }
+    .ba-view   { background:var(--secondary); border:1px solid var(--border); color:var(--fg); }
     .ba-view:hover { border-color:var(--primary); color:var(--primary); }
-    .ba-add  { background:var(--primary); color:var(--primary-fg); }
-    .ba-add:hover { opacity:.9; box-shadow:var(--glow-gold); }
-    .ba-add.added { background:hsla(152,60%,52%,0.15); color:var(--green); border:1px solid hsla(152,60%,52%,0.3); }
-    .ba-dl { background:hsla(210,80%,65%,0.12); border:1px solid hsla(210,80%,65%,0.25); color:var(--blue); }
-    .ba-dl:hover { background:hsla(210,80%,65%,0.22); }
-    .ba-borrow { background:hsla(152,60%,52%,0.12); border:1px solid hsla(152,60%,52%,0.25); color:var(--green); }
-    .ba-borrow:hover { background:hsla(152,60%,52%,0.22); }
+    .ba-hold   { background:var(--primary); color:var(--primary-fg); }
+    .ba-hold:hover { opacity:.9; box-shadow:var(--glow-gold); }
+    .ba-hold.on-hold { background:hsla(30,90%,58%,0.15); color:var(--orange); border:1px solid hsla(30,90%,58%,0.3); cursor:default; }
+    .ba-hold.unavail { background:var(--secondary); border:1px solid var(--border); color:var(--muted); }
+    .ba-hold.unavail:hover { border-color:var(--orange); color:var(--orange); }
+    .ba-add  { background:hsla(152,60%,52%,0.12); border:1px solid hsla(152,60%,52%,0.25); color:var(--green); }
+    .ba-add:hover { background:hsla(152,60%,52%,0.2); }
+    .ba-add.added { background:var(--secondary); border-color:var(--border); color:var(--muted); cursor:default; }
 
-    /* LOADING / EMPTY */
-    .search-placeholder { text-align:center; padding:60px 20px; color:var(--muted); }
-    .search-placeholder .icon { font-size:3rem; margin-bottom:12px; }
-    .search-placeholder p { font-size:0.9rem; }
-    .loading-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
-    .skeleton { background:var(--card); border:1px solid var(--border); border-radius:14px; height:280px; animation:shimmer 1.5s infinite; }
-    @keyframes shimmer { 0%,100%{opacity:.6} 50%{opacity:1} }
-
-    /* MY LIBRARY SECTION */
-    .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:26px 28px; transition:border-color .3s; }
-    .card:hover { border-color:hsla(43,55%,54%,0.25); }
+    /* MY HOLDS SECTION */
+    .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:26px 28px; }
     .card-title { font-size:1rem; font-weight:600; margin-bottom:18px; padding-bottom:12px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; gap:8px; }
 
-    /* TABLE */
-    .table-wrap { overflow-x:auto; }
-    table { width:100%; border-collapse:collapse; font-size:0.875rem; }
-    thead tr { border-bottom:1px solid var(--border); }
-    th { color:var(--muted); font-weight:600; padding:10px 14px; text-align:left; font-family:var(--font-display); font-size:0.72rem; letter-spacing:.05em; text-transform:uppercase; }
-    td { padding:12px 14px; border-bottom:1px solid hsla(220,25%,18%,0.5); vertical-align:middle; }
-    tr:last-child td { border-bottom:none; }
-    tbody tr:hover td { background:var(--secondary); }
-    .action-btns { display:flex; gap:6px; }
-    .empty-row td { text-align:center; padding:32px; color:var(--muted); font-size:0.875rem; }
+    .holds-list { display:flex; flex-direction:column; gap:10px; }
+    .hold-item { background:var(--secondary); border:1px solid var(--border); border-radius:12px; padding:16px 18px; display:flex; align-items:center; gap:16px; flex-wrap:wrap; transition:border-color .2s; }
+    .hold-item.ready     { border-color:hsla(152,60%,52%,0.4); background:hsla(152,60%,52%,0.05); }
+    .hold-item.expiring  { border-color:hsla(0,70%,60%,0.4); background:hsla(0,70%,60%,0.05); }
+    .hold-cover { width:44px; height:56px; border-radius:6px; background:var(--card); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0; overflow:hidden; }
+    .hold-cover img { width:100%; height:100%; object-fit:cover; }
+    .hold-info { flex:1; min-width:0; }
+    .hold-title  { font-size:0.9rem; font-weight:600; margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .hold-author { font-size:0.75rem; color:var(--muted); margin-bottom:6px; }
+    .hold-meta   { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .hold-status-pill { font-size:0.7rem; font-weight:700; padding:3px 10px; border-radius:20px; font-family:var(--font-display); white-space:nowrap; }
+    .hs-pending  { background:hsla(210,80%,65%,0.12); color:var(--blue);   border:1px solid hsla(210,80%,65%,0.25); }
+    .hs-ready    { background:hsla(152,60%,52%,0.12); color:var(--green);  border:1px solid hsla(152,60%,52%,0.25); }
+    .hs-expired  { background:hsla(0,70%,60%,0.12);   color:var(--red);    border:1px solid hsla(0,70%,60%,0.25); }
+    .hs-collected{ background:var(--secondary); color:var(--muted); border:1px solid var(--border); }
+    .hold-location { font-size:0.72rem; color:var(--muted); display:flex; align-items:center; gap:4px; }
+    .hold-actions { display:flex; gap:8px; flex-shrink:0; }
+    .hbtn { padding:6px 14px; border-radius:8px; font-size:0.75rem; font-weight:700; cursor:pointer; font-family:var(--font-display); border:none; transition:all .2s; }
+    .hbtn-cancel { background:hsla(0,70%,60%,0.1); border:1px solid hsla(0,70%,60%,0.25); color:var(--red); }
+    .hbtn-cancel:hover { background:hsla(0,70%,60%,0.2); }
 
-    .pill { display:inline-block; padding:3px 10px; border-radius:20px; font-size:0.72rem; font-weight:600; font-family:var(--font-display); white-space:nowrap; }
-    .pill-active   { background:hsla(152,60%,52%,0.12); color:var(--green);   border:1px solid hsla(152,60%,52%,0.25); }
-    .pill-reading  { background:hsla(43,55%,54%,0.12);  color:var(--primary); border:1px solid hsla(43,55%,54%,0.3); }
-    .pill-finished { background:hsla(210,80%,65%,0.12); color:var(--blue);    border:1px solid hsla(210,80%,65%,0.25); }
-    .pill-want     { background:var(--secondary);       color:var(--muted);   border:1px solid var(--border); }
+    /* PICKUP COUNTDOWN */
+    .pickup-countdown { display:flex; align-items:center; gap:6px; font-size:0.75rem; font-weight:700; font-family:var(--font-display); }
+    .pickup-countdown.urgent { color:var(--red); }
+    .pickup-countdown.ok     { color:var(--green); }
+    .countdown-ring { width:32px; height:32px; flex-shrink:0; }
 
     /* READING LIST */
     .reading-list { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; }
@@ -143,669 +138,736 @@
     .rl-author { font-size:0.75rem; color:var(--muted); }
     .rl-status-row { display:flex; align-items:center; justify-content:space-between; margin-top:4px; }
     .status-sel { font-size:0.72rem; background:var(--card); border:1px solid var(--border); color:var(--fg); border-radius:6px; padding:3px 6px; cursor:pointer; font-family:var(--font-display); }
-    .rl-remove { font-size:0.68rem; color:var(--red); background:none; border:none; cursor:pointer; font-family:var(--font-body); }
+    .rl-remove  { font-size:0.68rem; color:var(--red); background:none; border:none; cursor:pointer; font-family:var(--font-body); }
 
-    /* HISTORY & NOTIFICATIONS */
-    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
-    .history-list { list-style:none; display:flex; flex-direction:column; gap:8px; }
-    .history-item { background:var(--secondary); border:1px solid var(--border); border-radius:10px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; }
-    .history-item .hi-title { font-weight:600; font-size:0.875rem; }
-    .history-item .hi-date  { color:var(--muted); font-size:0.78rem; margin-top:2px; }
-    .notif-list { list-style:none; display:flex; flex-direction:column; gap:8px; }
-    .notif-item { display:flex; align-items:flex-start; gap:12px; background:var(--secondary); border:1px solid var(--border); border-radius:10px; padding:12px 16px; font-size:0.85rem; }
-    .notif-item.unread { border-color:hsla(43,55%,54%,0.35); }
-    .notif-icon { font-size:1.1rem; flex-shrink:0; margin-top:1px; }
-    .notif-text strong { display:block; font-size:0.875rem; margin-bottom:2px; }
-    .notif-text span   { color:var(--muted); font-size:0.78rem; }
-    .unread-dot { width:7px; height:7px; border-radius:50%; background:var(--primary); flex-shrink:0; margin-top:6px; margin-left:auto; }
-
-    /* BUTTONS */
     .btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:8px 18px; border-radius:8px; font-family:var(--font-display); font-size:0.82rem; font-weight:600; cursor:pointer; border:none; transition:all .2s; }
-    .btn-ghost  { background:transparent; border:1px solid hsla(45,30%,92%,0.2); color:var(--fg); }
-    .btn-ghost:hover  { background:var(--secondary); }
-    .btn-danger { background:hsla(0,70%,60%,0.12); border:1px solid hsla(0,70%,60%,0.3); color:var(--red); }
-    .btn-danger:hover { background:hsla(0,70%,60%,0.22); }
+    .btn-ghost { background:transparent; border:1px solid hsla(45,30%,92%,0.2); color:var(--fg); }
+    .btn-ghost:hover { background:var(--secondary); }
     .btn-sm { padding:5px 12px; font-size:0.75rem; }
+    .pill { display:inline-block; padding:3px 10px; border-radius:20px; font-size:0.72rem; font-weight:600; font-family:var(--font-display); white-space:nowrap; }
+    .pill-active  { background:hsla(152,60%,52%,0.12); color:var(--green);  border:1px solid hsla(152,60%,52%,0.25); }
+    .pill-want    { background:var(--secondary); color:var(--muted); border:1px solid var(--border); }
 
-    /* TOAST */
-    .toast { position:fixed; bottom:24px; right:24px; z-index:200; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 20px; font-size:0.875rem; font-family:var(--font-display); font-weight:600; box-shadow:var(--glow-gold); transform:translateY(80px); opacity:0; transition:all .3s; pointer-events:none; }
+    .empty-state { text-align:center; padding:40px 20px; color:var(--muted); }
+    .empty-state .icon { font-size:2.5rem; margin-bottom:10px; }
+    .empty-state p { font-size:0.875rem; }
+
+    .search-placeholder { text-align:center; padding:60px 20px; color:var(--muted); }
+    .search-placeholder .icon { font-size:3rem; margin-bottom:12px; }
+    .loading-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:16px; }
+    .skeleton { background:var(--card); border:1px solid var(--border); border-radius:14px; height:300px; animation:shimmer 1.5s infinite; }
+    @keyframes shimmer { 0%,100%{opacity:.6} 50%{opacity:1} }
+
+    .toast { position:fixed; bottom:24px; right:24px; z-index:500; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 20px; font-size:0.875rem; font-family:var(--font-display); font-weight:600; box-shadow:var(--glow-gold); transform:translateY(80px); opacity:0; transition:all .3s; pointer-events:none; max-width:320px; }
     .toast.show { transform:translateY(0); opacity:1; }
     .toast.success { border-color:hsla(152,60%,52%,0.4); color:var(--green); }
-    .toast.info    { border-color:hsla(43,55%,54%,0.4); color:var(--primary); }
+    .toast.info    { border-color:hsla(43,55%,54%,0.4);  color:var(--primary); }
+    .toast.warn    { border-color:hsla(0,70%,60%,0.4);   color:var(--red); }
 
-    /* FOOTER */
+    /* HOLD MODAL */
+    .modal-overlay { display:none; position:fixed; inset:0; z-index:200; background:hsla(220,40%,5%,0.88); backdrop-filter:blur(8px); align-items:center; justify-content:center; }
+    .modal-overlay.open { display:flex; }
+    .modal-box { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:32px 36px; width:90%; max-width:500px; box-shadow:0 24px 70px rgba(0,0,0,0.6); animation:scaleIn .22s ease; max-height:90vh; overflow-y:auto; }
+    .modal-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; }
+    .modal-top h3 { font-size:1.15rem; font-weight:700; }
+    .modal-close { background:none; border:none; color:var(--muted); font-size:1.3rem; cursor:pointer; line-height:1; }
+    .modal-close:hover { color:var(--fg); }
+
+    .book-preview-row { display:flex; gap:16px; align-items:flex-start; background:var(--secondary); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:22px; }
+    .book-preview-cover { width:52px; height:68px; border-radius:6px; background:var(--card); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:1.6rem; flex-shrink:0; overflow:hidden; }
+    .book-preview-cover img { width:100%; height:100%; object-fit:cover; }
+    .book-preview-info h4 { font-size:0.95rem; font-weight:600; margin-bottom:4px; }
+    .book-preview-info p  { font-size:0.8rem; color:var(--muted); margin-bottom:8px; }
+
+    .avail-status-box { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:10px; margin-bottom:22px; }
+    .avail-status-box.available   { background:hsla(152,60%,52%,0.08); border:1px solid hsla(152,60%,52%,0.25); }
+    .avail-status-box.unavailable { background:hsla(30,90%,58%,0.08);  border:1px solid hsla(30,90%,58%,0.25); }
+    .avail-icon { font-size:1.5rem; }
+    .avail-text strong { display:block; font-size:0.88rem; font-weight:700; }
+    .avail-text small  { font-size:0.78rem; color:var(--muted); }
+    .avail-status-box.available .avail-text strong   { color:var(--green); }
+    .avail-status-box.unavailable .avail-text strong { color:var(--orange); }
+
+    .shelf-info { display:flex; align-items:center; gap:8px; background:var(--secondary); border:1px solid var(--border); border-radius:10px; padding:12px 16px; margin-bottom:22px; font-size:0.85rem; }
+    .shelf-info .shelf-icon { font-size:1.2rem; }
+    .shelf-info div strong  { display:block; font-size:0.8rem; color:var(--fg); margin-bottom:1px; }
+    .shelf-info div span    { font-size:0.75rem; color:var(--muted); }
+
+    .note-input { width:100%; padding:10px 13px; background:var(--secondary); border:1px solid var(--border); border-radius:8px; outline:none; color:var(--fg); font-family:var(--font-body); font-size:0.875rem; resize:none; transition:border-color .2s; margin-bottom:16px; }
+    .note-input:focus { border-color:var(--primary); }
+    .note-input::placeholder { color:var(--muted); }
+
+    .modal-submit { width:100%; padding:13px; border:none; border-radius:10px; background:var(--primary); color:var(--primary-fg); font-family:var(--font-display); font-size:0.95rem; font-weight:700; cursor:pointer; transition:all .2s; }
+    .modal-submit:hover { opacity:.9; box-shadow:var(--glow-gold); }
+    .modal-submit:disabled { opacity:.45; cursor:not-allowed; }
+    .modal-status { margin-top:10px; font-size:0.82rem; text-align:center; min-height:16px; font-family:var(--font-display); }
+
+    .pts-toast { position:fixed; bottom:28px; left:28px; z-index:600; background:var(--card); border:1px solid hsla(43,55%,54%,0.5); border-radius:14px; padding:14px 20px; display:flex; align-items:center; gap:12px; box-shadow:0 8px 32px rgba(0,0,0,0.4),var(--glow-gold); transform:translateY(80px); opacity:0; transition:all .4s cubic-bezier(.175,.885,.32,1.275); pointer-events:none; min-width:220px; }
+    .pts-toast.show { transform:translateY(0); opacity:1; }
+    .pts-toast-icon { font-size:1.6rem; }
+    .pts-toast-title { font-family:var(--font-display); font-size:0.82rem; font-weight:700; color:var(--primary); }
+    .pts-toast-msg   { font-size:0.78rem; color:var(--muted); }
+    .pts-toast-pts   { font-family:var(--font-display); font-size:1.1rem; font-weight:700; color:var(--primary); }
+
     .site-footer { border-top:1px solid var(--border); padding:32px 24px; margin-top:auto; }
     .footer-inner { max-width:1280px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
     .site-footer p { font-family:var(--font-display); font-size:0.875rem; color:var(--muted); line-height:1.7; }
     .site-footer strong { color:var(--fg); }
     .site-footer a { color:var(--primary); }
-    .site-footer a:hover { text-decoration:underline; }
     .site-footer small { font-size:0.75rem; color:var(--muted); }
 
     @keyframes fadeUp  { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
     @keyframes scaleIn { from{opacity:0;transform:scale(.94)} to{opacity:1;transform:scale(1)} }
-    @media (max-width:900px) { .two-col { grid-template-columns:1fr; } }
-    @media (max-width:640px) { .stats-row { grid-template-columns:repeat(2,1fr); } main { padding:32px 16px 60px; } .title-wrap .subtitle { display:none; } }
+    @media (max-width:900px) { .stats-row{grid-template-columns:repeat(2,1fr)} }
+    @media (max-width:640px) { main{padding:32px 16px 60px} .title-wrap .subtitle{display:none} .modal-box{padding:24px 18px} }
   </style>
 </head>
 <body>
 
-  <header class="site-header">
-    <div class="header-inner">
-      <div class="logo-wrap">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEC31GlH03Kf6NAmmiIHqInFd0q1bQz2gmDg&s" alt="UCC logo" class="ucc-logo">
-        <div class="title-wrap">
-          <h1>UCC Knowledge Hub</h1>
-          <p class="subtitle">Empowering Digital Learning</p>
-        </div>
-      </div>
-      <nav class="main-nav">
-        <a href="ucc_knowledge_hub.html">Home</a>
-        <a href="Loaners.html">Library</a>
-        <a href="forum.html">Forum</a>
-        <a href="study_rooms.html">Study Rooms</a>
-        <a href="profile.html">Profile</a>
-        <button class="nav-logout" id="logoutBtn">Log Out</button>
-      </nav>
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo-wrap">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEC31GlH03Kf6NAmmiIHqInFd0q1bQz2gmDg&s" alt="UCC logo" class="ucc-logo">
+      <div class="title-wrap"><h1>UCC Knowledge Hub</h1><p class="subtitle">Empowering Digital Learning</p></div>
     </div>
-  </header>
+    <nav class="main-nav">
+      <a href="ucc_knowledge_hub.html">Home</a>
+      <a href="Loaners.html" class="active">Library</a>
+      <a href="forum.html">Forum</a>
+      <a href="profile.html">Profile</a>
+      <button class="nav-logout" id="logoutBtn">Log Out</button>
+    </nav>
+  </div>
+</header>
 
-  <main>
+<main>
 
-    <!-- SEARCH HERO -->
-    <div class="page-hero">
-      <h2>📖 Digital Resource Library</h2>
-      <p>Search millions of books, CompTIA courses, textbooks and academic resources. Add them to your reading list or download PDFs — no library visit needed.</p>
-
-      <form id="searchForm" autocomplete="off">
-        <div class="search-bar">
-          <input id="searchQuery" type="search" placeholder="Search books, CompTIA A+, textbooks, courses…">
-          <select id="searchSource">
-            <option value="both">All Sources</option>
-            <option value="google">Google Books</option>
-            <option value="openlibrary">Open Library</option>
-          </select>
-          <button class="ba-btn ba-add" type="submit" style="flex:none;padding:8px 20px;border-radius:8px;">Search</button>
-        </div>
-      </form>
-
-      <!-- Quick tags -->
-      <div class="quick-tags">
-        <span class="qtag" onclick="quickSearch('CompTIA A+')">CompTIA A+</span>
-        <span class="qtag" onclick="quickSearch('CompTIA Security+')">Security+</span>
-        <span class="qtag" onclick="quickSearch('CompTIA Network+')">Network+</span>
-        <span class="qtag" onclick="quickSearch('Caribbean History')">Caribbean History</span>
-        <span class="qtag" onclick="quickSearch('Business Management')">Business Management</span>
-        <span class="qtag" onclick="quickSearch('Python Programming')">Python</span>
-        <span class="qtag" onclick="quickSearch('Accounting textbook')">Accounting</span>
-        <span class="qtag" onclick="quickSearch('free pdf')">Free PDFs</span>
+  <!-- HERO -->
+  <div class="page-hero">
+    <h2>📚 Borrowing & Renewing </h2>
+    <p>Search our catalogue, check availability and place a hold. We'll prep your book — collect it at the library within 24 hours once notified.</p>
+    <form id="searchForm" autocomplete="off">
+      <div class="search-bar">
+        <input id="searchQuery" type="search" placeholder="Search by title, author, subject…">
+        <select id="searchSource">
+          <option value="both">All Sources</option>
+          <option value="google">Google Books</option>
+          <option value="openlibrary">Open Library</option>
+        </select>
+        <button class="ba-btn ba-hold" type="submit" style="flex:none;padding:8px 20px;border-radius:8px;border:none;">Search</button>
       </div>
-    </div>
-
-    <!-- STATS -->
-    <div class="stats-row">
-      <div class="stat-card"><div class="stat-num" id="statSaved">0</div><div class="stat-lbl">Saved Resources</div></div>
-      <div class="stat-card"><div class="stat-num" id="statReading">0</div><div class="stat-lbl">Currently Reading</div></div>
-      <div class="stat-card"><div class="stat-num" id="statFinished">0</div><div class="stat-lbl">Finished</div></div>
-      <div class="stat-card"><div class="stat-num" id="statLoans">0</div><div class="stat-lbl">Active Loans</div></div>
-    </div>
-
-    <!-- SEARCH RESULTS -->
-    <div class="results-section">
-      <div class="results-header">
-        <h3 id="resultsTitle">🔍 Search Results</h3>
-        <div style="display:flex;align-items:center;gap:12px;">
-          <span class="results-count" id="resultsCount"></span>
-          <div class="source-tabs" id="sourceTabs" style="display:none;">
-            <button class="source-tab active" id="tab-all"    onclick="filterSource('all')">All</button>
-            <button class="source-tab"        id="tab-google" onclick="filterSource('google')">Google Books</button>
-            <button class="source-tab"        id="tab-open"   onclick="filterSource('open')">Open Library</button>
-          </div>
-        </div>
-      </div>
-      <div id="resultsArea">
-        <div class="search-placeholder">
-          <div class="icon">📚</div>
-          <p>Search for any book, course, or subject above.<br>Try "CompTIA A+" or "Caribbean History".</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- MY READING LIST -->
-    <div class="card" id="readingListCard">
-      <div class="card-title">
-        <span>📑 My Reading List</span>
-        <span style="font-size:0.78rem;color:var(--muted);font-weight:400;">Added from search results</span>
-      </div>
-      <div class="reading-list" id="readingList">
-        <p style="color:var(--muted);font-size:.85rem;">No books saved yet. Search above and click "Add to Library".</p>
-      </div>
-    </div>
-
-    <!-- ACTIVE LOANS -->
-    <div class="card">
-      <div class="card-title">
-        <span>📚 My Loans</span>
-        <button class="btn btn-ghost btn-sm" onclick="loadLoans()">↻ Refresh</button>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Title</th><th>Author</th><th>Format</th><th>Due Date</th><th>Status</th><th>Actions</th></tr></thead>
-          <tbody id="loansTableBody"><tr class="empty-row"><td colspan="6">Loading…</td></tr></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- HISTORY + NOTIFICATIONS -->
-    <div class="two-col">
-      <div class="card">
-        <div class="card-title">🕓 Reading History</div>
-        <ul class="history-list" id="historyList">
-          <li style="color:var(--muted);font-size:.85rem;padding:8px 0;">No history yet.</li>
-        </ul>
-      </div>
-      <div class="card">
-        <div class="card-title">🔔 Notifications</div>
-        <ul class="notif-list" id="notifList">
-          <li style="color:var(--muted);font-size:.85rem;padding:8px 0;">Loading…</li>
-        </ul>
-      </div>
-    </div>
-
-  </main>
-
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <p><strong>University of the Commonwealth Caribbean</strong><br>
-        17 Worthington Avenue, Kingston 5, Jamaica W.I. &nbsp;·&nbsp;
-        <a href="https://www.ucc.edu.jm">www.ucc.edu.jm</a></p>
-      <small>© <span id="year"></span> UCC — All Rights Reserved</small>
-    </div>
-  </footer>
-
-  <!-- TOAST -->
-  <div class="toast" id="toast"></div>
-
-  <!-- BORROW MODAL -->
-  <div class="modal-overlay" id="borrowModal" style="display:none;position:fixed;inset:0;z-index:200;background:hsla(220,40%,5%,0.85);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:32px 36px;width:90%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,0.6);animation:scaleIn .22s ease;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-        <h3 style="font-family:var(--font-display);font-size:1.1rem;font-weight:700;">📥 Borrow Resource</h3>
-        <button onclick="closeBorrowModal()" style="background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;">✕</button>
-      </div>
-
-      <div id="borrowBookInfo" style="background:var(--secondary);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:20px;">
-        <div id="borrowTitle" style="font-weight:600;font-size:0.95rem;margin-bottom:4px;"></div>
-        <div id="borrowAuthor" style="font-size:0.8rem;color:var(--muted);"></div>
-      </div>
-
-      <div style="margin-bottom:14px;">
-        <label style="display:block;font-size:0.72rem;color:var(--muted);margin-bottom:6px;font-family:var(--font-display);font-weight:600;letter-spacing:.05em;text-transform:uppercase;">Borrow From</label>
-        <input type="date" id="borrowFrom" style="width:100%;padding:10px 13px;background:var(--secondary);border:1px solid var(--border);border-radius:8px;outline:none;color:var(--fg);font-family:var(--font-body);font-size:0.875rem;">
-      </div>
-
-      <div style="margin-bottom:20px;">
-        <label style="display:block;font-size:0.72rem;color:var(--muted);margin-bottom:6px;font-family:var(--font-display);font-weight:600;letter-spacing:.05em;text-transform:uppercase;">Return By (Due Date)</label>
-        <input type="date" id="borrowTo" style="width:100%;padding:10px 13px;background:var(--secondary);border:1px solid var(--border);border-radius:8px;outline:none;color:var(--fg);font-family:var(--font-body);font-size:0.875rem;" oninput="updateFineNote()">
-      </div>
-
-      <!-- FINE NOTE -->
-      <div id="fineNote" style="display:none;background:hsla(43,55%,54%,0.08);border:1px solid hsla(43,55%,54%,0.25);border-radius:10px;padding:14px 16px;margin-bottom:20px;font-size:0.85rem;">
-        <div style="font-family:var(--font-display);font-weight:700;color:var(--primary);margin-bottom:6px;">⚠️ Fine Policy</div>
-        <div id="fineText" style="color:var(--muted);line-height:1.6;"></div>
-      </div>
-
-      <button onclick="confirmBorrow()" style="width:100%;padding:12px;border:none;border-radius:10px;background:var(--primary);color:var(--primary-fg);font-family:var(--font-display);font-size:0.9rem;font-weight:700;cursor:pointer;transition:all .2s;">✓ Confirm Borrow</button>
-      <p id="borrowStatus" style="margin-top:10px;font-size:0.82rem;text-align:center;min-height:16px;font-family:var(--font-display);"></p>
+    </form>
+    <div class="quick-tags">
+      <span class="qtag" onclick="quickSearch('CompTIA A+')">CompTIA A+</span>
+      <span class="qtag" onclick="quickSearch('Caribbean History')">Caribbean History</span>
+      <span class="qtag" onclick="quickSearch('Business Management')">Business Management</span>
+      <span class="qtag" onclick="quickSearch('Python Programming')">Python</span>
+      <span class="qtag" onclick="quickSearch('Accounting textbook')">Accounting</span>
+      <span class="qtag" onclick="quickSearch('Nursing textbook')">Nursing</span>
     </div>
   </div>
 
-  <script>
-  // ─── CONFIG ───────────────────────────────────────────
-  const GOOGLE_API_KEY = "AIzaSyAjZt96cL-gnZxuT9nLU0d0HTXVDs2m2_4"; // your key
-  const API_BASE       = "/api";
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num" id="statHolds">0</div><div class="stat-lbl">Active Holds</div></div>
+    <div class="stat-card"><div class="stat-num" id="statReady">0</div><div class="stat-lbl">Ready for Pickup</div></div>
+    <div class="stat-card"><div class="stat-num" id="statSaved">0</div><div class="stat-lbl">Reading List</div></div>
+    <div class="stat-card"><div class="stat-num" id="statCollected">0</div><div class="stat-lbl">Collected</div></div>
+  </div>
 
-  document.getElementById("year").textContent = new Date().getFullYear();
+  <!-- MY HOLDS -->
+  <div class="card">
+    <div class="card-title">
+      <span>🔖 My Holds</span>
+      <button class="btn btn-ghost btn-sm" onclick="loadMyHolds()">↻ Refresh</button>
+    </div>
+    <div id="myHoldsArea">
+      <div class="empty-state"><div class="icon">📭</div><p>No active holds. Search above to place a hold on a book.</p></div>
+    </div>
+  </div>
 
-  // ─── AUTH ─────────────────────────────────────────────
-  const token    = getToken();
-  const _user    = getCurrentUser();
-  const userId   = _user?.userId   || null;
-  const fullname = _user?.fullname || "Student";
+  <!-- SEARCH RESULTS -->
+  <div class="results-section">
+    <div class="results-header">
+      <h3 id="resultsTitle">🔍 Catalogue Search</h3>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <span class="results-count" id="resultsCount"></span>
+        <div class="source-tabs" id="sourceTabs" style="display:none;">
+          <button class="source-tab active" id="tab-all"    onclick="filterSource('all')">All</button>
+          <button class="source-tab"        id="tab-google" onclick="filterSource('google')">Google Books</button>
+          <button class="source-tab"        id="tab-open"   onclick="filterSource('open')">Open Library</button>
+        </div>
+      </div>
+    </div>
+    <div id="resultsArea">
+      <div class="search-placeholder">
+        <div class="icon">🔎</div>
+        <p>Search the catalogue above to check availability and place holds.</p>
+      </div>
+    </div>
+  </div>
 
-  document.getElementById("logoutBtn").addEventListener("click", () => logout());
+  <!-- READING LIST -->
+  <div class="card">
+    <div class="card-title">
+      <span>📑 My Reading List</span>
+      <span style="font-size:0.78rem;color:var(--muted);font-weight:400;">Books you want to read</span>
+    </div>
+    <div class="reading-list" id="readingList">
+      <p style="color:var(--muted);font-size:.85rem;">No books saved yet.</p>
+    </div>
+  </div>
 
-  // ─── POINTS ──────────────────────────────────────────
-  const _sbPts = supabase.createClient(
-    "https://bqgtuxhfqfmxvryfljya.supabase.co",
-    "sb_publishable_y71RZ0UCDxkcmFQQHGEf-Q_davD0hbm"
-  );
+</main>
 
-  async function awardPoints(pts, action, note) {
-    if (!userId) return;
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p><strong>University of the Commonwealth Caribbean</strong><br>
+      17 Worthington Avenue, Kingston 5, Jamaica W.I. &nbsp;·&nbsp;
+      <a href="https://www.ucc.edu.jm">www.ucc.edu.jm</a></p>
+    <small>© <span id="year"></span> UCC — All Rights Reserved</small>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<!-- HOLD MODAL -->
+<div class="modal-overlay" id="holdModal">
+  <div class="modal-box">
+    <div class="modal-top">
+      <h3>📖 Place a Hold</h3>
+      <button class="modal-close" onclick="closeHoldModal()">✕</button>
+    </div>
+
+    <div class="book-preview-row">
+      <div class="book-preview-cover" id="modalCover">📚</div>
+      <div class="book-preview-info">
+        <h4 id="modalTitle">—</h4>
+        <p  id="modalAuthor">—</p>
+        <div id="modalTags"></div>
+      </div>
+    </div>
+
+    <div id="availStatusBox" class="avail-status-box available">
+      <span class="avail-icon" id="availIcon">✅</span>
+      <div class="avail-text">
+        <strong id="availText">Checking availability…</strong>
+        <small  id="availSub">Please wait</small>
+      </div>
+    </div>
+
+    <div class="shelf-info" id="shelfInfo">
+      <span class="shelf-icon">📍</span>
+      <div>
+        <strong id="shelfLocation">—</strong>
+        <span id="shelfSection">—</span>
+      </div>
+    </div>
+
+    <textarea class="note-input" id="holdNote" rows="2" placeholder="Optional note for the librarian (e.g. 'Please hold at front desk')…"></textarea>
+
+    <button class="modal-submit" id="holdSubmitBtn" onclick="confirmHold()">📌 Confirm Hold</button>
+    <p class="modal-status" id="holdStatus"></p>
+  </div>
+</div>
+
+<!-- POINTS TOAST -->
+<div class="pts-toast" id="ptsToast">
+  <div class="pts-toast-icon">⭐</div>
+  <div style="flex:1;">
+    <div class="pts-toast-title" id="ptsToastTitle">Points Earned!</div>
+    <div class="pts-toast-msg"   id="ptsToastMsg">Keep it up!</div>
+  </div>
+  <div class="pts-toast-pts" id="ptsToastPts">+0</div>
+</div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────
+const GOOGLE_API_KEY = "AIzaSyAjZt96cL-gnZxuT9nLU0d0HTXVDs2m2_4";
+const SUPABASE_URL   = "https://bqgtuxhfqfmxvryfljya.supabase.co";
+const SUPABASE_ANON  = "sb_publishable_y71RZ0UCDxkcmFQQHGEf-Q_davD0hbm";
+const API_BASE       = "/api";
+const sb             = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+document.getElementById("year").textContent = new Date().getFullYear();
+
+// ── AUTH ─────────────────────────────────────────────
+const token    = getToken();
+const _user    = getCurrentUser();
+const userId   = _user?.userId   || null;
+const fullname = _user?.fullname || "Student";
+document.getElementById("logoutBtn").addEventListener("click", () => logout());
+
+// ── STATE ─────────────────────────────────────────────
+let allResults   = [];
+let activeSource = "all";
+let myHolds      = [];
+let readingList  = JSON.parse(localStorage.getItem(`rl_${userId}`) || "[]");
+let savedIds     = new Set(readingList.map(b => b.id));
+let _holdBook    = null;
+
+// Simulate library inventory — in production this comes from your DB
+// Format: { bookId: { copies: N, available: N, shelf: "Section / Shelf" } }
+const INVENTORY_CACHE = {};
+
+function getInventory(bookId) {
+  if (INVENTORY_CACHE[bookId]) return INVENTORY_CACHE[bookId];
+  // Simulate: ~60% chance available, random copies 1–5
+  const copies    = Math.floor(Math.random() * 5) + 1;
+  const available = Math.random() > 0.4 ? Math.floor(Math.random() * copies) + 1 : 0;
+  const sections  = ["General Reference / Shelf A", "IT & Computing / Shelf B", "Business & Management / Shelf C",
+                     "Caribbean Studies / Shelf D", "Science & Research / Shelf E", "Periodicals / Shelf F"];
+  const shelf     = sections[Math.floor(Math.random() * sections.length)];
+  INVENTORY_CACHE[bookId] = { copies, available, shelf };
+  return INVENTORY_CACHE[bookId];
+}
+
+// ── INIT ─────────────────────────────────────────────
+window.addEventListener("DOMContentLoaded", () => {
+  loadMyHolds();
+  renderReadingList();
+  updateStats();
+});
+
+// ── TOAST ─────────────────────────────────────────────
+function showToast(msg, type = "success") {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove("show"), 3000);
+}
+
+// ── SEARCH ────────────────────────────────────────────
+document.getElementById("searchForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const q = document.getElementById("searchQuery").value.trim();
+  if (q) await searchBooks(q);
+});
+function quickSearch(q) { document.getElementById("searchQuery").value = q; searchBooks(q); }
+
+async function searchBooks(q) {
+  const source = document.getElementById("searchSource").value;
+  const area   = document.getElementById("resultsArea");
+  area.innerHTML = `<div class="loading-grid">${Array(6).fill('<div class="skeleton"></div>').join("")}</div>`;
+  document.getElementById("sourceTabs").style.display = "none";
+  document.getElementById("resultsTitle").textContent = `🔍 Results for "${q}"`;
+  document.getElementById("resultsCount").textContent = "";
+  allResults = [];
+
+  const fetches = [];
+  if (source === "both" || source === "google")      fetches.push(fetchGoogle(q));
+  if (source === "both" || source === "openlibrary") fetches.push(fetchOpenLibrary(q));
+  const results = await Promise.allSettled(fetches);
+  results.forEach(r => { if (r.status === "fulfilled") allResults.push(...r.value); });
+
+  if (!allResults.length) {
+    area.innerHTML = `<div class="search-placeholder"><div class="icon">😕</div><p>No results for "${q}".</p></div>`; return;
+  }
+  document.getElementById("sourceTabs").style.display = "flex";
+  document.getElementById("resultsCount").textContent = `${allResults.length} results`;
+  activeSource = "all"; updateSourceTabs(); renderResults(allResults);
+}
+
+async function fetchGoogle(q) {
+  try {
+    const res  = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=12&key=${GOOGLE_API_KEY}`);
+    const data = await res.json();
+    if (!data.items) return [];
+    return data.items.map(item => {
+      const info = item.volumeInfo;
+      return {
+        id: "g_" + item.id, source: "google",
+        title:  info.title || "Unknown Title",
+        author: (info.authors || ["Unknown"]).join(", "),
+        cover:  info.imageLinks?.thumbnail?.replace("http://","https://") || null,
+        year:   info.publishedDate?.slice(0,4) || "",
+        isbn:   info.industryIdentifiers?.[0]?.identifier || "",
+        viewLink: info.infoLink || info.previewLink || null
+      };
+    });
+  } catch { return []; }
+}
+
+async function fetchOpenLibrary(q) {
+  try {
+    const res  = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=12&fields=key,title,author_name,isbn,cover_i,first_publish_year`);
+    const data = await res.json();
+    if (!data.docs) return [];
+    return data.docs.map(b => ({
+      id: "ol_" + b.key, source: "openlibrary",
+      title:  b.title || "Unknown Title",
+      author: b.author_name?.[0] || "Unknown",
+      cover:  b.cover_i ? `https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg` : null,
+      year:   b.first_publish_year || "",
+      isbn:   b.isbn?.[0] || "",
+      viewLink: `https://openlibrary.org${b.key}`
+    }));
+  } catch { return []; }
+}
+
+function filterSource(src) {
+  activeSource = src; updateSourceTabs();
+  const filtered = src === "all" ? allResults
+    : src === "google" ? allResults.filter(b => b.source === "google")
+    : allResults.filter(b => b.source === "openlibrary");
+  document.getElementById("resultsCount").textContent = `${filtered.length} results`;
+  renderResults(filtered);
+}
+function updateSourceTabs() {
+  ["all","google","open"].forEach(s =>
+    document.getElementById(`tab-${s}`)?.classList.toggle("active", activeSource === s));
+}
+
+// ── RENDER BOOKS ──────────────────────────────────────
+function renderResults(books) {
+  const area = document.getElementById("resultsArea");
+  if (!books.length) { area.innerHTML = `<div class="search-placeholder"><div class="icon">😕</div><p>No results.</p></div>`; return; }
+  area.innerHTML = `<div class="books-grid">${books.map(bookCard).join("")}</div>`;
+}
+
+function bookCard(b) {
+  const inv      = getInventory(b.id);
+  const isAdded  = savedIds.has(b.id);
+  const onHold   = myHolds.some(h => h.book_id === b.id && ["pending","ready"].includes(h.status));
+  const cover    = b.cover
+    ? `<img src="${b.cover}" alt="${escHtml(b.title)}" onerror="this.parentElement.innerHTML='📚'" loading="lazy" style="width:100%;height:100%;object-fit:cover;">`
+    : "📚";
+
+  const pct      = inv.copies > 0 ? Math.round((inv.available / inv.copies) * 100) : 0;
+  const barColor = pct === 0 ? "var(--red)" : pct < 50 ? "var(--orange)" : "var(--green)";
+
+  const holdBtnLabel = onHold ? "⏳ On Hold" : inv.available > 0 ? "📌 Place Hold" : "📋 Join Waitlist";
+  const holdBtnClass = onHold ? "ba-hold on-hold" : "ba-hold";
+
+  return `<div class="book-card" id="card-${b.id}">
+    <div class="book-cover-placeholder">${cover}</div>
+    <div class="book-info">
+      <div class="book-title">${escHtml(b.title)}</div>
+      <div class="book-author">${escHtml(b.author)}</div>
+      <div class="book-meta">
+        ${b.year ? `<span class="book-tag">${b.year}</span>` : ""}
+        ${inv.available > 0
+          ? `<span class="book-tag avail-tag">✅ ${inv.available} Available</span>`
+          : `<span class="book-tag unavail-tag">❌ Unavailable</span>`}
+        <span class="book-tag">${b.source === "google" ? "Google Books" : "Open Library"}</span>
+      </div>
+      <div class="avail-bar">
+        <div class="avail-bar-label">
+          <span>Availability</span>
+          <span>${inv.available}/${inv.copies} copies</span>
+        </div>
+        <div class="avail-bar-track">
+          <div class="avail-bar-fill" style="width:${pct}%;background:${barColor};"></div>
+        </div>
+      </div>
+      <div style="font-size:0.7rem;color:var(--muted);margin-top:2px;">📍 ${inv.shelf}</div>
+    </div>
+    <div class="book-actions">
+      <button class="ba-btn ba-add ${isAdded ? "added" : ""}" id="addbtn-${b.id}"
+        onclick="addToReadingList(${JSON.stringify(b).replace(/"/g,'&quot;')})">
+        ${isAdded ? "✓ Saved" : "🔖 Save"}
+      </button>
+      <button class="ba-btn ${holdBtnClass}" ${onHold ? "disabled" : ""}
+        onclick="${onHold ? "" : `openHoldModal(${JSON.stringify(b).replace(/"/g,'&quot;')})`}">
+        ${holdBtnLabel}
+      </button>
+    </div>
+  </div>`;
+}
+
+// ── HOLD MODAL ────────────────────────────────────────
+function openHoldModal(book) {
+  _holdBook = book;
+  const inv = getInventory(book.id);
+
+  // Cover
+  const coverEl = document.getElementById("modalCover");
+  if (book.cover) coverEl.innerHTML = `<img src="${book.cover}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='📚'">`;
+  else coverEl.innerHTML = "📚";
+
+  document.getElementById("modalTitle").textContent  = book.title;
+  document.getElementById("modalAuthor").textContent = book.author;
+  document.getElementById("holdNote").value = "";
+  document.getElementById("holdStatus").textContent = "";
+
+  // Availability box
+  const box  = document.getElementById("availStatusBox");
+  const icon = document.getElementById("availIcon");
+  const text = document.getElementById("availText");
+  const sub  = document.getElementById("availSub");
+  if (inv.available > 0) {
+    box.className = "avail-status-box available";
+    icon.textContent = "✅";
+    text.textContent = `${inv.available} ${inv.available === 1 ? "copy" : "copies"} available`;
+    sub.textContent  = "Your hold will be ready for pickup within 24 hours.";
+  } else {
+    box.className = "avail-status-box unavailable";
+    icon.textContent = "⏳";
+    text.textContent = "Currently unavailable — join the waitlist";
+    sub.textContent  = "We'll notify you on your profile when a copy is ready.";
+  }
+
+  // Shelf
+  document.getElementById("shelfLocation").textContent = inv.shelf.split(" / ")[0];
+  document.getElementById("shelfSection").textContent  = inv.shelf.split(" / ")[1] || "";
+
+  document.getElementById("holdModal").classList.add("open");
+}
+
+function closeHoldModal() {
+  document.getElementById("holdModal").classList.remove("open");
+  _holdBook = null;
+}
+document.getElementById("holdModal").addEventListener("click", e => {
+  if (e.target === document.getElementById("holdModal")) closeHoldModal();
+});
+
+async function confirmHold() {
+  if (!_holdBook) return;
+  const btn    = document.getElementById("holdSubmitBtn");
+  const status = document.getElementById("holdStatus");
+  const note   = document.getElementById("holdNote").value.trim();
+  const inv    = getInventory(_holdBook.id);
+
+  btn.disabled = true;
+  status.style.color = "var(--muted)";
+  status.textContent = "Placing hold…";
+
+  const holdData = {
+    user_id:    userId,
+    student_name: fullname,
+    book_id:    _holdBook.id,
+    book_title: _holdBook.title,
+    book_author:_holdBook.author,
+    book_cover: _holdBook.cover || null,
+    shelf_location: inv.shelf,
+    copies_available: inv.available,
+    status:     inv.available > 0 ? "pending" : "waitlist",
+    note:       note || null,
+    placed_at:  new Date().toISOString(),
+    pickup_by:  null   // set by librarian when ready
+  };
+
+  try {
+    // Try real backend first
+    const res = await fetch(`${API_BASE}/holds`, {
+      method: "POST",
+      headers: { "Content-Type":"application/json", "Authorization":"Bearer " + token },
+      body: JSON.stringify(holdData)
+    });
+
+    if (!res.ok) throw new Error("backend_fail");
+
+    const saved = await res.json();
+    myHolds.push({ ...holdData, id: saved.id || Date.now() });
+  } catch {
+    // Fallback: save to Supabase directly
     try {
-      const { data: existing } = await _sbPts.from("points").select("total,books_read").eq("user_id", userId).single();
-      const current   = existing?.total || 0;
-      const booksRead = existing?.books_read || 0;
-      const newBooks  = action === "finish_book" ? booksRead + 1 : booksRead;
-      const newTotal  = current + pts;
-      await _sbPts.from("points").upsert({ user_id: userId, fullname, total: newTotal, books_read: newBooks, updated_at: new Date().toISOString() }, { onConflict: "user_id" });
-      await _sbPts.from("point_events").insert({ user_id: userId, action, points: pts, note: note||action });
-      const weekStart = (() => { const d=new Date(); const day=d.getDay(); const diff=d.getDate()-day+(day===0?-6:1); d.setDate(diff); return d.toISOString().split("T")[0]; })();
-      const objUpdate = {};
-      if (action === "borrow_book") objUpdate.obj_borrow = true;
-      if (action === "finish_book") objUpdate.obj_finish = true;
-      if (Object.keys(objUpdate).length) {
-        await _sbPts.from("weekly_objectives").upsert({ user_id: userId, week_start: weekStart, ...objUpdate }, { onConflict: "user_id,week_start" });
-      }
-      showPtsToast(pts, action, newTotal);
-    } catch(e) { console.warn("Points:", e); }
-  }
-
-  function showPtsToast(pts, action, newTotal) {
-    const messages = {
-      borrow_book: { title:"Book Borrowed! 📚", msg:`You now have ${newTotal} total points` },
-      finish_book: { title:"Book Finished! 🎉",  msg:`You now have ${newTotal} total points` }
-    };
-    const m = messages[action] || { title:"Points Earned!", msg:`You now have ${newTotal} total points` };
-    document.getElementById("ptsToastTitle").textContent = m.title;
-    document.getElementById("ptsToastMsg").textContent   = m.msg;
-    document.getElementById("ptsToastPts").textContent   = `+${pts} pts`;
-    const toast = document.getElementById("ptsToast");
-    toast.classList.add("show");
-    setTimeout(() => toast.classList.remove("show"), 3500);
-  }
-
-  // ─── STATE ────────────────────────────────────────────
-  let allResults  = [];   // all fetched books
-  let activeSource = "all";
-  let readingList  = JSON.parse(localStorage.getItem(`rl_${userId}`) || "[]");
-  let savedIds     = new Set(readingList.map(b => b.id));
-
-  // ─── INIT ─────────────────────────────────────────────
-  window.addEventListener("DOMContentLoaded", () => {
-    renderReadingList();
-    updateStats();
-    loadLoans();
-    loadNotifications();
-  });
-
-  // ─── TOAST ────────────────────────────────────────────
-  function showToast(msg, type = "success") {
-    const t = document.getElementById("toast");
-    t.textContent = msg; t.className = `toast ${type} show`;
-    setTimeout(() => t.classList.remove("show"), 2800);
-  }
-
-  // ─── SEARCH ───────────────────────────────────────────
-  document.getElementById("searchForm").addEventListener("submit", async e => {
-    e.preventDefault();
-    const q = document.getElementById("searchQuery").value.trim();
-    if (!q) return;
-    await searchBooks(q);
-  });
-
-  function quickSearch(q) {
-    document.getElementById("searchQuery").value = q;
-    searchBooks(q);
-  }
-
-  async function searchBooks(q) {
-    const source = document.getElementById("searchSource").value;
-    const area   = document.getElementById("resultsArea");
-    area.innerHTML = `<div class="loading-grid">${Array(6).fill('<div class="skeleton"></div>').join("")}</div>`;
-    document.getElementById("sourceTabs").style.display = "none";
-    document.getElementById("resultsCount").textContent = "";
-    document.getElementById("resultsTitle").textContent = `🔍 Results for "${q}"`;
-
-    allResults = [];
-
-    const fetches = [];
-    if (source === "both" || source === "google")      fetches.push(fetchGoogle(q));
-    if (source === "both" || source === "openlibrary") fetches.push(fetchOpenLibrary(q));
-
-    const results = await Promise.allSettled(fetches);
-    results.forEach(r => { if (r.status === "fulfilled") allResults.push(...r.value); });
-
-    if (!allResults.length) {
-      area.innerHTML = `<div class="search-placeholder"><div class="icon">😕</div><p>No results found for "${q}". Try a different search.</p></div>`;
-      return;
+      const { data, error } = await sb.from("book_holds").insert(holdData).select().single();
+      if (error) throw error;
+      myHolds.push({ ...holdData, id: data.id });
+    } catch {
+      // Final fallback: localStorage
+      const localId = "local_" + Date.now();
+      myHolds.push({ ...holdData, id: localId });
+      const stored = JSON.parse(localStorage.getItem(`holds_${userId}`) || "[]");
+      stored.push({ ...holdData, id: localId });
+      localStorage.setItem(`holds_${userId}`, JSON.stringify(stored));
     }
-
-    document.getElementById("sourceTabs").style.display = "flex";
-    document.getElementById("resultsCount").textContent = `${allResults.length} results`;
-    activeSource = "all";
-    updateSourceTabs();
-    renderResults(allResults);
   }
 
-  // ─── GOOGLE BOOKS ─────────────────────────────────────
-  async function fetchGoogle(q) {
-    try {
-      const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=12&key=${GOOGLE_API_KEY}`;
-      const res  = await fetch(url);
-      const data = await res.json();
-      if (!data.items) return [];
-      return data.items.map(item => {
-        const info = item.volumeInfo;
-        const access = item.accessInfo;
-        const hasPdf = access?.pdf?.isAvailable;
-        const pdfLink = hasPdf ? access.pdf.downloadLink || access.pdf.acsTokenLink : null;
-        const previewLink = info.previewLink || null;
-        return {
-          id:        "g_" + item.id,
-          source:    "google",
-          title:     info.title || "Unknown Title",
-          author:    (info.authors || ["Unknown"]).join(", "),
-          cover:     info.imageLinks?.thumbnail?.replace("http://","https://") || null,
-          isbn:      info.industryIdentifiers?.[0]?.identifier || "",
-          format:    hasPdf ? "E-Book / PDF" : "E-Book",
-          year:      info.publishedDate?.slice(0,4) || "",
-          pages:     info.pageCount || null,
-          hasPdf,
-          pdfLink,
-          previewLink,
-          viewLink:  info.infoLink || previewLink,
-          isFree:    item.saleInfo?.saleability === "FREE",
-          description: info.description || ""
-        };
-      });
-    } catch { return []; }
+  btn.disabled = false;
+  status.style.color = "var(--green)";
+  status.textContent = inv.available > 0
+    ? "✓ Hold placed! Ready within 24hrs. Check your profile for updates."
+    : "✓ Added to waitlist! We'll update your profile when available.";
+
+  // No points for placing a hold
+  updateStats();
+  renderHolds();
+
+  // Refresh card button
+  const card = document.getElementById(`card-${_holdBook.id}`);
+  if (card) {
+    const btn2 = card.querySelector(".ba-hold");
+    if (btn2) { btn2.textContent = "⏳ On Hold"; btn2.className = "ba-btn ba-hold on-hold"; btn2.disabled = true; }
   }
 
-  // ─── OPEN LIBRARY ─────────────────────────────────────
-  async function fetchOpenLibrary(q) {
-    try {
-      const res  = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=12&fields=key,title,author_name,isbn,cover_i,first_publish_year,number_of_pages_median,ia,has_fulltext`);
-      const data = await res.json();
-      if (!data.docs) return [];
-      return data.docs.map(b => {
-        const coverUrl = b.cover_i ? `https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg` : null;
-        const hasPdf   = b.has_fulltext && b.ia?.length > 0;
-        const pdfLink  = hasPdf ? `https://archive.org/download/${b.ia[0]}/${b.ia[0]}.pdf` : null;
-        const viewLink = `https://openlibrary.org${b.key}`;
-        return {
-          id:        "ol_" + b.key,
-          source:    "openlibrary",
-          title:     b.title || "Unknown Title",
-          author:    b.author_name?.[0] || "Unknown",
-          cover:     coverUrl,
-          isbn:      b.isbn?.[0] || "",
-          format:    hasPdf ? "E-Book / PDF" : "Physical Book",
-          year:      b.first_publish_year || "",
-          hasPdf,
-          pdfLink,
-          viewLink,
-          isFree:    true,
-          description: ""
-        };
-      });
-    } catch { return []; }
+  setTimeout(closeHoldModal, 2000);
+}
+
+// ── MY HOLDS ──────────────────────────────────────────
+async function loadMyHolds() {
+  // Try backend
+  try {
+    const res = await fetch(`${API_BASE}/holds/user`, { headers: { "Authorization":"Bearer " + token } });
+    if (res.ok) { myHolds = await res.json(); renderHolds(); updateStats(); return; }
+  } catch {}
+
+  // Try Supabase
+  try {
+    const { data } = await sb.from("book_holds").select("*").eq("user_id", userId).order("placed_at", { ascending: false });
+    if (data) { myHolds = data; renderHolds(); updateStats(); return; }
+  } catch {}
+
+  // Fallback localStorage
+  myHolds = JSON.parse(localStorage.getItem(`holds_${userId}`) || "[]");
+  renderHolds();
+  updateStats();
+}
+
+function renderHolds() {
+  const area = document.getElementById("myHoldsArea");
+  if (!myHolds.length) {
+    area.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>No active holds. Search the catalogue to place a hold.</p></div>`;
+    return;
   }
 
-  // ─── RENDER RESULTS ───────────────────────────────────
-  function renderResults(books) {
-    const area = document.getElementById("resultsArea");
-    if (!books.length) {
-      area.innerHTML = `<div class="search-placeholder"><div class="icon">😕</div><p>No results in this category.</p></div>`;
-      return;
-    }
-    area.innerHTML = `<div class="books-grid">${books.map(b => bookCard(b)).join("")}</div>`;
-  }
-
-  function bookCard(b) {
-    const isAdded = savedIds.has(b.id);
-    const cover   = b.cover
-      ? `<img src="${b.cover}" alt="${escHtml(b.title)}" onerror="this.parentElement.innerHTML='📚'" loading="lazy" style="width:100%;height:100%;object-fit:cover;">`
+  area.innerHTML = `<div class="holds-list">${myHolds.map(h => {
+    const isReady    = h.status === "ready";
+    const isExpiring = isReady && h.pickup_by && timeLeft(h.pickup_by) < 3600000; // < 1hr
+    const cover      = h.book_cover
+      ? `<img src="${h.book_cover}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='📚'">`
       : "📚";
 
-    return `<div class="book-card" id="card-${b.id}">
-      <div class="book-cover-placeholder">${cover}</div>
-      <div class="book-info">
-        <div class="book-title">${escHtml(b.title)}</div>
-        <div class="book-author">${escHtml(b.author)}</div>
-        <div class="book-meta">
-          ${b.year ? `<span class="book-tag">${b.year}</span>` : ""}
-          ${b.hasPdf ? `<span class="book-tag pdf-tag">📄 PDF</span>` : ""}
-          ${b.isFree ? `<span class="book-tag free-tag">Free</span>` : ""}
-          <span class="book-tag">${b.source === "google" ? "Google Books" : "Open Library"}</span>
+    const statusPill = {
+      pending:   `<span class="hold-status-pill hs-pending">⏳ Pending</span>`,
+      waitlist:  `<span class="hold-status-pill hs-pending">📋 Waitlist</span>`,
+      ready:     `<span class="hold-status-pill hs-ready">✅ Ready for Pickup!</span>`,
+      expired:   `<span class="hold-status-pill hs-expired">❌ Expired</span>`,
+      collected: `<span class="hold-status-pill hs-collected">📦 Collected</span>`
+    }[h.status] || "";
+
+    const pickupInfo = isReady && h.pickup_by
+      ? `<div class="pickup-countdown ${isExpiring ? "urgent" : "ok"}">
+           ⏱ Pick up by: ${new Date(h.pickup_by).toLocaleString("en-JM",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})}
+           — ${formatTimeLeft(h.pickup_by)} remaining
+         </div>`
+      : h.status === "pending"
+      ? `<span style="font-size:0.72rem;color:var(--muted);">Librarian will prep your book shortly</span>`
+      : h.status === "waitlist"
+      ? `<span style="font-size:0.72rem;color:var(--muted);">You'll be notified when a copy is available</span>`
+      : "";
+
+    return `<div class="hold-item ${isReady ? "ready" : ""} ${isExpiring ? "expiring" : ""}">
+      <div class="hold-cover">${cover}</div>
+      <div class="hold-info">
+        <div class="hold-title">${escHtml(h.book_title)}</div>
+        <div class="hold-author">${escHtml(h.book_author || "")}</div>
+        <div class="hold-meta">
+          ${statusPill}
+          ${h.shelf_location ? `<div class="hold-location">📍 ${h.shelf_location}</div>` : ""}
         </div>
+        ${pickupInfo}
       </div>
-      <div class="book-actions">
-        ${b.hasPdf && b.pdfLink
-          ? `<button class="ba-btn ba-dl" onclick="downloadPdf('${esc(b.pdfLink)}','${esc(b.title)}','${b.id}')">⬇ PDF</button>`
-          : `<a class="ba-btn ba-view" href="${b.viewLink||"#"}" target="_blank">👁 View</a>`}
-        <button class="ba-btn ba-borrow" onclick="openBorrowModal(${JSON.stringify(b).replace(/"/g,"&quot;")})">📥 Borrow</button>
-        <button class="ba-btn ba-add ${isAdded?"added":""}" id="addbtn-${b.id}"
-          onclick="addToLibrary(${JSON.stringify(b).replace(/"/g,"&quot;")})">
-          ${isAdded ? "✓ Saved" : "+ Add"}
-        </button>
+      <div class="hold-actions">
+        ${["pending","waitlist"].includes(h.status)
+          ? `<button class="hbtn hbtn-cancel" onclick="cancelHold('${h.id}')">✕ Cancel</button>`
+          : ""}
       </div>
     </div>`;
+  }).join("")}</div>`;
+}
+
+async function cancelHold(holdId) {
+  if (!confirm("Cancel this hold?")) return;
+  try {
+    await fetch(`${API_BASE}/holds/${holdId}`, { method:"DELETE", headers:{ "Authorization":"Bearer "+token } });
+  } catch {
+    try { await sb.from("book_holds").delete().eq("id", holdId); } catch {}
   }
+  myHolds = myHolds.filter(h => String(h.id) !== String(holdId));
+  // Remove from localStorage
+  const stored = JSON.parse(localStorage.getItem(`holds_${userId}`) || "[]");
+  localStorage.setItem(`holds_${userId}`, JSON.stringify(stored.filter(h => String(h.id) !== String(holdId))));
+  renderHolds();
+  updateStats();
+  showToast("Hold cancelled.", "info");
+}
 
-  // ─── SOURCE FILTER ────────────────────────────────────
-  function filterSource(src) {
-    activeSource = src;
-    updateSourceTabs();
-    const filtered = src === "all" ? allResults
-      : src === "google" ? allResults.filter(b=>b.source==="google")
-      : allResults.filter(b=>b.source==="openlibrary");
-    document.getElementById("resultsCount").textContent = `${filtered.length} results`;
-    renderResults(filtered);
-  }
+// ── READING LIST ──────────────────────────────────────
+function addToReadingList(book) {
+  if (typeof book === "string") { try { book = JSON.parse(book); } catch { return; } }
+  if (savedIds.has(book.id)) { showToast("Already in your reading list!", "info"); return; }
+  readingList.unshift({ ...book, status:"want_to_read", addedAt: new Date().toISOString() });
+  savedIds.add(book.id);
+  localStorage.setItem(`rl_${userId}`, JSON.stringify(readingList));
+  const btn = document.getElementById(`addbtn-${book.id}`);
+  if (btn) { btn.textContent = "✓ Saved"; btn.classList.add("added"); }
+  renderReadingList();
+  updateStats();
+  showToast(`✓ "${book.title.slice(0,30)}" saved to reading list.`);
+}
 
-  function updateSourceTabs() {
-    ["all","google","open"].forEach(s => {
-      document.getElementById(`tab-${s}`)?.classList.toggle("active", activeSource === s);
-    });
-  }
+function renderReadingList() {
+  const list = document.getElementById("readingList");
+  if (!readingList.length) { list.innerHTML = `<p style="color:var(--muted);font-size:.85rem;">No books saved yet.</p>`; return; }
+  list.innerHTML = readingList.slice(0,12).map(b => `
+    <div class="rl-item">
+      <div class="rl-title">${escHtml(b.title)}</div>
+      <div class="rl-author">${escHtml(b.author)}</div>
+      <div class="rl-status-row">
+        <select class="status-sel" onchange="updateRLStatus('${b.id}',this.value)">
+          <option value="want_to_read"  ${b.status==="want_to_read" ?"selected":""}>Want to Read</option>
+          <option value="reading"       ${b.status==="reading"      ?"selected":""}>Reading</option>
+          <option value="finished"      ${b.status==="finished"     ?"selected":""}>Finished</option>
+        </select>
+        <button class="rl-remove" onclick="removeFromRL('${b.id}')">✕</button>
+      </div>
+    </div>`).join("");
+}
 
-  // ─── DOWNLOAD PDF ─────────────────────────────────────
-  function downloadPdf(link, title, bookId) {
-    // Open PDF in new tab (direct download where supported)
-    window.open(link, "_blank");
-    showToast(`📄 Opening PDF: ${title.slice(0,30)}…`, "info");
-    // Also add to library automatically
-    const book = allResults.find(b => b.id === bookId);
-    if (book && !savedIds.has(bookId)) addToLibrary(book);
-  }
+function updateRLStatus(id, status) {
+  const b = readingList.find(b => b.id === id);
+  if (!b) return;
+  const prev = b.status;
+  b.status = status;
+  localStorage.setItem(`rl_${userId}`, JSON.stringify(readingList));
+  updateStats();
+  // Only award points for finishing a book
+  if (status === "finished" && prev !== "finished") awardPoints(20, "finish_book", b.title);
+}
+function removeFromRL(id) {
+  readingList = readingList.filter(b => b.id !== id);
+  savedIds.delete(id);
+  localStorage.setItem(`rl_${userId}`, JSON.stringify(readingList));
+  renderReadingList(); updateStats();
+}
 
-  // ─── ADD TO LIBRARY ───────────────────────────────────
-  function addToLibrary(book) {
-    if (typeof book === "string") {
-      try { book = JSON.parse(book); } catch { return; }
-    }
-    if (savedIds.has(book.id)) {
-      showToast("Already in your library!", "info");
-      return;
-    }
+// ── STATS ─────────────────────────────────────────────
+function updateStats() {
+  document.getElementById("statHolds").textContent     = myHolds.filter(h => ["pending","waitlist"].includes(h.status)).length;
+  document.getElementById("statReady").textContent     = myHolds.filter(h => h.status === "ready").length;
+  document.getElementById("statSaved").textContent     = readingList.length;
+  document.getElementById("statCollected").textContent = myHolds.filter(h => h.status === "collected").length;
+}
 
-    // Add to reading list
-    const entry = { ...book, status: "want_to_read", addedAt: new Date().toISOString() };
-    readingList.unshift(entry);
-    savedIds.add(book.id);
-    localStorage.setItem(`rl_${userId}`, JSON.stringify(readingList));
+// ── HELPERS ───────────────────────────────────────────
+function timeLeft(dt)       { return new Date(dt) - Date.now(); }
+function formatTimeLeft(dt) {
+  const ms = timeLeft(dt); if (ms <= 0) return "Expired";
+  const h  = Math.floor(ms / 3600000);
+  const m  = Math.floor((ms % 3600000) / 60000);
+  return h > 0 ? `${h}h ${m}m` : `${m}m`;
+}
+function esc(s)    { return (s||"").replace(/'/g,"\\'").replace(/"/g,"&quot;"); }
+function escHtml(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
-    // Save to backend loans table
-    saveToLoans(book);
-
-    // Update UI
-    const btn = document.getElementById(`addbtn-${book.id}`);
-    if (btn) { btn.textContent = "✓ Saved"; btn.classList.add("added"); }
-
-    renderReadingList();
-    updateStats();
-    showToast(`✓ "${book.title.slice(0,30)}" added to your library!`);
-  }
-
-  async function saveToLoans(book) {
-    // Try real backend — silent fail for demo
-    try {
-      const dueDate = new Date();
-      dueDate.setDate(dueDate.getDate() + 30);
-      await fetch(`${API_BASE}/loans`, {
-        method: "POST",
-        headers: { "Content-Type":"application/json", "Authorization":"Bearer "+token },
-        body: JSON.stringify({
-          book_title:  book.title,
-          book_author: book.author,
-          format:      book.format || "E-Book / PDF",
-          status:      "active",
-          source_url:  book.viewLink || book.pdfLink || "",
-          pdf_url:     book.pdfLink || null,
-          due_date:    dueDate.toISOString()
-        })
-      });
-    } catch { /* silent */ }
-  }
-
-  // ─── READING LIST ─────────────────────────────────────
-  function renderReadingList() {
-    const list = document.getElementById("readingList");
-    if (!readingList.length) {
-      list.innerHTML = `<p style="color:var(--muted);font-size:.85rem;">No books saved yet. Search above and click "+ Add".</p>`;
-      return;
-    }
-    list.innerHTML = readingList.slice(0,12).map(b => `
-      <div class="rl-item">
-        <div class="rl-title">${escHtml(b.title)}</div>
-        <div class="rl-author">${escHtml(b.author)}</div>
-        <div style="display:flex;gap:6px;margin-top:4px;">
-          ${b.hasPdf && b.pdfLink
-            ? `<button class="ba-btn ba-dl" style="flex:1;padding:5px 8px;font-size:.72rem;" onclick="window.open('${esc(b.pdfLink)}','_blank')">📄 PDF</button>`
-            : `<a class="ba-btn ba-view" style="flex:1;padding:5px 8px;font-size:.72rem;text-align:center;" href="${b.viewLink||"#"}" target="_blank">👁 View</a>`}
-        </div>
-        <div class="rl-status-row">
-          <select class="status-sel" onchange="updateStatus('${b.id}',this.value)">
-            <option value="want_to_read"  ${b.status==="want_to_read" ?"selected":""}>Want to Read</option>
-            <option value="reading"       ${b.status==="reading"      ?"selected":""}>Reading</option>
-            <option value="finished"      ${b.status==="finished"     ?"selected":""}>Finished</option>
-          </select>
-          <button class="rl-remove" onclick="removeFromLibrary('${b.id}')">✕ Remove</button>
-        </div>
-      </div>`).join("");
-  }
-
-  function updateStatus(bookId, status) {
-    const book = readingList.find(b => b.id === bookId);
-    if (!book) return;
-    book.status = status;
-    localStorage.setItem(`rl_${userId}`, JSON.stringify(readingList));
-    updateStats();
-    if (status === 'finished') awardPoints(20, 'finish_book', book.title);
-    // Sync to Supabase
-    sb.from("reading_progress").update({ status }).eq("user_id", userId).eq("book_title", book.title).catch(()=>{});
-  }
-
-  function removeFromLibrary(bookId) {
-    readingList = readingList.filter(b => b.id !== bookId);
-    savedIds.delete(bookId);
-    localStorage.setItem(`rl_${userId}`, JSON.stringify(readingList));
-    // Update card button if visible
-    const btn = document.getElementById(`addbtn-${bookId}`);
-    if (btn) { btn.textContent = "+ Add"; btn.classList.remove("added"); }
-    renderReadingList();
-    updateStats();
-  }
-
-  // ─── STATS ────────────────────────────────────────────
-  function updateStats() {
-    document.getElementById("statSaved").textContent    = readingList.length;
-    document.getElementById("statReading").textContent  = readingList.filter(b=>b.status==="reading").length;
-    document.getElementById("statFinished").textContent = readingList.filter(b=>b.status==="finished").length;
-  }
-
-  // ─── LOAD LOANS ───────────────────────────────────────
-  async function loadLoans() {
-    const tbody = document.getElementById("loansTableBody");
-
-    // Always load simulated loans from localStorage
-    const simLoans = JSON.parse(localStorage.getItem(`sim_loans_${userId}`) || "[]");
-
-    let realLoans = [];
-    try {
-      const res = await fetch(`${API_BASE}/loans/user`, { headers: { "Authorization":"Bearer "+token } });
-      if (res.ok) realLoans = await res.json();
-    } catch { /* silent — use sim only */ }
-
-    // Merge: real loans first, then sim loans (avoid duplicates by title)
-    const realTitles = new Set(realLoans.map(l => l.book_title));
-    const merged = [...realLoans, ...simLoans.filter(l => !realTitles.has(l.book_title))];
-
-    document.getElementById("statLoans").textContent = merged.filter(l=>l.status==="active").length;
-    renderLoansTable(merged);
-    renderHistory(merged);
-    loadNotifications(merged);
-  }
-
-  function renderLoansTable(loans) {
-    const tbody = document.getElementById("loansTableBody");
-    if (!loans.length) { tbody.innerHTML=`<tr class="empty-row"><td colspan="6">No loans yet. Add a book above!</td></tr>`; return; }
-    tbody.innerHTML = loans.map(l => {
-      const isOver = l.due_date && new Date(l.due_date) < new Date() && l.status==="active";
-      const status = isOver ? "overdue" : l.status;
-      const due    = l.due_date ? new Date(l.due_date).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"}) : "—";
-      const pillMap = { active:"pill-active", overdue:"pill-active", hold:"pill-want", returned:"pill-want" };
-      return `<tr>
-        <td><strong>${escHtml(l.book_title||"—")}</strong></td>
-        <td>${escHtml(l.book_author||"—")}</td>
-        <td>${l.format||"—"}</td>
-        <td style="${isOver?"color:var(--red)":""}">${due}</td>
-        <td><span class="pill ${pillMap[status]||"pill-active"}">${status}</span></td>
-        <td><div class="action-btns">
-          ${l.pdf_url  ? `<a class="btn btn-ghost btn-sm" href="${l.pdf_url}"  target="_blank">📄 PDF</a>` : ""}
-          ${l.source_url&&!l.pdf_url ? `<a class="btn btn-ghost btn-sm" href="${l.source_url}" target="_blank">👁 View</a>` : ""}
-        </div></td>
-      </tr>`;
-    }).join("");
-  }
-
-  function renderHistory(loans) {
-    const list = document.getElementById("historyList");
-    if (!loans.length) { list.innerHTML=`<li style="color:var(--muted);font-size:.85rem;padding:8px 0;">No history yet.</li>`; return; }
-    list.innerHTML = loans.slice(0,5).map(l=>`
-      <li class="history-item">
-        <div><div class="hi-title">${escHtml(l.book_title)}</div>
-        <div class="hi-date">${l.format||"E-Book"} · Added ${l.created_at?new Date(l.created_at).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"}):"—"}</div></div>
-        <span class="pill pill-active">Saved</span>
-      </li>`).join("");
-  }
-
-  async function loadNotifications(loans) {
-    const list = document.getElementById("notifList");
-    if (!loans?.length) { list.innerHTML=`<li style="color:var(--muted);font-size:.85rem;padding:8px 0;">No notifications.</li>`; return; }
-    const notifs = [];
-    loans.forEach(l => {
-      const isOver  = l.due_date && new Date(l.due_date) < new Date() && l.status==="active";
-      const dueSoon = l.due_date && !isOver && l.status==="active" &&
-                      (new Date(l.due_date)-new Date())/(1000*60*60*24) <= 5;
-      if (isOver)  notifs.push({icon:"⚠️",unread:true, title:`Access Expiring — ${l.book_title}`, sub:`Was due ${new Date(l.due_date).toLocaleDateString()}`});
-      if (dueSoon) notifs.push({icon:"📅",unread:false,title:`Expiring Soon — ${l.book_title}`,   sub:`Access expires in 5 days`});
-    });
-    if (!notifs.length) { list.innerHTML=`<li style="color:var(--muted);font-size:.85rem;padding:8px 0;">No notifications right now.</li>`; return; }
-    list.innerHTML = notifs.slice(0,5).map(n=>`
-      <li class="notif-item ${n.unread?"unread":""}">
-        <span class="notif-icon">${n.icon}</span>
-        <div class="notif-text"><strong>${n.title}</strong><span>${n.sub}</span></div>
-        ${n.unread?'<div class="unread-dot"></div>':''}
-      </li>`).join("");
-  }
-
-  // ─── HELPERS ──────────────────────────────────────────
-  function esc(s)    { return (s||"").replace(/'/g,"\\'").replace(/"/g,"&quot;"); }
-  function escHtml(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-  </script>
-
-  <!-- POINTS TOAST -->
-  <div class="pts-toast" id="ptsToast">
-    <div class="pts-toast-icon">⭐</div>
-    <div class="pts-toast-body">
-      <div class="pts-toast-title" id="ptsToastTitle">Points Earned!</div>
-      <div class="pts-toast-msg"  id="ptsToastMsg">Keep it up!</div>
-    </div>
-    <div class="pts-toast-pts" id="ptsToastPts">+0</div>
-  </div>
-
+// ── POINTS ────────────────────────────────────────────
+async function awardPoints(pts, action, note) {
+  if (!userId) return;
+  try {
+    const { data: ex } = await sb.from("points").select("total,books_read").eq("user_id",userId).single();
+    const newTotal = (ex?.total||0)+pts;
+    await sb.from("points").upsert({user_id:userId,fullname,total:newTotal,books_read:ex?.books_read||0,updated_at:new Date().toISOString()},{onConflict:"user_id"});
+    await sb.from("point_events").insert({user_id:userId,action,points:pts,note:note||action});
+    const msgs = { finish_book: "Book Finished! 🎉" };
+    const t = document.getElementById("ptsToast");
+    document.getElementById("ptsToastTitle").textContent = msgs[action] || "Points Earned! ⭐";
+    document.getElementById("ptsToastMsg").textContent   = `You now have ${newTotal} total points`;
+    document.getElementById("ptsToastPts").textContent   = `+${pts}`;
+    t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),3500);
+  } catch {}
+}
+</script>
 </body>
 </html>

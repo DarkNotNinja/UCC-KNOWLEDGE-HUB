@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Librarian Dashboard — UCC Knowledge Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="auth.js"></script>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --bg: hsl(220,40%,7%); --fg: hsl(45,30%,92%); --primary: hsl(43,55%,54%);
+      --primary-fg: hsl(220,40%,7%); --card: hsl(220,35%,11%); --muted: hsl(220,15%,55%);
+      --border: hsl(220,25%,18%); --secondary: hsl(220,30%,16%);
+      --green: hsl(152,60%,52%); --red: hsl(0,70%,60%); --blue: hsl(210,80%,65%);
+      --orange: hsl(30,90%,58%); --glow-gold: 0 0 40px hsla(43,55%,54%,0.25);
+      --font-display: 'Space Grotesk', sans-serif; --font-body: 'Inter', sans-serif;
+    }
+    body { background:var(--bg); color:var(--fg); font-family:var(--font-body); line-height:1.6; min-height:100vh; display:flex; flex-direction:column; }
+    a { text-decoration:none; color:inherit; }
+    h1,h2,h3,h4,h5,h6 { font-family:var(--font-display); }
+
+    .site-header { position:sticky; top:0; z-index:50; background:hsla(220,35%,11%,0.75); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); }
+    .header-inner { max-width:1400px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:12px 24px; gap:16px; }
+    .logo-wrap { display:flex; align-items:center; gap:12px; }
+    .ucc-logo { height:40px; width:40px; border-radius:50%; }
+    .title-wrap h1 { font-size:1.125rem; font-weight:700; }
+    .title-wrap .subtitle { font-size:0.72rem; color:var(--orange); font-weight:600; font-family:var(--font-display); }
+    .header-right { display:flex; align-items:center; gap:10px; }
+    .librarian-badge { background:hsla(43,55%,54%,0.15); border:1px solid hsla(43,55%,54%,0.3); color:var(--primary); font-size:0.72rem; font-weight:700; padding:5px 12px; border-radius:20px; font-family:var(--font-display); }
+    .nav-logout { font-size:0.875rem; color:hsl(0,70%,70%); padding:7px 14px; border-radius:8px; border:1px solid hsla(0,70%,60%,0.25); background:hsla(0,70%,60%,0.08); cursor:pointer; transition:all .2s; font-family:var(--font-body); }
+    .nav-logout:hover { background:hsla(0,70%,60%,0.18); color:#fff; }
+
+    main { flex:1; max-width:1400px; width:100%; margin:0 auto; padding:40px 24px 80px; display:flex; flex-direction:column; gap:28px; }
+
+    /* PAGE HEADER */
+    .page-header { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; animation:fadeUp .4s ease both; }
+    .page-header h2 { font-size:1.6rem; font-weight:700; margin-bottom:4px; }
+    .page-header p  { font-size:0.875rem; color:var(--muted); }
+    .header-actions { display:flex; gap:10px; flex-shrink:0; flex-wrap:wrap; }
+
+    /* STATS */
+    .stats-row { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; animation:fadeUp .4s .05s ease both; }
+    .stat-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px 18px; transition:border-color .3s; cursor:default; }
+    .stat-card.clickable { cursor:pointer; }
+    .stat-card.clickable:hover { border-color:hsla(43,55%,54%,0.4); }
+    .stat-card.active-filter { border-color:var(--primary); background:hsla(43,55%,54%,0.06); }
+    .stat-num { font-family:var(--font-display); font-size:1.8rem; font-weight:700; color:var(--primary); line-height:1; }
+    .stat-num.green  { color:var(--green); }
+    .stat-num.orange { color:var(--orange); }
+    .stat-num.red    { color:var(--red); }
+    .stat-num.blue   { color:var(--blue); }
+    .stat-lbl { font-size:0.75rem; color:var(--muted); margin-top:4px; }
+
+    /* FILTER / SEARCH BAR */
+    .filter-row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .search-input-wrap { flex:1; min-width:200px; display:flex; align-items:center; gap:8px; background:var(--card); border:1px solid var(--border); border-radius:10px; padding:8px 14px; transition:border-color .2s; }
+    .search-input-wrap:focus-within { border-color:var(--primary); }
+    .search-input-wrap input { flex:1; background:none; border:none; outline:none; color:var(--fg); font-family:var(--font-body); font-size:0.875rem; }
+    .search-input-wrap input::placeholder { color:var(--muted); }
+    .filter-sel { padding:9px 13px; background:var(--card); border:1px solid var(--border); border-radius:10px; color:var(--fg); font-family:var(--font-body); font-size:0.875rem; outline:none; cursor:pointer; }
+    .filter-sel option { background:var(--card); }
+
+    /* STATUS TABS */
+    .status-tabs { display:flex; gap:6px; flex-wrap:wrap; }
+    .stab { padding:7px 16px; border-radius:8px; border:1px solid var(--border); background:var(--secondary); color:var(--muted); font-size:0.8rem; font-weight:600; cursor:pointer; transition:all .2s; font-family:var(--font-display); }
+    .stab:hover { color:var(--fg); }
+    .stab.active { border-color:var(--primary); color:var(--primary); background:hsla(43,55%,54%,0.1); }
+    .stab .tab-count { display:inline-block; min-width:18px; text-align:center; background:var(--card); border-radius:10px; padding:0 5px; margin-left:5px; font-size:0.7rem; }
+    .stab.active .tab-count { background:hsla(43,55%,54%,0.15); }
+
+    /* HOLDS TABLE */
+    .holds-table-wrap { animation:fadeUp .4s .1s ease both; }
+    .holds-table-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+    .holds-table-header h3 { font-size:1rem; font-weight:600; }
+
+    .hold-cards { display:flex; flex-direction:column; gap:10px; }
+    .hold-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px 22px; display:flex; align-items:flex-start; gap:18px; transition:border-color .2s; flex-wrap:wrap; }
+    .hold-card:hover { border-color:hsla(43,55%,54%,0.25); }
+    .hold-card.status-ready    { border-left:3px solid var(--green); }
+    .hold-card.status-pending  { border-left:3px solid var(--blue); }
+    .hold-card.status-waitlist { border-left:3px solid var(--orange); }
+    .hold-card.status-expired  { border-left:3px solid var(--red); opacity:.7; }
+    .hold-card.status-collected{ border-left:3px solid var(--muted); opacity:.6; }
+
+    .hc-cover { width:48px; height:62px; border-radius:7px; background:var(--secondary); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:1.5rem; flex-shrink:0; overflow:hidden; }
+    .hc-cover img { width:100%; height:100%; object-fit:cover; }
+
+    .hc-info { flex:1; min-width:200px; }
+    .hc-title  { font-size:0.95rem; font-weight:700; margin-bottom:3px; }
+    .hc-author { font-size:0.78rem; color:var(--muted); margin-bottom:8px; }
+    .hc-meta   { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    .hc-student { display:flex; align-items:center; gap:6px; font-size:0.8rem; }
+    .hc-avatar  { width:24px; height:24px; border-radius:50%; background:var(--secondary); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:0.62rem; font-weight:700; color:var(--primary); font-family:var(--font-display); flex-shrink:0; }
+    .hc-shelf   { font-size:0.72rem; color:var(--muted); display:flex; align-items:center; gap:4px; }
+    .hc-note    { font-size:0.75rem; color:var(--primary); background:hsla(43,55%,54%,0.08); border:1px solid hsla(43,55%,54%,0.2); border-radius:6px; padding:4px 10px; margin-top:6px; display:inline-block; }
+    .hc-time    { font-size:0.72rem; color:var(--muted); }
+
+    .status-badge { font-size:0.68rem; font-weight:700; padding:3px 10px; border-radius:20px; font-family:var(--font-display); white-space:nowrap; }
+    .sb-pending  { background:hsla(210,80%,65%,0.12); color:var(--blue);   border:1px solid hsla(210,80%,65%,0.25); }
+    .sb-waitlist { background:hsla(30,90%,58%,0.12);  color:var(--orange); border:1px solid hsla(30,90%,58%,0.25); }
+    .sb-ready    { background:hsla(152,60%,52%,0.12); color:var(--green);  border:1px solid hsla(152,60%,52%,0.25); }
+    .sb-expired  { background:hsla(0,70%,60%,0.12);   color:var(--red);    border:1px solid hsla(0,70%,60%,0.25); }
+    .sb-collected{ background:var(--secondary); color:var(--muted); border:1px solid var(--border); }
+
+    .hc-actions { display:flex; flex-direction:column; gap:6px; flex-shrink:0; min-width:140px; }
+    .action-btn { width:100%; padding:8px 14px; border-radius:8px; font-family:var(--font-display); font-size:0.75rem; font-weight:700; cursor:pointer; border:none; transition:all .2s; text-align:center; }
+    .btn-ready     { background:var(--green); color:hsl(220,40%,7%); }
+    .btn-ready:hover { opacity:.9; }
+    .btn-collected { background:hsla(152,60%,52%,0.15); border:1px solid hsla(152,60%,52%,0.3); color:var(--green); }
+    .btn-collected:hover { background:hsla(152,60%,52%,0.25); }
+    .btn-cancel    { background:hsla(0,70%,60%,0.1); border:1px solid hsla(0,70%,60%,0.25); color:var(--red); }
+    .btn-cancel:hover { background:hsla(0,70%,60%,0.2); }
+    .btn-ghost-sm  { background:var(--secondary); border:1px solid var(--border); color:var(--muted); }
+    .btn-ghost-sm:hover { color:var(--fg); border-color:var(--primary); }
+
+    /* PICKUP DEADLINE */
+    .pickup-deadline { font-size:0.72rem; font-family:var(--font-display); font-weight:600; display:flex; align-items:center; gap:4px; margin-top:4px; }
+    .pickup-deadline.urgent { color:var(--red); }
+    .pickup-deadline.ok     { color:var(--green); }
+    .pickup-deadline.warn   { color:var(--orange); }
+
+    /* INVENTORY SECTION */
+    .inventory-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; }
+    .inv-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px 18px; }
+    .inv-card-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+    .inv-section { font-size:0.85rem; font-weight:600; }
+    .inv-nums { font-size:0.78rem; color:var(--muted); }
+    .inv-bar { height:6px; background:var(--secondary); border-radius:6px; overflow:hidden; margin-bottom:8px; }
+    .inv-bar-fill { height:100%; border-radius:6px; }
+    .inv-actions { display:flex; gap:6px; }
+    .inv-btn { flex:1; padding:6px 10px; border-radius:7px; font-size:0.72rem; font-weight:700; cursor:pointer; font-family:var(--font-display); border:none; transition:all .2s; text-align:center; background:var(--secondary); border:1px solid var(--border); color:var(--muted); }
+    .inv-btn:hover { color:var(--primary); border-color:var(--primary); }
+
+    /* EMPTY / LOADING */
+    .empty-state { text-align:center; padding:50px 20px; color:var(--muted); }
+    .empty-state .icon { font-size:2.5rem; margin-bottom:10px; }
+    .loading-row { display:flex; flex-direction:column; gap:10px; }
+    .skeleton-row { background:var(--card); border:1px solid var(--border); border-radius:14px; height:90px; animation:shimmer 1.5s infinite; }
+    @keyframes shimmer { 0%,100%{opacity:.6} 50%{opacity:1} }
+
+    /* TOAST */
+    .toast { position:fixed; bottom:24px; right:24px; z-index:500; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 20px; font-size:0.875rem; font-family:var(--font-display); font-weight:600; box-shadow:var(--glow-gold); transform:translateY(80px); opacity:0; transition:all .3s; pointer-events:none; max-width:340px; }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .toast.success { border-color:hsla(152,60%,52%,0.4); color:var(--green); }
+    .toast.info    { border-color:hsla(43,55%,54%,0.4);  color:var(--primary); }
+    .toast.warn    { border-color:hsla(0,70%,60%,0.4);   color:var(--red); }
+
+    /* MODAL */
+    .modal-overlay { display:none; position:fixed; inset:0; z-index:200; background:hsla(220,40%,5%,0.88); backdrop-filter:blur(8px); align-items:center; justify-content:center; }
+    .modal-overlay.open { display:flex; }
+    .modal-box { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:30px 34px; width:90%; max-width:480px; box-shadow:0 24px 70px rgba(0,0,0,0.6); animation:scaleIn .22s ease; }
+    .modal-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; }
+    .modal-top h3 { font-size:1.1rem; font-weight:700; }
+    .modal-close { background:none; border:none; color:var(--muted); font-size:1.3rem; cursor:pointer; }
+    .modal-close:hover { color:var(--fg); }
+    .form-group { margin-bottom:14px; }
+    .form-group label { display:block; font-size:0.72rem; color:var(--muted); margin-bottom:6px; font-family:var(--font-display); font-weight:600; letter-spacing:.05em; text-transform:uppercase; }
+    .form-group input, .form-group select, .form-group textarea { width:100%; padding:10px 13px; background:var(--secondary); border:1px solid var(--border); border-radius:8px; outline:none; color:var(--fg); font-family:var(--font-body); font-size:0.875rem; transition:border-color .2s; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color:var(--primary); }
+    .form-group textarea { resize:vertical; }
+    .modal-submit { width:100%; padding:12px; border:none; border-radius:10px; background:var(--primary); color:var(--primary-fg); font-family:var(--font-display); font-size:0.9rem; font-weight:700; cursor:pointer; transition:all .2s; }
+    .modal-submit:hover { opacity:.9; box-shadow:var(--glow-gold); }
+
+    .btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:9px 20px; border-radius:9px; font-family:var(--font-display); font-size:0.82rem; font-weight:600; cursor:pointer; border:none; transition:all .2s; }
+    .btn-primary { background:var(--primary); color:var(--primary-fg); }
+    .btn-primary:hover { opacity:.9; box-shadow:var(--glow-gold); }
+    .btn-ghost { background:transparent; border:1px solid hsla(45,30%,92%,0.2); color:var(--fg); }
+    .btn-ghost:hover { background:var(--secondary); }
+
+    .site-footer { border-top:1px solid var(--border); padding:28px 24px; margin-top:auto; }
+    .footer-inner { max-width:1400px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+    .site-footer p { font-family:var(--font-display); font-size:0.875rem; color:var(--muted); }
+    .site-footer strong { color:var(--fg); }
+    .site-footer a { color:var(--primary); }
+    .site-footer small { font-size:0.75rem; color:var(--muted); }
+
+    @keyframes fadeUp  { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes scaleIn { from{opacity:0;transform:scale(.94)} to{opacity:1;transform:scale(1)} }
+    @media (max-width:1100px) { .stats-row{grid-template-columns:repeat(3,1fr)} }
+    @media (max-width:700px)  { .stats-row{grid-template-columns:repeat(2,1fr)} main{padding:28px 16px 60px} .hc-actions{min-width:unset;width:100%} }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo-wrap">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEC31GlH03Kf6NAmmiIHqInFd0q1bQz2gmDg&s" alt="UCC logo" class="ucc-logo">
+      <div class="title-wrap">
+        <h1>UCC Knowledge Hub</h1>
+        <p class="subtitle">📚 Librarian Dashboard</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="librarian-badge">👩‍💼 Librarian</span>
+      <a href="Loaners.html" style="font-size:0.82rem;color:var(--muted);padding:7px 14px;border-radius:8px;background:var(--secondary);border:1px solid var(--border);">← Student View</a>
+      <button class="nav-logout" id="logoutBtn">Log Out</button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div>
+      <h2>📋 Hold Queue</h2>
+      <p>Manage student book holds, mark books ready for pickup and track collections.</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-ghost" onclick="loadHolds()">↻ Refresh</button>
+      <button class="btn btn-primary" onclick="openInventoryModal()">📦 Update Inventory</button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card clickable" onclick="filterStatus('all')" id="sc-all">
+      <div class="stat-num" id="statTotal">0</div>
+      <div class="stat-lbl">Total Holds</div>
+    </div>
+    <div class="stat-card clickable" onclick="filterStatus('pending')" id="sc-pending">
+      <div class="stat-num blue"   id="statPending">0</div>
+      <div class="stat-lbl">⏳ Pending Prep</div>
+    </div>
+    <div class="stat-card clickable" onclick="filterStatus('ready')" id="sc-ready">
+      <div class="stat-num green"  id="statReady">0</div>
+      <div class="stat-lbl">✅ Ready for Pickup</div>
+    </div>
+    <div class="stat-card clickable" onclick="filterStatus('expired')" id="sc-expired">
+      <div class="stat-num red"    id="statExpired">0</div>
+      <div class="stat-lbl">❌ Expired (24hr)</div>
+    </div>
+    <div class="stat-card clickable" onclick="filterStatus('waitlist')" id="sc-waitlist">
+      <div class="stat-num orange" id="statWaitlist">0</div>
+      <div class="stat-lbl">📋 Waitlist</div>
+    </div>
+  </div>
+
+  <!-- FILTER ROW -->
+  <div class="filter-row">
+    <div class="search-input-wrap">
+      <span style="color:var(--muted);">🔍</span>
+      <input type="search" id="searchHolds" placeholder="Search by student name or book title…" oninput="applyFilters()">
+    </div>
+    <select class="filter-sel" id="sortHolds" onchange="applyFilters()">
+      <option value="newest">Newest First</option>
+      <option value="oldest">Oldest First</option>
+      <option value="expiring">Expiring Soon</option>
+    </select>
+  </div>
+
+  <!-- STATUS TABS -->
+  <div class="status-tabs">
+    <button class="stab active" id="stab-all"       onclick="filterStatus('all')">All <span class="tab-count" id="tc-all">0</span></button>
+    <button class="stab"        id="stab-pending"   onclick="filterStatus('pending')">⏳ Pending <span class="tab-count" id="tc-pending">0</span></button>
+    <button class="stab"        id="stab-ready"     onclick="filterStatus('ready')">✅ Ready <span class="tab-count" id="tc-ready">0</span></button>
+    <button class="stab"        id="stab-waitlist"  onclick="filterStatus('waitlist')">📋 Waitlist <span class="tab-count" id="tc-waitlist">0</span></button>
+    <button class="stab"        id="stab-collected" onclick="filterStatus('collected')">📦 Collected <span class="tab-count" id="tc-collected">0</span></button>
+    <button class="stab"        id="stab-expired"   onclick="filterStatus('expired')">❌ Expired <span class="tab-count" id="tc-expired">0</span></button>
+  </div>
+
+  <!-- HOLDS LIST -->
+  <div class="holds-table-wrap">
+    <div class="holds-table-header">
+      <h3 id="holdsListTitle">All Holds</h3>
+      <span id="holdsListCount" style="font-size:0.82rem;color:var(--muted);"></span>
+    </div>
+    <div id="holdsArea">
+      <div class="loading-row">${Array(4).fill('<div class="skeleton-row"></div>').join("")}</div>
+    </div>
+  </div>
+
+  <!-- INVENTORY -->
+  <div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <h3 style="font-size:1rem;font-weight:600;">📦 Shelf Inventory</h3>
+      <button class="btn btn-ghost" style="font-size:0.75rem;padding:6px 14px;" onclick="renderInventory()">↻ Refresh</button>
+    </div>
+    <div class="inventory-grid" id="inventoryGrid">
+      <p style="color:var(--muted);font-size:.85rem;">Loading inventory…</p>
+    </div>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p><strong>University of the Commonwealth Caribbean</strong> — Librarian Portal</p>
+    <small>© <span id="year"></span> UCC — All Rights Reserved</small>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<!-- MARK READY MODAL -->
+<div class="modal-overlay" id="readyModal">
+  <div class="modal-box">
+    <div class="modal-top">
+      <h3>✅ Mark as Ready for Pickup</h3>
+      <button class="modal-close" onclick="closeReadyModal()">✕</button>
+    </div>
+    <div id="readyBookInfo" style="background:var(--secondary);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:20px;">
+      <div id="readyBookTitle"  style="font-weight:600;font-size:0.95rem;margin-bottom:3px;"></div>
+      <div id="readyStudentName" style="font-size:0.8rem;color:var(--muted);"></div>
+    </div>
+    <div class="form-group">
+      <label>Pickup Deadline (student has 24hrs from now)</label>
+      <input type="datetime-local" id="pickupDeadline">
+    </div>
+    <div class="form-group">
+      <label>Shelf / Collection Point</label>
+      <input type="text" id="readyShelf" placeholder="e.g. Front Desk — Hold Shelf B">
+    </div>
+    <div class="form-group">
+      <label>Note for Student (optional)</label>
+      <textarea id="readyNote" rows="2" placeholder="e.g. Please bring your student ID…"></textarea>
+    </div>
+    <button class="modal-submit" onclick="confirmReady()">✅ Notify Student — Book is Ready</button>
+  </div>
+</div>
+
+<!-- INVENTORY UPDATE MODAL -->
+<div class="modal-overlay" id="inventoryModal">
+  <div class="modal-box">
+    <div class="modal-top">
+      <h3>📦 Update Inventory</h3>
+      <button class="modal-close" onclick="document.getElementById('inventoryModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="form-group">
+      <label>Book Title</label>
+      <input type="text" id="invTitle" placeholder="Enter book title">
+    </div>
+    <div class="form-group">
+      <label>Shelf / Location</label>
+      <input type="text" id="invShelf" placeholder="e.g. IT & Computing / Shelf B">
+    </div>
+    <div class="form-group">
+      <label>Total Copies</label>
+      <input type="number" id="invCopies" min="0" value="3">
+    </div>
+    <div class="form-group">
+      <label>Currently Available</label>
+      <input type="number" id="invAvailable" min="0" value="2">
+    </div>
+    <button class="modal-submit" onclick="saveInventory()">💾 Save Inventory</button>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────
+const SUPABASE_URL  = "https://bqgtuxhfqfmxvryfljya.supabase.co";
+const SUPABASE_ANON = "sb_publishable_y71RZ0UCDxkcmFQQHGEf-Q_davD0hbm";
+const API_BASE      = "/api";
+const sb            = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+document.getElementById("year").textContent = new Date().getFullYear();
+
+// ── AUTH ─────────────────────────────────────────────
+const token    = getToken();
+const _user    = getCurrentUser();
+const userId   = _user?.userId   || null;
+const fullname = _user?.fullname || "Librarian";
+document.getElementById("logoutBtn").addEventListener("click", () => logout());
+
+// ── STATE ─────────────────────────────────────────────
+let allHolds     = [];
+let activeStatus = "all";
+let _readyHold   = null;
+
+// ── INIT ─────────────────────────────────────────────
+window.addEventListener("DOMContentLoaded", () => {
+  loadHolds();
+  renderInventory();
+  // Set default pickup deadline to 24hrs from now
+  const d = new Date(); d.setHours(d.getHours() + 24);
+  document.getElementById("pickupDeadline").value = d.toISOString().slice(0,16);
+});
+
+// ── TOAST ─────────────────────────────────────────────
+function showToast(msg, type="success") {
+  const t = document.getElementById("toast");
+  t.textContent=msg; t.className=`toast ${type} show`;
+  setTimeout(()=>t.classList.remove("show"),3000);
+}
+
+// ── LOAD HOLDS ────────────────────────────────────────
+async function loadHolds() {
+  document.getElementById("holdsArea").innerHTML =
+    `<div class="loading-row">${Array(4).fill('<div class="skeleton-row"></div>').join("")}</div>`;
+
+  // Auto-expire holds past pickup_by deadline
+  const now = new Date();
+
+  try {
+    const res = await fetch(`${API_BASE}/holds`, { headers:{ "Authorization":"Bearer "+token } });
+    if (res.ok) { allHolds = await res.json(); }
+    else throw new Error();
+  } catch {
+    try {
+      const { data } = await sb.from("book_holds").select("*").order("placed_at", { ascending:false });
+      allHolds = data || [];
+    } catch {
+      allHolds = getSeedHolds(); // demo data
+    }
+  }
+
+  // Auto-expire
+  allHolds = allHolds.map(h => {
+    if (h.status === "ready" && h.pickup_by && new Date(h.pickup_by) < now) {
+      return { ...h, status:"expired" };
+    }
+    return h;
+  });
+
+  updateStats();
+  applyFilters();
+  renderInventory();
+}
+
+function getSeedHolds() {
+  const now = new Date();
+  const pickup = new Date(now.getTime() + 22*60*60*1000); // ~22hrs from now
+  const urgentPickup = new Date(now.getTime() + 1.5*60*60*1000); // ~1.5hrs
+  return [
+    { id:"h1", student_name:"Jada Williams",  book_title:"CompTIA A+ Core 1 (220-1101)", book_author:"Mike Meyers", book_cover:null, shelf_location:"IT & Computing / Shelf B", status:"pending",  placed_at:new Date(now-3600000*2).toISOString(), pickup_by:null, note:"Please hold near front desk", copies_available:2 },
+    { id:"h2", student_name:"Marcus Brown",   book_title:"Caribbean History vol. 2",      book_author:"Bridget Brereton", book_cover:null, shelf_location:"Caribbean Studies / Shelf D", status:"ready",   placed_at:new Date(now-3600000*5).toISOString(), pickup_by:pickup.toISOString(), note:null, copies_available:1 },
+    { id:"h3", student_name:"Alicia Thompson",book_title:"Principles of Accounting",      book_author:"Frank Wood",  book_cover:null, shelf_location:"Business & Management / Shelf C", status:"ready", placed_at:new Date(now-3600000*25).toISOString(), pickup_by:urgentPickup.toISOString(), note:null, copies_available:0 },
+    { id:"h4", student_name:"Devon Clarke",   book_title:"Python Crash Course",           book_author:"Eric Matthes",book_cover:null, shelf_location:"IT & Computing / Shelf B", status:"waitlist", placed_at:new Date(now-3600000*1).toISOString(), pickup_by:null, note:"Need for assignment due Friday", copies_available:0 },
+    { id:"h5", student_name:"Keisha Grant",   book_title:"Business Management A-Level",  book_author:"Peter Stimpson",book_cover:null,shelf_location:"Business & Management / Shelf C", status:"collected", placed_at:new Date(now-3600000*48).toISOString(), pickup_by:new Date(now-3600000*24).toISOString(), note:null, copies_available:3 },
+  ];
+}
+
+// ── FILTER & RENDER ───────────────────────────────────
+function filterStatus(status) {
+  activeStatus = status;
+  document.querySelectorAll(".stab").forEach(t => t.classList.remove("active"));
+  document.querySelectorAll(".stat-card").forEach(c => c.classList.remove("active-filter"));
+  document.getElementById(`stab-${status}`)?.classList.add("active");
+  document.getElementById(`sc-${status}`)?.classList.add("active-filter");
+  applyFilters();
+}
+
+function applyFilters() {
+  const q    = document.getElementById("searchHolds").value.toLowerCase().trim();
+  const sort = document.getElementById("sortHolds").value;
+
+  let filtered = allHolds.filter(h => {
+    const statusMatch = activeStatus === "all" || h.status === activeStatus;
+    const qMatch      = !q || h.book_title?.toLowerCase().includes(q) || h.student_name?.toLowerCase().includes(q);
+    return statusMatch && qMatch;
+  });
+
+  if (sort === "newest")   filtered.sort((a,b) => new Date(b.placed_at) - new Date(a.placed_at));
+  if (sort === "oldest")   filtered.sort((a,b) => new Date(a.placed_at) - new Date(b.placed_at));
+  if (sort === "expiring") filtered.sort((a,b) => {
+    if (!a.pickup_by) return 1; if (!b.pickup_by) return -1;
+    return new Date(a.pickup_by) - new Date(b.pickup_by);
+  });
+
+  const label = { all:"All Holds", pending:"Pending Prep", ready:"Ready for Pickup", waitlist:"Waitlist", collected:"Collected", expired:"Expired" };
+  document.getElementById("holdsListTitle").textContent = label[activeStatus] || "Holds";
+  document.getElementById("holdsListCount").textContent = `${filtered.length} hold${filtered.length !== 1 ? "s" : ""}`;
+  renderHolds(filtered);
+}
+
+function renderHolds(holds) {
+  const area = document.getElementById("holdsArea");
+  if (!holds.length) {
+    area.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>No holds in this category.</p></div>`; return;
+  }
+  area.innerHTML = `<div class="hold-cards">${holds.map(holdCard).join("")}</div>`;
+}
+
+function holdCard(h) {
+  const cover = h.book_cover
+    ? `<img src="${h.book_cover}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='📚'">`
+    : "📚";
+  const initials = (h.student_name||"?").split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase();
+  const ago      = timeAgo(h.placed_at);
+
+  const statusBadge = {
+    pending:  `<span class="status-badge sb-pending">⏳ Pending Prep</span>`,
+    waitlist: `<span class="status-badge sb-waitlist">📋 Waitlist</span>`,
+    ready:    `<span class="status-badge sb-ready">✅ Ready for Pickup</span>`,
+    expired:  `<span class="status-badge sb-expired">❌ Expired</span>`,
+    collected:`<span class="status-badge sb-collected">📦 Collected</span>`
+  }[h.status] || "";
+
+  let pickupLine = "";
+  if (h.status === "ready" && h.pickup_by) {
+    const ms      = new Date(h.pickup_by) - Date.now();
+    const isUrgent= ms < 3600000;
+    const isWarn  = ms < 7200000;
+    const cls     = isUrgent ? "urgent" : isWarn ? "warn" : "ok";
+    pickupLine    = `<div class="pickup-deadline ${cls}">
+      ⏱ Pickup by: ${new Date(h.pickup_by).toLocaleString("en-JM",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})}
+      — ${formatTimeLeft(h.pickup_by)} remaining
+    </div>`;
+  }
+
+  const actions = (() => {
+    switch(h.status) {
+      case "pending":
+        return `<button class="action-btn btn-ready"    onclick="openReadyModal('${h.id}')">✅ Mark Ready</button>
+                <button class="action-btn btn-cancel"   onclick="cancelHold('${h.id}')">✕ Cancel</button>`;
+      case "waitlist":
+        return `<button class="action-btn btn-ready"    onclick="openReadyModal('${h.id}')">✅ Book Available — Notify</button>
+                <button class="action-btn btn-cancel"   onclick="cancelHold('${h.id}')">✕ Cancel</button>`;
+      case "ready":
+        return `<button class="action-btn btn-collected" onclick="markCollected('${h.id}')">📦 Mark Collected</button>
+                <button class="action-btn btn-cancel"    onclick="cancelHold('${h.id}')">✕ Cancel</button>`;
+      case "expired":
+        return `<button class="action-btn btn-ghost-sm" onclick="openReadyModal('${h.id}')">↻ Re-notify</button>
+                <button class="action-btn btn-cancel"   onclick="cancelHold('${h.id}')">🗑 Remove</button>`;
+      case "collected":
+        return `<button class="action-btn btn-ghost-sm" disabled style="opacity:.4;cursor:default;">✓ Done</button>`;
+      default: return "";
+    }
+  })();
+
+  return `<div class="hold-card status-${h.status}" id="hcard-${h.id}">
+    <div class="hc-cover">${cover}</div>
+    <div class="hc-info">
+      <div class="hc-title">${escHtml(h.book_title)}</div>
+      <div class="hc-author">${escHtml(h.book_author||"")}</div>
+      <div class="hc-meta">
+        <div class="hc-student">
+          <div class="hc-avatar">${initials}</div>
+          <span style="font-weight:600;font-size:0.82rem;">${escHtml(h.student_name)}</span>
+        </div>
+        ${statusBadge}
+        ${h.shelf_location ? `<div class="hc-shelf">📍 ${h.shelf_location}</div>` : ""}
+        <div class="hc-time">Placed ${ago}</div>
+      </div>
+      ${h.note ? `<div class="hc-note">💬 "${escHtml(h.note)}"</div>` : ""}
+      ${pickupLine}
+    </div>
+    <div class="hc-actions">${actions}</div>
+  </div>`;
+}
+
+// ── ACTIONS ───────────────────────────────────────────
+function openReadyModal(holdId) {
+  _readyHold = allHolds.find(h => String(h.id) === String(holdId));
+  if (!_readyHold) return;
+  document.getElementById("readyBookTitle").textContent  = _readyHold.book_title;
+  document.getElementById("readyStudentName").textContent = `Student: ${_readyHold.student_name}`;
+  document.getElementById("readyShelf").value  = _readyHold.shelf_location || "";
+  document.getElementById("readyNote").value   = "";
+  // Default 24hrs
+  const d = new Date(); d.setHours(d.getHours() + 24);
+  document.getElementById("pickupDeadline").value = d.toISOString().slice(0,16);
+  document.getElementById("readyModal").classList.add("open");
+}
+function closeReadyModal() { document.getElementById("readyModal").classList.remove("open"); _readyHold = null; }
+document.getElementById("readyModal").addEventListener("click", e => { if(e.target===document.getElementById("readyModal")) closeReadyModal(); });
+
+async function confirmReady() {
+  if (!_readyHold) return;
+  const pickup_by   = new Date(document.getElementById("pickupDeadline").value).toISOString();
+  const shelf       = document.getElementById("readyShelf").value.trim();
+  const libNote     = document.getElementById("readyNote").value.trim();
+
+  const update = { status:"ready", pickup_by, shelf_location:shelf||_readyHold.shelf_location, librarian_note: libNote||null, ready_at: new Date().toISOString() };
+
+  try {
+    await fetch(`${API_BASE}/holds/${_readyHold.id}`, {
+      method:"PUT", headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},
+      body: JSON.stringify(update)
+    });
+  } catch {
+    try { await sb.from("book_holds").update(update).eq("id", _readyHold.id); } catch {}
+  }
+
+  // Update local state
+  const idx = allHolds.findIndex(h => String(h.id) === String(_readyHold.id));
+  if (idx !== -1) allHolds[idx] = { ...allHolds[idx], ...update };
+
+  closeReadyModal();
+  showToast(`✅ ${_readyHold.student_name} notified — book ready for pickup!`);
+  updateStats();
+  applyFilters();
+}
+
+async function markCollected(holdId) {
+  if (!confirm("Mark this hold as collected?")) return;
+  const update = { status:"collected", collected_at: new Date().toISOString() };
+  try {
+    await fetch(`${API_BASE}/holds/${holdId}`, {
+      method:"PUT", headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},
+      body: JSON.stringify(update)
+    });
+  } catch {
+    try { await sb.from("book_holds").update(update).eq("id", holdId); } catch {}
+  }
+  const idx = allHolds.findIndex(h => String(h.id) === String(holdId));
+  if (idx !== -1) allHolds[idx] = { ...allHolds[idx], ...update };
+  showToast("📦 Hold marked as collected.", "info");
+  updateStats(); applyFilters();
+}
+
+async function cancelHold(holdId) {
+  if (!confirm("Remove this hold?")) return;
+  try {
+    await fetch(`${API_BASE}/holds/${holdId}`, { method:"DELETE", headers:{"Authorization":"Bearer "+token} });
+  } catch {
+    try { await sb.from("book_holds").delete().eq("id", holdId); } catch {}
+  }
+  allHolds = allHolds.filter(h => String(h.id) !== String(holdId));
+  showToast("Hold removed.", "warn");
+  updateStats(); applyFilters();
+}
+
+// ── STATS ─────────────────────────────────────────────
+function updateStats() {
+  const counts = { all:0, pending:0, ready:0, expired:0, waitlist:0, collected:0 };
+  allHolds.forEach(h => { counts.all++; counts[h.status] = (counts[h.status]||0) + 1; });
+  document.getElementById("statTotal").textContent    = counts.all;
+  document.getElementById("statPending").textContent  = counts.pending  || 0;
+  document.getElementById("statReady").textContent    = counts.ready    || 0;
+  document.getElementById("statExpired").textContent  = counts.expired  || 0;
+  document.getElementById("statWaitlist").textContent = counts.waitlist || 0;
+  Object.keys(counts).forEach(s => {
+    const el = document.getElementById(`tc-${s}`);
+    if (el) el.textContent = counts[s] || 0;
+  });
+}
+
+// ── INVENTORY ─────────────────────────────────────────
+const SHELF_SECTIONS = [
+  { name:"General Reference", shelf:"Shelf A", total:24, available:18, color:"var(--blue)" },
+  { name:"IT & Computing",    shelf:"Shelf B", total:32, available:14, color:"var(--primary)" },
+  { name:"Business & Mgmt",   shelf:"Shelf C", total:28, available:22, color:"var(--green)" },
+  { name:"Caribbean Studies", shelf:"Shelf D", total:20, available:8,  color:"var(--orange)" },
+  { name:"Science & Research",shelf:"Shelf E", total:18, available:15, color:"var(--blue)" },
+  { name:"Periodicals",       shelf:"Shelf F", total:45, available:40, color:"var(--muted)" },
+];
+
+function renderInventory() {
+  const grid = document.getElementById("inventoryGrid");
+  grid.innerHTML = SHELF_SECTIONS.map(s => {
+    const pct = Math.round((s.available / s.total) * 100);
+    return `<div class="inv-card">
+      <div class="inv-card-top">
+        <span class="inv-section">📍 ${s.name}</span>
+        <span class="inv-nums">${s.available}/${s.total} available</span>
+      </div>
+      <div class="inv-bar"><div class="inv-bar-fill" style="width:${pct}%;background:${s.color};"></div></div>
+      <div style="font-size:0.7rem;color:var(--muted);margin-bottom:10px;">${s.shelf} — ${pct}% available</div>
+      <div class="inv-actions">
+        <button class="inv-btn" onclick="openInventoryModal('${s.name}','${s.shelf}',${s.total},${s.available})">✏️ Update</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function openInventoryModal(name="", shelf="", total=0, available=0) {
+  document.getElementById("invTitle").value     = name;
+  document.getElementById("invShelf").value     = shelf ? `${name} / ${shelf}` : "";
+  document.getElementById("invCopies").value    = total;
+  document.getElementById("invAvailable").value = available;
+  document.getElementById("inventoryModal").classList.add("open");
+}
+
+function saveInventory() {
+  showToast("✓ Inventory updated.", "success");
+  document.getElementById("inventoryModal").classList.remove("open");
+}
+
+// ── HELPERS ───────────────────────────────────────────
+function timeAgo(d) {
+  if (!d) return "";
+  const s = (Date.now()-new Date(d))/1000;
+  if (s<60) return "just now";
+  if (s<3600) return `${Math.floor(s/60)}m ago`;
+  if (s<86400) return `${Math.floor(s/3600)}h ago`;
+  return `${Math.floor(s/86400)}d ago`;
+}
+function formatTimeLeft(dt) {
+  const ms = new Date(dt)-Date.now();
+  if (ms<=0) return "Expired";
+  const h=Math.floor(ms/3600000), m=Math.floor((ms%3600000)/60000);
+  return h>0 ? `${h}h ${m}m` : `${m}m`;
+}
+function escHtml(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+</script>
+</body>
+</html>
