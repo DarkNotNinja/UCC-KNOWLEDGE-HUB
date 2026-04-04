@@ -110,7 +110,7 @@ function logout() {
   if (_isLibrarianPage) {
     localStorage.removeItem("lib_session");
     localStorage.removeItem("lib_token");
-    window.location.href = "ucc_login.html?mode=librarian";
+    window.location.href = "ucc_landing_page.html";
   } else {
     localStorage.removeItem("token");
     window.location.href = "ucc_landing_page.html";
