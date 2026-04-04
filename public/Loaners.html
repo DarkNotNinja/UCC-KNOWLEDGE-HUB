@@ -35,9 +35,13 @@
     .nav-logout { font-size:0.875rem; color:hsl(0,70%,70%); padding:7px 14px; border-radius:8px; border:1px solid hsla(0,70%,60%,0.25); background:hsla(0,70%,60%,0.08); cursor:pointer; transition:all .2s; font-family:var(--font-body); }
     .nav-logout:hover { background:hsla(0,70%,60%,0.18); color:#fff; }
 
+    /* LIVE INDICATOR */
+    .live-badge { display:inline-flex; align-items:center; gap:6px; font-size:0.72rem; font-weight:600; color:var(--green); font-family:var(--font-display); background:hsla(152,60%,52%,0.1); border:1px solid hsla(152,60%,52%,0.25); border-radius:20px; padding:4px 10px; }
+    .live-dot { width:6px; height:6px; border-radius:50%; background:var(--green); animation:pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
+
     main { flex:1; max-width:1280px; width:100%; margin:0 auto; padding:48px 24px 80px; display:flex; flex-direction:column; gap:32px; }
 
-    /* HERO */
     .page-hero { padding-bottom:28px; border-bottom:1px solid var(--border); animation:fadeUp .4s ease both; }
     .page-hero h2 { font-size:clamp(1.5rem,3vw,2.2rem); font-weight:700; letter-spacing:-0.02em; margin-bottom:8px; }
     .page-hero > p { font-size:0.95rem; color:var(--muted); max-width:600px; margin-bottom:24px; }
@@ -50,14 +54,12 @@
     .qtag { padding:5px 14px; border-radius:20px; background:var(--secondary); border:1px solid var(--border); color:var(--muted); font-size:0.78rem; font-weight:600; cursor:pointer; transition:all .2s; font-family:var(--font-display); }
     .qtag:hover { border-color:var(--primary); color:var(--primary); }
 
-    /* STATS */
     .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
     .stat-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 20px; transition:border-color .3s; }
     .stat-card:hover { border-color:hsla(43,55%,54%,0.3); }
     .stat-num { font-family:var(--font-display); font-size:1.6rem; font-weight:700; color:var(--primary); }
     .stat-lbl { font-size:0.78rem; color:var(--muted); margin-top:2px; }
 
-    /* RESULTS */
     .results-section { animation:fadeUp .4s .1s ease both; }
     .results-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:10px; }
     .results-header h3 { font-size:1rem; font-weight:600; }
@@ -78,10 +80,7 @@
     .book-tag { font-size:0.68rem; padding:2px 8px; border-radius:10px; background:var(--secondary); color:var(--muted); border:1px solid var(--border); font-family:var(--font-display); }
     .book-tag.avail-tag  { background:hsla(152,60%,52%,0.1); color:var(--green); border-color:hsla(152,60%,52%,0.25); }
     .book-tag.unavail-tag{ background:hsla(0,70%,60%,0.1);   color:var(--red);   border-color:hsla(0,70%,60%,0.25); }
-    .book-tag.hold-tag   { background:hsla(30,90%,58%,0.1);  color:var(--orange);border-color:hsla(30,90%,58%,0.25); }
-    .book-tag.pdf-tag    { background:hsla(210,80%,65%,0.1); color:var(--blue);  border-color:hsla(210,80%,65%,0.25); }
 
-    /* AVAILABILITY BAR */
     .avail-bar { margin:8px 0 4px; }
     .avail-bar-label { display:flex; justify-content:space-between; font-size:0.68rem; color:var(--muted); margin-bottom:4px; font-family:var(--font-display); }
     .avail-bar-track { height:4px; background:var(--secondary); border-radius:4px; overflow:hidden; }
@@ -94,19 +93,16 @@
     .ba-hold   { background:var(--primary); color:var(--primary-fg); }
     .ba-hold:hover { opacity:.9; box-shadow:var(--glow-gold); }
     .ba-hold.on-hold { background:hsla(30,90%,58%,0.15); color:var(--orange); border:1px solid hsla(30,90%,58%,0.3); cursor:default; }
-    .ba-hold.unavail { background:var(--secondary); border:1px solid var(--border); color:var(--muted); }
-    .ba-hold.unavail:hover { border-color:var(--orange); color:var(--orange); }
     .ba-add  { background:hsla(152,60%,52%,0.12); border:1px solid hsla(152,60%,52%,0.25); color:var(--green); }
     .ba-add:hover { background:hsla(152,60%,52%,0.2); }
     .ba-add.added { background:var(--secondary); border-color:var(--border); color:var(--muted); cursor:default; }
 
-    /* MY HOLDS SECTION */
     .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:26px 28px; }
     .card-title { font-size:1rem; font-weight:600; margin-bottom:18px; padding-bottom:12px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; gap:8px; }
 
     .holds-list { display:flex; flex-direction:column; gap:10px; }
-    .hold-item { background:var(--secondary); border:1px solid var(--border); border-radius:12px; padding:16px 18px; display:flex; align-items:center; gap:16px; flex-wrap:wrap; transition:border-color .2s; }
-    .hold-item.ready     { border-color:hsla(152,60%,52%,0.4); background:hsla(152,60%,52%,0.05); }
+    .hold-item { background:var(--secondary); border:1px solid var(--border); border-radius:12px; padding:16px 18px; display:flex; align-items:center; gap:16px; flex-wrap:wrap; transition:all .3s; }
+    .hold-item.ready     { border-color:hsla(152,60%,52%,0.5); background:hsla(152,60%,52%,0.06); }
     .hold-item.expiring  { border-color:hsla(0,70%,60%,0.4); background:hsla(0,70%,60%,0.05); }
     .hold-cover { width:44px; height:56px; border-radius:6px; background:var(--card); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0; overflow:hidden; }
     .hold-cover img { width:100%; height:100%; object-fit:cover; }
@@ -125,13 +121,16 @@
     .hbtn-cancel { background:hsla(0,70%,60%,0.1); border:1px solid hsla(0,70%,60%,0.25); color:var(--red); }
     .hbtn-cancel:hover { background:hsla(0,70%,60%,0.2); }
 
-    /* PICKUP COUNTDOWN */
-    .pickup-countdown { display:flex; align-items:center; gap:6px; font-size:0.75rem; font-weight:700; font-family:var(--font-display); }
+    .pickup-countdown { display:flex; align-items:center; gap:6px; font-size:0.75rem; font-weight:700; font-family:var(--font-display); margin-top:4px; }
     .pickup-countdown.urgent { color:var(--red); }
     .pickup-countdown.ok     { color:var(--green); }
-    .countdown-ring { width:32px; height:32px; flex-shrink:0; }
 
-    /* READING LIST */
+    /* READY BANNER — appears when librarian marks a hold ready */
+    .ready-banner { background:hsla(152,60%,52%,0.1); border:1px solid hsla(152,60%,52%,0.35); border-radius:12px; padding:14px 18px; display:flex; align-items:center; gap:12px; margin-bottom:4px; animation:fadeUp .4s ease; }
+    .ready-banner .rb-icon { font-size:1.5rem; flex-shrink:0; }
+    .ready-banner .rb-text strong { display:block; color:var(--green); font-family:var(--font-display); font-size:0.9rem; }
+    .ready-banner .rb-text span { font-size:0.78rem; color:var(--muted); }
+
     .reading-list { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; }
     .rl-item { background:var(--secondary); border:1px solid var(--border); border-radius:10px; padding:14px 16px; display:flex; flex-direction:column; gap:6px; }
     .rl-title  { font-size:0.875rem; font-weight:600; line-height:1.3; }
@@ -144,9 +143,6 @@
     .btn-ghost { background:transparent; border:1px solid hsla(45,30%,92%,0.2); color:var(--fg); }
     .btn-ghost:hover { background:var(--secondary); }
     .btn-sm { padding:5px 12px; font-size:0.75rem; }
-    .pill { display:inline-block; padding:3px 10px; border-radius:20px; font-size:0.72rem; font-weight:600; font-family:var(--font-display); white-space:nowrap; }
-    .pill-active  { background:hsla(152,60%,52%,0.12); color:var(--green);  border:1px solid hsla(152,60%,52%,0.25); }
-    .pill-want    { background:var(--secondary); color:var(--muted); border:1px solid var(--border); }
 
     .empty-state { text-align:center; padding:40px 20px; color:var(--muted); }
     .empty-state .icon { font-size:2.5rem; margin-bottom:10px; }
@@ -158,7 +154,7 @@
     .skeleton { background:var(--card); border:1px solid var(--border); border-radius:14px; height:300px; animation:shimmer 1.5s infinite; }
     @keyframes shimmer { 0%,100%{opacity:.6} 50%{opacity:1} }
 
-    .toast { position:fixed; bottom:24px; right:24px; z-index:500; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 20px; font-size:0.875rem; font-family:var(--font-display); font-weight:600; box-shadow:var(--glow-gold); transform:translateY(80px); opacity:0; transition:all .3s; pointer-events:none; max-width:320px; }
+    .toast { position:fixed; bottom:24px; right:24px; z-index:500; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 20px; font-size:0.875rem; font-family:var(--font-display); font-weight:600; box-shadow:var(--glow-gold); transform:translateY(80px); opacity:0; transition:all .3s; pointer-events:none; max-width:340px; }
     .toast.show { transform:translateY(0); opacity:1; }
     .toast.success { border-color:hsla(152,60%,52%,0.4); color:var(--green); }
     .toast.info    { border-color:hsla(43,55%,54%,0.4);  color:var(--primary); }
@@ -242,9 +238,8 @@
 
 <main>
 
-  <!-- HERO -->
   <div class="page-hero">
-    <h2>📚 Borrowing & Renewing </h2>
+    <h2>📚 Borrowing & Renewing</h2>
     <p>Search our catalogue, check availability and place a hold. We'll prep your book — collect it at the library within 24 hours once notified.</p>
     <form id="searchForm" autocomplete="off">
       <div class="search-bar">
@@ -267,7 +262,6 @@
     </div>
   </div>
 
-  <!-- STATS -->
   <div class="stats-row">
     <div class="stat-card"><div class="stat-num" id="statHolds">0</div><div class="stat-lbl">Active Holds</div></div>
     <div class="stat-card"><div class="stat-num" id="statReady">0</div><div class="stat-lbl">Ready for Pickup</div></div>
@@ -275,18 +269,19 @@
     <div class="stat-card"><div class="stat-num" id="statCollected">0</div><div class="stat-lbl">Collected</div></div>
   </div>
 
-  <!-- MY HOLDS -->
   <div class="card">
     <div class="card-title">
       <span>🔖 My Holds</span>
-      <button class="btn btn-ghost btn-sm" onclick="loadMyHolds()">↻ Refresh</button>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <!--<span class="live-badge" style="font-size:0.68rem;"><span class="live-dot"></span> Updates automatically</span>-->
+        <button class="btn btn-ghost btn-sm" onclick="loadMyHolds()">↻ Refresh</button>
+      </div>
     </div>
     <div id="myHoldsArea">
       <div class="empty-state"><div class="icon">📭</div><p>No active holds. Search above to place a hold on a book.</p></div>
     </div>
   </div>
 
-  <!-- SEARCH RESULTS -->
   <div class="results-section">
     <div class="results-header">
       <h3 id="resultsTitle">🔍 Catalogue Search</h3>
@@ -307,7 +302,6 @@
     </div>
   </div>
 
-  <!-- READING LIST -->
   <div class="card">
     <div class="card-title">
       <span>📑 My Reading List</span>
@@ -338,16 +332,13 @@
       <h3>📖 Place a Hold</h3>
       <button class="modal-close" onclick="closeHoldModal()">✕</button>
     </div>
-
     <div class="book-preview-row">
       <div class="book-preview-cover" id="modalCover">📚</div>
       <div class="book-preview-info">
         <h4 id="modalTitle">—</h4>
         <p  id="modalAuthor">—</p>
-        <div id="modalTags"></div>
       </div>
     </div>
-
     <div id="availStatusBox" class="avail-status-box available">
       <span class="avail-icon" id="availIcon">✅</span>
       <div class="avail-text">
@@ -355,18 +346,15 @@
         <small  id="availSub">Please wait</small>
       </div>
     </div>
-
-    <div class="shelf-info" id="shelfInfo">
+    <div class="shelf-info">
       <span class="shelf-icon">📍</span>
       <div>
         <strong id="shelfLocation">—</strong>
         <span id="shelfSection">—</span>
       </div>
     </div>
-
-    <textarea class="note-input" id="holdNote" rows="2" placeholder="Optional note for the librarian (e.g. 'Please hold at front desk')…"></textarea>
-
-    <button class="modal-submit" id="holdSubmitBtn" onclick="confirmHold()">📌 Confirm Hold</button>
+    <textarea class="note-input" id="holdNote" rows="2" placeholder="Optional note for the librarian…"></textarea>
+    <button class="modal-submit" id="holdSubmitBtn" onclick="confirmHold()">Confirm Hold</button>
     <p class="modal-status" id="holdStatus"></p>
   </div>
 </div>
@@ -386,7 +374,6 @@
 const GOOGLE_API_KEY = "AIzaSyAjZt96cL-gnZxuT9nLU0d0HTXVDs2m2_4";
 const SUPABASE_URL   = "https://bqgtuxhfqfmxvryfljya.supabase.co";
 const SUPABASE_ANON  = "sb_publishable_y71RZ0UCDxkcmFQQHGEf-Q_davD0hbm";
-const API_BASE       = "/api";
 const sb             = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
 document.getElementById("year").textContent = new Date().getFullYear();
@@ -406,19 +393,13 @@ let readingList  = JSON.parse(localStorage.getItem(`rl_${userId}`) || "[]");
 let savedIds     = new Set(readingList.map(b => b.id));
 let _holdBook    = null;
 
-// Simulate library inventory — in production this comes from your DB
-// Format: { bookId: { copies: N, available: N, shelf: "Section / Shelf" } }
 const INVENTORY_CACHE = {};
-
 function getInventory(bookId) {
   if (INVENTORY_CACHE[bookId]) return INVENTORY_CACHE[bookId];
-  // Simulate: ~60% chance available, random copies 1–5
   const copies    = Math.floor(Math.random() * 5) + 1;
   const available = Math.random() > 0.4 ? Math.floor(Math.random() * copies) + 1 : 0;
-  const sections  = ["General Reference / Shelf A", "IT & Computing / Shelf B", "Business & Management / Shelf C",
-                     "Caribbean Studies / Shelf D", "Science & Research / Shelf E", "Periodicals / Shelf F"];
-  const shelf     = sections[Math.floor(Math.random() * sections.length)];
-  INVENTORY_CACHE[bookId] = { copies, available, shelf };
+  const sections  = ["General Reference / Shelf A","IT & Computing / Shelf B","Business & Management / Shelf C","Caribbean Studies / Shelf D","Science & Research / Shelf E","Periodicals / Shelf F"];
+  INVENTORY_CACHE[bookId] = { copies, available, shelf: sections[Math.floor(Math.random()*sections.length)] };
   return INVENTORY_CACHE[bookId];
 }
 
@@ -427,13 +408,78 @@ window.addEventListener("DOMContentLoaded", () => {
   loadMyHolds();
   renderReadingList();
   updateStats();
+  subscribeToMyHolds(); // ← real-time listener
 });
+
+// ── REAL-TIME: subscribe to changes on THIS student's holds ──
+function subscribeToMyHolds() {
+  if (!userId) return;
+  sb.channel(`holds_student_${userId}`)
+    .on("postgres_changes", {
+        event: "*",
+        schema: "public",
+        table:  "book_holds",
+        filter: `user_id=eq.${userId}`
+      },
+      payload => handleHoldChange(payload)
+    )
+    .subscribe();
+}
+
+function handleHoldChange(payload) {
+  const { eventType, new: newRow, old: oldRow } = payload;
+
+  if (eventType === "INSERT") {
+    if (!myHolds.find(h => String(h.id) === String(newRow.id))) {
+      myHolds.unshift(newRow);
+    }
+  } else if (eventType === "UPDATE") {
+    const idx = myHolds.findIndex(h => String(h.id) === String(newRow.id));
+    if (idx !== -1) {
+      const prev = myHolds[idx];
+      myHolds[idx] = newRow;
+      // Notify student when librarian marks ready
+      if (prev.status !== "ready" && newRow.status === "ready") {
+        showToast("🎉 Great news! Your book is ready for pickup!", "success");
+        showReadyNotification(newRow);
+      }
+      if (prev.status !== "collected" && newRow.status === "collected") {
+        showToast("📦 Hold marked as collected. Enjoy your book!", "info");
+      }
+    } else {
+      myHolds.unshift(newRow);
+    }
+  } else if (eventType === "DELETE") {
+    myHolds = myHolds.filter(h => String(h.id) !== String(oldRow.id));
+    showToast("Hold removed by librarian.", "warn");
+  }
+
+  renderHolds();
+  updateStats();
+}
+
+function showReadyNotification(hold) {
+  // Big banner notification for "book ready" — gets the student's attention
+  const banner = document.createElement("div");
+  banner.className = "ready-banner";
+  banner.innerHTML = `
+    <div class="rb-icon">🔔</div>
+    <div class="rb-text">
+      <strong>"${escHtml(hold.book_title)}" is ready for pickup!</strong>
+      <span>📍 ${escHtml(hold.shelf_location || "Library Front Desk")}
+        ${hold.pickup_by ? ` — Pick up by ${new Date(hold.pickup_by).toLocaleString("en-JM",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})}` : ""}
+      </span>
+    </div>`;
+  const area = document.getElementById("myHoldsArea");
+  area.prepend(banner);
+  setTimeout(() => banner.remove(), 12000);
+}
 
 // ── TOAST ─────────────────────────────────────────────
 function showToast(msg, type = "success") {
   const t = document.getElementById("toast");
   t.textContent = msg; t.className = `toast ${type} show`;
-  setTimeout(() => t.classList.remove("show"), 3000);
+  setTimeout(() => t.classList.remove("show"), 4000);
 }
 
 // ── SEARCH ────────────────────────────────────────────
@@ -474,15 +520,7 @@ async function fetchGoogle(q) {
     if (!data.items) return [];
     return data.items.map(item => {
       const info = item.volumeInfo;
-      return {
-        id: "g_" + item.id, source: "google",
-        title:  info.title || "Unknown Title",
-        author: (info.authors || ["Unknown"]).join(", "),
-        cover:  info.imageLinks?.thumbnail?.replace("http://","https://") || null,
-        year:   info.publishedDate?.slice(0,4) || "",
-        isbn:   info.industryIdentifiers?.[0]?.identifier || "",
-        viewLink: info.infoLink || info.previewLink || null
-      };
+      return { id:"g_"+item.id, source:"google", title:info.title||"Unknown Title", author:(info.authors||["Unknown"]).join(", "), cover:info.imageLinks?.thumbnail?.replace("http://","https://")||null, year:info.publishedDate?.slice(0,4)||"", viewLink:info.infoLink||info.previewLink||null };
     });
   } catch { return []; }
 }
@@ -492,50 +530,35 @@ async function fetchOpenLibrary(q) {
     const res  = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=12&fields=key,title,author_name,isbn,cover_i,first_publish_year`);
     const data = await res.json();
     if (!data.docs) return [];
-    return data.docs.map(b => ({
-      id: "ol_" + b.key, source: "openlibrary",
-      title:  b.title || "Unknown Title",
-      author: b.author_name?.[0] || "Unknown",
-      cover:  b.cover_i ? `https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg` : null,
-      year:   b.first_publish_year || "",
-      isbn:   b.isbn?.[0] || "",
-      viewLink: `https://openlibrary.org${b.key}`
-    }));
+    return data.docs.map(b => ({ id:"ol_"+b.key, source:"openlibrary", title:b.title||"Unknown Title", author:b.author_name?.[0]||"Unknown", cover:b.cover_i?`https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg`:null, year:b.first_publish_year||"", viewLink:`https://openlibrary.org${b.key}` }));
   } catch { return []; }
 }
 
 function filterSource(src) {
   activeSource = src; updateSourceTabs();
-  const filtered = src === "all" ? allResults
-    : src === "google" ? allResults.filter(b => b.source === "google")
-    : allResults.filter(b => b.source === "openlibrary");
+  const filtered = src==="all" ? allResults : src==="google" ? allResults.filter(b=>b.source==="google") : allResults.filter(b=>b.source==="openlibrary");
   document.getElementById("resultsCount").textContent = `${filtered.length} results`;
   renderResults(filtered);
 }
 function updateSourceTabs() {
-  ["all","google","open"].forEach(s =>
-    document.getElementById(`tab-${s}`)?.classList.toggle("active", activeSource === s));
+  ["all","google","open"].forEach(s => document.getElementById(`tab-${s}`)?.classList.toggle("active", activeSource===s));
 }
 
 // ── RENDER BOOKS ──────────────────────────────────────
 function renderResults(books) {
   const area = document.getElementById("resultsArea");
-  if (!books.length) { area.innerHTML = `<div class="search-placeholder"><div class="icon">😕</div><p>No results.</p></div>`; return; }
+  if (!books.length) { area.innerHTML=`<div class="search-placeholder"><div class="icon">😕</div><p>No results.</p></div>`; return; }
   area.innerHTML = `<div class="books-grid">${books.map(bookCard).join("")}</div>`;
 }
 
 function bookCard(b) {
   const inv      = getInventory(b.id);
   const isAdded  = savedIds.has(b.id);
-  const onHold   = myHolds.some(h => h.book_id === b.id && ["pending","ready"].includes(h.status));
-  const cover    = b.cover
-    ? `<img src="${b.cover}" alt="${escHtml(b.title)}" onerror="this.parentElement.innerHTML='📚'" loading="lazy" style="width:100%;height:100%;object-fit:cover;">`
-    : "📚";
-
-  const pct      = inv.copies > 0 ? Math.round((inv.available / inv.copies) * 100) : 0;
-  const barColor = pct === 0 ? "var(--red)" : pct < 50 ? "var(--orange)" : "var(--green)";
-
-  const holdBtnLabel = onHold ? "⏳ On Hold" : inv.available > 0 ? "📌 Place Hold" : "📋 Join Waitlist";
+  const onHold   = myHolds.some(h => h.book_id===b.id && ["pending","ready"].includes(h.status));
+  const cover    = b.cover ? `<img src="${b.cover}" alt="${escHtml(b.title)}" onerror="this.parentElement.innerHTML='📚'" loading="lazy" style="width:100%;height:100%;object-fit:cover;">` : "📚";
+  const pct      = inv.copies>0 ? Math.round((inv.available/inv.copies)*100) : 0;
+  const barColor = pct===0 ? "var(--red)" : pct<50 ? "var(--orange)" : "var(--green)";
+  const holdBtnLabel = onHold ? "⏳ On Hold" : inv.available>0 ? "📌 Place Hold" : "📋 Join Waitlist";
   const holdBtnClass = onHold ? "ba-hold on-hold" : "ba-hold";
 
   return `<div class="book-card" id="card-${b.id}">
@@ -544,30 +567,21 @@ function bookCard(b) {
       <div class="book-title">${escHtml(b.title)}</div>
       <div class="book-author">${escHtml(b.author)}</div>
       <div class="book-meta">
-        ${b.year ? `<span class="book-tag">${b.year}</span>` : ""}
-        ${inv.available > 0
-          ? `<span class="book-tag avail-tag">✅ ${inv.available} Available</span>`
-          : `<span class="book-tag unavail-tag">❌ Unavailable</span>`}
-        <span class="book-tag">${b.source === "google" ? "Google Books" : "Open Library"}</span>
+        ${b.year?`<span class="book-tag">${b.year}</span>`:""}
+        ${inv.available>0?`<span class="book-tag avail-tag">✅ ${inv.available} Available</span>`:`<span class="book-tag unavail-tag">❌ Unavailable</span>`}
+        <span class="book-tag">${b.source==="google"?"Google Books":"Open Library"}</span>
       </div>
       <div class="avail-bar">
-        <div class="avail-bar-label">
-          <span>Availability</span>
-          <span>${inv.available}/${inv.copies} copies</span>
-        </div>
-        <div class="avail-bar-track">
-          <div class="avail-bar-fill" style="width:${pct}%;background:${barColor};"></div>
-        </div>
+        <div class="avail-bar-label"><span>Availability</span><span>${inv.available}/${inv.copies} copies</span></div>
+        <div class="avail-bar-track"><div class="avail-bar-fill" style="width:${pct}%;background:${barColor};"></div></div>
       </div>
       <div style="font-size:0.7rem;color:var(--muted);margin-top:2px;">📍 ${inv.shelf}</div>
     </div>
     <div class="book-actions">
-      <button class="ba-btn ba-add ${isAdded ? "added" : ""}" id="addbtn-${b.id}"
-        onclick="addToReadingList(${JSON.stringify(b).replace(/"/g,'&quot;')})">
-        ${isAdded ? "✓ Saved" : "🔖 Save"}
+      <button class="ba-btn ba-add ${isAdded?"added":""}" id="addbtn-${b.id}" onclick="addToReadingList(${JSON.stringify(b).replace(/"/g,'&quot;')})">
+        ${isAdded?"✓ Saved":"🔖 Save"}
       </button>
-      <button class="ba-btn ${holdBtnClass}" ${onHold ? "disabled" : ""}
-        onclick="${onHold ? "" : `openHoldModal(${JSON.stringify(b).replace(/"/g,'&quot;')})`}">
+      <button class="ba-btn ${holdBtnClass}" ${onHold?"disabled":""} onclick="${onHold?"":` openHoldModal(${JSON.stringify(b).replace(/"/g,'&quot;')})`}">
         ${holdBtnLabel}
       </button>
     </div>
@@ -578,48 +592,29 @@ function bookCard(b) {
 function openHoldModal(book) {
   _holdBook = book;
   const inv = getInventory(book.id);
-
-  // Cover
   const coverEl = document.getElementById("modalCover");
-  if (book.cover) coverEl.innerHTML = `<img src="${book.cover}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='📚'">`;
-  else coverEl.innerHTML = "📚";
-
+  if (book.cover) coverEl.innerHTML=`<img src="${book.cover}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='📚'">`;
+  else coverEl.innerHTML="📚";
   document.getElementById("modalTitle").textContent  = book.title;
   document.getElementById("modalAuthor").textContent = book.author;
   document.getElementById("holdNote").value = "";
   document.getElementById("holdStatus").textContent = "";
-
-  // Availability box
-  const box  = document.getElementById("availStatusBox");
-  const icon = document.getElementById("availIcon");
-  const text = document.getElementById("availText");
-  const sub  = document.getElementById("availSub");
-  if (inv.available > 0) {
-    box.className = "avail-status-box available";
-    icon.textContent = "✅";
-    text.textContent = `${inv.available} ${inv.available === 1 ? "copy" : "copies"} available`;
-    sub.textContent  = "Your hold will be ready for pickup within 24 hours.";
+  const box=document.getElementById("availStatusBox"), icon=document.getElementById("availIcon"), text=document.getElementById("availText"), sub=document.getElementById("availSub");
+  if (inv.available>0) {
+    box.className="avail-status-box available"; icon.textContent="✅";
+    text.textContent=`${inv.available} ${inv.available===1?"copy":"copies"} available`;
+    sub.textContent="Your hold will be ready for pickup within 24 hours.";
   } else {
-    box.className = "avail-status-box unavailable";
-    icon.textContent = "⏳";
-    text.textContent = "Currently unavailable — join the waitlist";
-    sub.textContent  = "We'll notify you on your profile when a copy is ready.";
+    box.className="avail-status-box unavailable"; icon.textContent="⏳";
+    text.textContent="Currently unavailable — join the waitlist";
+    sub.textContent="We'll notify you when a copy is ready.";
   }
-
-  // Shelf
   document.getElementById("shelfLocation").textContent = inv.shelf.split(" / ")[0];
-  document.getElementById("shelfSection").textContent  = inv.shelf.split(" / ")[1] || "";
-
+  document.getElementById("shelfSection").textContent  = inv.shelf.split(" / ")[1]||"";
   document.getElementById("holdModal").classList.add("open");
 }
-
-function closeHoldModal() {
-  document.getElementById("holdModal").classList.remove("open");
-  _holdBook = null;
-}
-document.getElementById("holdModal").addEventListener("click", e => {
-  if (e.target === document.getElementById("holdModal")) closeHoldModal();
-});
+function closeHoldModal() { document.getElementById("holdModal").classList.remove("open"); _holdBook=null; }
+document.getElementById("holdModal").addEventListener("click", e => { if(e.target===document.getElementById("holdModal")) closeHoldModal(); });
 
 async function confirmHold() {
   if (!_holdBook) return;
@@ -633,84 +628,57 @@ async function confirmHold() {
   status.textContent = "Placing hold…";
 
   const holdData = {
-    user_id:    userId,
-    student_name: fullname,
-    book_id:    _holdBook.id,
-    book_title: _holdBook.title,
-    book_author:_holdBook.author,
-    book_cover: _holdBook.cover || null,
-    shelf_location: inv.shelf,
+    user_id:          userId,
+    student_name:     fullname,
+    book_id:          _holdBook.id,
+    book_title:       _holdBook.title,
+    book_author:      _holdBook.author,
+    book_cover:       _holdBook.cover || null,
+    shelf_location:   inv.shelf,
     copies_available: inv.available,
-    status:     inv.available > 0 ? "pending" : "waitlist",
-    note:       note || null,
-    placed_at:  new Date().toISOString(),
-    pickup_by:  null   // set by librarian when ready
+    status:           inv.available > 0 ? "pending" : "waitlist",
+    note:             note || null,
+    placed_at:        new Date().toISOString(),
+    pickup_by:        null
   };
 
+  // ── SUPABASE ONLY — no localStorage fallback ──────────────────
+  // This ensures the librarian always sees the hold.
   try {
-    // Try real backend first
-    const res = await fetch(`${API_BASE}/holds`, {
-      method: "POST",
-      headers: { "Content-Type":"application/json", "Authorization":"Bearer " + token },
-      body: JSON.stringify(holdData)
-    });
-
-    if (!res.ok) throw new Error("backend_fail");
-
-    const saved = await res.json();
-    myHolds.push({ ...holdData, id: saved.id || Date.now() });
-  } catch {
-    // Fallback: save to Supabase directly
-    try {
-      const { data, error } = await sb.from("book_holds").insert(holdData).select().single();
-      if (error) throw error;
-      myHolds.push({ ...holdData, id: data.id });
-    } catch {
-      // Final fallback: localStorage
-      const localId = "local_" + Date.now();
-      myHolds.push({ ...holdData, id: localId });
-      const stored = JSON.parse(localStorage.getItem(`holds_${userId}`) || "[]");
-      stored.push({ ...holdData, id: localId });
-      localStorage.setItem(`holds_${userId}`, JSON.stringify(stored));
+    const { data, error } = await sb.from("book_holds").insert(holdData).select().single();
+    if (error) throw error;
+    // The realtime subscription will fire and add it to myHolds automatically.
+    // We add it locally too in case the subscription is slightly delayed.
+    if (!myHolds.find(h => String(h.id)===String(data.id))) {
+      myHolds.unshift(data);
     }
+    btn.disabled = false;
+    status.style.color = "var(--green)";
+    status.textContent = inv.available>0
+      ? "✓ Hold placed! The librarian has been notified. Check back for updates."
+      : "✓ Added to waitlist! We'll notify you when a copy is ready.";
+    updateStats(); renderHolds();
+    const card=document.getElementById(`card-${_holdBook.id}`);
+    if (card) { const b2=card.querySelector(".ba-hold"); if(b2){b2.textContent="⏳ On Hold";b2.className="ba-btn ba-hold on-hold";b2.disabled=true;} }
+    setTimeout(closeHoldModal, 2200);
+  } catch(err) {
+    btn.disabled = false;
+    status.style.color = "var(--red)";
+    status.textContent = "⚠ Could not place hold. Please check your connection and try again.";
+    console.error("Hold insert error:", err);
   }
-
-  btn.disabled = false;
-  status.style.color = "var(--green)";
-  status.textContent = inv.available > 0
-    ? "✓ Hold placed! Ready within 24hrs. Check your profile for updates."
-    : "✓ Added to waitlist! We'll update your profile when available.";
-
-  // No points for placing a hold
-  updateStats();
-  renderHolds();
-
-  // Refresh card button
-  const card = document.getElementById(`card-${_holdBook.id}`);
-  if (card) {
-    const btn2 = card.querySelector(".ba-hold");
-    if (btn2) { btn2.textContent = "⏳ On Hold"; btn2.className = "ba-btn ba-hold on-hold"; btn2.disabled = true; }
-  }
-
-  setTimeout(closeHoldModal, 2000);
 }
 
 // ── MY HOLDS ──────────────────────────────────────────
 async function loadMyHolds() {
-  // Try backend
   try {
-    const res = await fetch(`${API_BASE}/holds/user`, { headers: { "Authorization":"Bearer " + token } });
-    if (res.ok) { myHolds = await res.json(); renderHolds(); updateStats(); return; }
-  } catch {}
-
-  // Try Supabase
-  try {
-    const { data } = await sb.from("book_holds").select("*").eq("user_id", userId).order("placed_at", { ascending: false });
-    if (data) { myHolds = data; renderHolds(); updateStats(); return; }
-  } catch {}
-
-  // Fallback localStorage
-  myHolds = JSON.parse(localStorage.getItem(`holds_${userId}`) || "[]");
+    const { data, error } = await sb.from("book_holds").select("*").eq("user_id", userId).order("placed_at", { ascending:false });
+    if (error) throw error;
+    myHolds = data || [];
+  } catch(e) {
+    console.error("loadMyHolds:", e);
+    myHolds = [];
+  }
   renderHolds();
   updateStats();
 }
@@ -718,51 +686,38 @@ async function loadMyHolds() {
 function renderHolds() {
   const area = document.getElementById("myHoldsArea");
   if (!myHolds.length) {
-    area.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>No active holds. Search the catalogue to place a hold.</p></div>`;
+    area.innerHTML=`<div class="empty-state"><div class="icon">📭</div><p>No active holds. Search the catalogue to place a hold.</p></div>`;
     return;
   }
-
-  area.innerHTML = `<div class="holds-list">${myHolds.map(h => {
-    const isReady    = h.status === "ready";
-    const isExpiring = isReady && h.pickup_by && timeLeft(h.pickup_by) < 3600000; // < 1hr
-    const cover      = h.book_cover
-      ? `<img src="${h.book_cover}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='📚'">`
-      : "📚";
-
+  area.innerHTML=`<div class="holds-list">${myHolds.map(h=>{
+    const isReady    = h.status==="ready";
+    const isExpiring = isReady && h.pickup_by && timeLeft(h.pickup_by)<3600000;
+    const cover      = h.book_cover ? `<img src="${h.book_cover}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='📚'">` : "📚";
     const statusPill = {
-      pending:   `<span class="hold-status-pill hs-pending">⏳ Pending</span>`,
-      waitlist:  `<span class="hold-status-pill hs-pending">📋 Waitlist</span>`,
-      ready:     `<span class="hold-status-pill hs-ready">✅ Ready for Pickup!</span>`,
-      expired:   `<span class="hold-status-pill hs-expired">❌ Expired</span>`,
-      collected: `<span class="hold-status-pill hs-collected">📦 Collected</span>`
-    }[h.status] || "";
-
+      pending:  `<span class="hold-status-pill hs-pending">⏳ Pending — Librarian is prepping</span>`,
+      waitlist: `<span class="hold-status-pill hs-pending">📋 Waitlist</span>`,
+      ready:    `<span class="hold-status-pill hs-ready">✅ Ready for Pickup!</span>`,
+      expired:  `<span class="hold-status-pill hs-expired">❌ Expired</span>`,
+      collected:`<span class="hold-status-pill hs-collected">📦 Collected</span>`
+    }[h.status]||"";
     const pickupInfo = isReady && h.pickup_by
-      ? `<div class="pickup-countdown ${isExpiring ? "urgent" : "ok"}">
-           ⏱ Pick up by: ${new Date(h.pickup_by).toLocaleString("en-JM",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})}
-           — ${formatTimeLeft(h.pickup_by)} remaining
-         </div>`
-      : h.status === "pending"
-      ? `<span style="font-size:0.72rem;color:var(--muted);">Librarian will prep your book shortly</span>`
-      : h.status === "waitlist"
-      ? `<span style="font-size:0.72rem;color:var(--muted);">You'll be notified when a copy is available</span>`
-      : "";
-
-    return `<div class="hold-item ${isReady ? "ready" : ""} ${isExpiring ? "expiring" : ""}">
+      ? `<div class="pickup-countdown ${isExpiring?"urgent":"ok"}">⏱ Pick up by: ${new Date(h.pickup_by).toLocaleString("en-JM",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})} — ${formatTimeLeft(h.pickup_by)} remaining</div>`
+      : h.status==="pending" ? `<span style="font-size:0.72rem;color:var(--muted);">Librarian will prep your book shortly</span>`
+      : h.status==="waitlist" ? `<span style="font-size:0.72rem;color:var(--muted);">You'll be notified when a copy is available</span>` : "";
+    return `<div class="hold-item ${isReady?"ready":""} ${isExpiring?"expiring":""}" id="hi-${h.id}">
       <div class="hold-cover">${cover}</div>
       <div class="hold-info">
         <div class="hold-title">${escHtml(h.book_title)}</div>
-        <div class="hold-author">${escHtml(h.book_author || "")}</div>
+        <div class="hold-author">${escHtml(h.book_author||"")}</div>
         <div class="hold-meta">
           ${statusPill}
-          ${h.shelf_location ? `<div class="hold-location">📍 ${h.shelf_location}</div>` : ""}
+          ${h.shelf_location?`<div class="hold-location">📍 ${h.shelf_location}</div>`:""}
         </div>
         ${pickupInfo}
+        ${h.librarian_note?`<div style="margin-top:6px;font-size:0.75rem;color:var(--primary);background:hsla(43,55%,54%,0.08);border:1px solid hsla(43,55%,54%,0.2);border-radius:6px;padding:4px 10px;display:inline-block;">📝 Librarian: "${escHtml(h.librarian_note)}"</div>`:""}
       </div>
       <div class="hold-actions">
-        ${["pending","waitlist"].includes(h.status)
-          ? `<button class="hbtn hbtn-cancel" onclick="cancelHold('${h.id}')">✕ Cancel</button>`
-          : ""}
+        ${["pending","waitlist"].includes(h.status)?`<button class="hbtn hbtn-cancel" onclick="cancelHold('${h.id}')">✕ Cancel</button>`:""}
       </div>
     </div>`;
   }).join("")}</div>`;
@@ -771,102 +726,87 @@ function renderHolds() {
 async function cancelHold(holdId) {
   if (!confirm("Cancel this hold?")) return;
   try {
-    await fetch(`${API_BASE}/holds/${holdId}`, { method:"DELETE", headers:{ "Authorization":"Bearer "+token } });
-  } catch {
-    try { await sb.from("book_holds").delete().eq("id", holdId); } catch {}
+    const { error } = await sb.from("book_holds").delete().eq("id", holdId);
+    if (error) throw error;
+    // Realtime will fire DELETE event and remove it from myHolds
+  } catch(e) {
+    // If realtime didn't fire, remove locally
+    myHolds = myHolds.filter(h => String(h.id)!==String(holdId));
+    renderHolds(); updateStats();
+    console.error("cancelHold:", e);
   }
-  myHolds = myHolds.filter(h => String(h.id) !== String(holdId));
-  // Remove from localStorage
-  const stored = JSON.parse(localStorage.getItem(`holds_${userId}`) || "[]");
-  localStorage.setItem(`holds_${userId}`, JSON.stringify(stored.filter(h => String(h.id) !== String(holdId))));
-  renderHolds();
-  updateStats();
   showToast("Hold cancelled.", "info");
 }
 
 // ── READING LIST ──────────────────────────────────────
 function addToReadingList(book) {
-  if (typeof book === "string") { try { book = JSON.parse(book); } catch { return; } }
-  if (savedIds.has(book.id)) { showToast("Already in your reading list!", "info"); return; }
-  readingList.unshift({ ...book, status:"want_to_read", addedAt: new Date().toISOString() });
+  if (typeof book==="string") { try{book=JSON.parse(book);}catch{return;} }
+  if (savedIds.has(book.id)) { showToast("Already in your reading list!","info"); return; }
+  readingList.unshift({...book,status:"want_to_read",addedAt:new Date().toISOString()});
   savedIds.add(book.id);
-  localStorage.setItem(`rl_${userId}`, JSON.stringify(readingList));
-  const btn = document.getElementById(`addbtn-${book.id}`);
-  if (btn) { btn.textContent = "✓ Saved"; btn.classList.add("added"); }
-  renderReadingList();
-  updateStats();
+  localStorage.setItem(`rl_${userId}`,JSON.stringify(readingList));
+  const btn=document.getElementById(`addbtn-${book.id}`);
+  if(btn){btn.textContent="✓ Saved";btn.classList.add("added");}
+  renderReadingList(); updateStats();
   showToast(`✓ "${book.title.slice(0,30)}" saved to reading list.`);
 }
 
 function renderReadingList() {
-  const list = document.getElementById("readingList");
-  if (!readingList.length) { list.innerHTML = `<p style="color:var(--muted);font-size:.85rem;">No books saved yet.</p>`; return; }
-  list.innerHTML = readingList.slice(0,12).map(b => `
+  const list=document.getElementById("readingList");
+  if(!readingList.length){list.innerHTML=`<p style="color:var(--muted);font-size:.85rem;">No books saved yet.</p>`;return;}
+  list.innerHTML=readingList.slice(0,12).map(b=>`
     <div class="rl-item">
       <div class="rl-title">${escHtml(b.title)}</div>
       <div class="rl-author">${escHtml(b.author)}</div>
       <div class="rl-status-row">
         <select class="status-sel" onchange="updateRLStatus('${b.id}',this.value)">
-          <option value="want_to_read"  ${b.status==="want_to_read" ?"selected":""}>Want to Read</option>
-          <option value="reading"       ${b.status==="reading"      ?"selected":""}>Reading</option>
-          <option value="finished"      ${b.status==="finished"     ?"selected":""}>Finished</option>
+          <option value="want_to_read" ${b.status==="want_to_read"?"selected":""}>Want to Read</option>
+          <option value="reading"      ${b.status==="reading"     ?"selected":""}>Reading</option>
+          <option value="finished"     ${b.status==="finished"    ?"selected":""}>Finished</option>
         </select>
         <button class="rl-remove" onclick="removeFromRL('${b.id}')">✕</button>
       </div>
     </div>`).join("");
 }
 
-function updateRLStatus(id, status) {
-  const b = readingList.find(b => b.id === id);
-  if (!b) return;
-  const prev = b.status;
-  b.status = status;
-  localStorage.setItem(`rl_${userId}`, JSON.stringify(readingList));
+function updateRLStatus(id,status){
+  const b=readingList.find(b=>b.id===id); if(!b) return;
+  const prev=b.status; b.status=status;
+  localStorage.setItem(`rl_${userId}`,JSON.stringify(readingList));
   updateStats();
-  // Only award points for finishing a book
-  if (status === "finished" && prev !== "finished") awardPoints(20, "finish_book", b.title);
+  if(status==="finished"&&prev!=="finished") awardPoints(20,"finish_book",b.title);
 }
-function removeFromRL(id) {
-  readingList = readingList.filter(b => b.id !== id);
-  savedIds.delete(id);
-  localStorage.setItem(`rl_${userId}`, JSON.stringify(readingList));
+function removeFromRL(id){
+  readingList=readingList.filter(b=>b.id!==id); savedIds.delete(id);
+  localStorage.setItem(`rl_${userId}`,JSON.stringify(readingList));
   renderReadingList(); updateStats();
 }
 
-// ── STATS ─────────────────────────────────────────────
-function updateStats() {
-  document.getElementById("statHolds").textContent     = myHolds.filter(h => ["pending","waitlist"].includes(h.status)).length;
-  document.getElementById("statReady").textContent     = myHolds.filter(h => h.status === "ready").length;
+function updateStats(){
+  document.getElementById("statHolds").textContent     = myHolds.filter(h=>["pending","waitlist"].includes(h.status)).length;
+  document.getElementById("statReady").textContent     = myHolds.filter(h=>h.status==="ready").length;
   document.getElementById("statSaved").textContent     = readingList.length;
-  document.getElementById("statCollected").textContent = myHolds.filter(h => h.status === "collected").length;
+  document.getElementById("statCollected").textContent = myHolds.filter(h=>h.status==="collected").length;
 }
 
 // ── HELPERS ───────────────────────────────────────────
-function timeLeft(dt)       { return new Date(dt) - Date.now(); }
-function formatTimeLeft(dt) {
-  const ms = timeLeft(dt); if (ms <= 0) return "Expired";
-  const h  = Math.floor(ms / 3600000);
-  const m  = Math.floor((ms % 3600000) / 60000);
-  return h > 0 ? `${h}h ${m}m` : `${m}m`;
-}
-function esc(s)    { return (s||"").replace(/'/g,"\\'").replace(/"/g,"&quot;"); }
-function escHtml(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function timeLeft(dt)      { return new Date(dt)-Date.now(); }
+function formatTimeLeft(dt){ const ms=timeLeft(dt); if(ms<=0) return "Expired"; const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000); return h>0?`${h}h ${m}m`:`${m}m`; }
+function escHtml(s)        { return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
-// ── POINTS ────────────────────────────────────────────
-async function awardPoints(pts, action, note) {
-  if (!userId) return;
+async function awardPoints(pts,action,note){
+  if(!userId) return;
   try {
-    const { data: ex } = await sb.from("points").select("total,books_read").eq("user_id",userId).single();
-    const newTotal = (ex?.total||0)+pts;
+    const {data:ex}=await sb.from("points").select("total,books_read").eq("user_id",userId).single();
+    const newTotal=(ex?.total||0)+pts;
     await sb.from("points").upsert({user_id:userId,fullname,total:newTotal,books_read:ex?.books_read||0,updated_at:new Date().toISOString()},{onConflict:"user_id"});
     await sb.from("point_events").insert({user_id:userId,action,points:pts,note:note||action});
-    const msgs = { finish_book: "Book Finished! 🎉" };
-    const t = document.getElementById("ptsToast");
-    document.getElementById("ptsToastTitle").textContent = msgs[action] || "Points Earned! ⭐";
-    document.getElementById("ptsToastMsg").textContent   = `You now have ${newTotal} total points`;
-    document.getElementById("ptsToastPts").textContent   = `+${pts}`;
+    const t=document.getElementById("ptsToast");
+    document.getElementById("ptsToastTitle").textContent="Book Finished! 🎉";
+    document.getElementById("ptsToastMsg").textContent=`You now have ${newTotal} total points`;
+    document.getElementById("ptsToastPts").textContent=`+${pts}`;
     t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),3500);
-  } catch {}
+  } catch{}
 }
 </script>
 </body>

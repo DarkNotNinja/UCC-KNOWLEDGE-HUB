@@ -7,23 +7,24 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="auth.js"></script>
-
   <style>
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
     :root {
-      --bg:         hsl(220, 40%, 7%);
-      --fg:         hsl(45, 30%, 92%);
-      --primary:    hsl(43, 55%, 54%);
-      --primary-fg: hsl(220, 40%, 7%);
-      --card:       hsl(220, 35%, 11%);
-      --muted:      hsl(220, 15%, 55%);
-      --border:     hsl(220, 25%, 18%);
-      --secondary:  hsl(220, 30%, 16%);
-      --green:      hsl(152, 60%, 52%);
-      --red:        hsl(0, 70%, 60%);
-      --blue:       hsl(210, 80%, 65%);
-      --glow-gold:  0 0 40px hsla(43, 55%, 54%, 0.25);
+      --bg:         hsl(220,40%,7%);
+      --fg:         hsl(45,30%,92%);
+      --primary:    hsl(43,55%,54%);
+      --primary-fg: hsl(220,40%,7%);
+      --card:       hsl(220,35%,11%);
+      --muted:      hsl(220,15%,55%);
+      --border:     hsl(220,25%,18%);
+      --secondary:  hsl(220,30%,16%);
+      --green:      hsl(152,60%,52%);
+      --red:        hsl(0,70%,60%);
+      --blue:       hsl(210,80%,65%);
+      --orange:     hsl(30,90%,58%);
+      --glow-gold:  0 0 40px hsla(43,55%,54%,0.25);
       --font-display: 'Space Grotesk', sans-serif;
       --font-body:    'Inter', sans-serif;
     }
@@ -31,432 +32,573 @@
     a { text-decoration:none; color:inherit; }
     h1,h2,h3,h4 { font-family:var(--font-display); }
 
-    /* HEADER */
-    .site-header { position:sticky; top:0; z-index:50; background:hsla(220,35%,11%,0.7); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); }
+    /* ── HEADER ── */
+    .site-header { position:sticky; top:0; z-index:50; background:hsla(220,35%,11%,0.75); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); }
     .header-inner { max-width:1280px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:12px 24px; }
     .header-left { display:flex; align-items:center; gap:12px; }
     .ucc-logo { height:40px; width:40px; border-radius:50%; }
     .header-title { font-family:var(--font-display); font-size:1.125rem; font-weight:700; }
     .main-nav { display:flex; gap:8px; align-items:center; }
     .main-nav a { font-size:0.875rem; color:var(--muted); padding:7px 14px; border-radius:8px; transition:all .2s; }
-    .main-nav a:hover { color:var(--fg); background:var(--secondary); }
+    .main-nav a:hover, .main-nav a.active { color:var(--fg); background:var(--secondary); }
     .nav-logout { font-size:0.875rem; color:hsl(0,70%,70%); padding:7px 14px; border-radius:8px; border:1px solid hsla(0,70%,60%,0.25); background:hsla(0,70%,60%,0.08); cursor:pointer; transition:all .2s; font-family:var(--font-body); }
     .nav-logout:hover { background:hsla(0,70%,60%,0.18); color:#fff; }
 
-    /* MAIN */
-    main { flex:1; max-width:1000px; width:100%; margin:0 auto; padding:48px 24px 72px; display:flex; flex-direction:column; gap:24px; }
+    main { flex:1; max-width:1040px; width:100%; margin:0 auto; padding:48px 24px 80px; display:flex; flex-direction:column; gap:24px; }
 
-    /* PROFILE HERO */
-    .profile-hero { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:32px 36px; display:flex; align-items:center; gap:28px; transition:border-color .3s,box-shadow .3s; animation:fadeUp .45s ease both; }
+    /* ── PROFILE HERO ── */
+    .profile-hero { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:32px 36px; display:flex; align-items:center; gap:28px; transition:border-color .3s,box-shadow .3s; animation:fadeUp .4s ease both; }
     .profile-hero:hover { border-color:var(--primary); box-shadow:var(--glow-gold); }
     .avatar-wrap { position:relative; flex-shrink:0; }
-    .avatar-img, .avatar-initials { width:84px; height:84px; border-radius:50%; border:2px solid var(--primary); object-fit:cover; }
-    .avatar-initials { display:flex; align-items:center; justify-content:center; background:var(--secondary); font-family:var(--font-display); font-size:1.8rem; font-weight:700; color:var(--primary); }
-    .status-dot { position:absolute; bottom:3px; right:3px; width:14px; height:14px; border-radius:50%; background:var(--green); border:2px solid var(--bg); }
+    .avatar-initials { width:84px; height:84px; border-radius:50%; border:2px solid var(--primary); display:flex; align-items:center; justify-content:center; background:var(--secondary); font-family:var(--font-display); font-size:1.8rem; font-weight:700; color:var(--primary); }
+    .status-dot { position:absolute; bottom:4px; right:4px; width:14px; height:14px; border-radius:50%; background:var(--green); border:2px solid var(--bg); }
     .hero-info { flex:1; }
     .hero-info h1 { font-size:1.6rem; font-weight:700; margin-bottom:4px; }
     .hero-email   { font-size:0.875rem; color:var(--primary); margin-bottom:12px; }
     .badges { display:flex; flex-wrap:wrap; gap:8px; }
-    .badge { font-size:0.75rem; font-weight:600; padding:4px 12px; border-radius:20px; letter-spacing:.03em; font-family:var(--font-display); }
+    .badge { font-size:0.75rem; font-weight:600; padding:4px 12px; border-radius:20px; font-family:var(--font-display); }
     .badge-id     { background:var(--secondary); border:1px solid var(--border); color:var(--muted); }
     .badge-role   { background:hsla(43,55%,54%,0.12); border:1px solid hsla(43,55%,54%,0.3); color:var(--primary); }
     .badge-active { background:hsla(152,60%,52%,0.12); border:1px solid hsla(152,60%,52%,0.3); color:var(--green); }
 
-    /* STATS ROW */
-    .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; animation:fadeUp .45s .05s ease both; }
-    .stat-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 20px; transition:border-color .3s; }
+    /* ── STATS ── */
+    .stats-row { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; animation:fadeUp .4s .05s ease both; }
+    .stat-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px 18px; transition:border-color .3s; }
     .stat-card:hover { border-color:hsla(43,55%,54%,0.3); }
-    .stat-card .stat-num { font-family:var(--font-display); font-size:1.6rem; font-weight:700; color:var(--primary); }
-    .stat-card .stat-lbl { font-size:0.78rem; color:var(--muted); margin-top:2px; }
+    .stat-num { font-family:var(--font-display); font-size:1.6rem; font-weight:700; color:var(--primary); }
+    .stat-num.green  { color:var(--green); }
+    .stat-num.orange { color:var(--orange); }
+    .stat-num.blue   { color:var(--blue); }
+    .stat-lbl { font-size:0.75rem; color:var(--muted); margin-top:2px; }
 
-    /* QUICK ACTIONS */
-    .quick-actions { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; animation:fadeUp .45s .08s ease both; }
-    .action-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px 16px; display:flex; flex-direction:column; align-items:center; gap:10px; cursor:pointer; transition:all .25s; text-align:center; text-decoration:none; color:inherit; }
+    /* ── QUICK ACTIONS ── */
+    .quick-actions { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; animation:fadeUp .4s .08s ease both; }
+    .action-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px 16px; display:flex; flex-direction:column; align-items:center; gap:10px; cursor:pointer; transition:all .25s; text-align:center; color:inherit; }
     .action-card:hover { border-color:var(--primary); box-shadow:0 0 24px hsla(43,55%,54%,0.1); transform:translateY(-3px); }
     .action-icon { width:44px; height:44px; border-radius:12px; font-size:1.3rem; display:flex; align-items:center; justify-content:center; background:var(--secondary); }
     .action-label { font-size:0.8rem; font-weight:600; font-family:var(--font-display); color:var(--muted); }
 
-    /* CARDS */
-    .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:28px 32px; transition:border-color .3s; animation:fadeUp .45s .15s ease both; }
-    .card:hover { border-color:hsla(43,55%,54%,0.3); }
-    .card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
-    .card-header h2 { font-size:1.1rem; font-weight:600; }
+    /* ── CARD ── */
+    .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:28px 32px; transition:border-color .3s; animation:fadeUp .4s .12s ease both; }
+    .card:hover { border-color:hsla(43,55%,54%,0.2); }
+    .card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; padding-bottom:14px; border-bottom:1px solid var(--border); }
+    .card-header h2 { font-size:1rem; font-weight:600; }
 
-    /* TABLE */
+    /* ── HOLDS TABLE ── */
     .table-wrap { overflow-x:auto; }
     table { width:100%; border-collapse:collapse; font-size:0.875rem; }
     thead tr { border-bottom:1px solid var(--border); }
-    th { color:var(--muted); font-weight:600; padding:10px 14px; text-align:left; font-family:var(--font-display); font-size:0.75rem; letter-spacing:.05em; text-transform:uppercase; }
+    th { color:var(--muted); font-weight:600; padding:10px 14px; text-align:left; font-family:var(--font-display); font-size:0.72rem; letter-spacing:.05em; text-transform:uppercase; }
     td { padding:12px 14px; border-bottom:1px solid hsla(220,25%,18%,0.5); vertical-align:middle; }
     tr:last-child td { border-bottom:none; }
     tbody tr:hover td { background:var(--secondary); }
-    .empty-row td { text-align:center; padding:28px; color:var(--muted); font-size:0.875rem; }
+    .empty-row td { text-align:center; padding:32px; color:var(--muted); font-size:0.875rem; }
 
-    /* PILLS */
-    .pill { display:inline-block; padding:3px 10px; border-radius:20px; font-size:0.75rem; font-weight:600; font-family:var(--font-display); white-space:nowrap; }
-    .pill-active   { background:hsla(152,60%,52%,0.12); color:var(--green);   border:1px solid hsla(152,60%,52%,0.25); }
-    .pill-returned { background:var(--secondary);       color:var(--muted);   border:1px solid var(--border); }
-    .pill-overdue  { background:hsla(0,70%,60%,0.12);   color:var(--red);     border:1px solid hsla(0,70%,60%,0.25); }
-    .pill-reading  { background:hsla(43,55%,54%,0.12);  color:var(--primary); border:1px solid hsla(43,55%,54%,0.3); }
-    .pill-finished { background:hsla(210,80%,65%,0.12); color:var(--blue);    border:1px solid hsla(210,80%,65%,0.25); }
-    .pill-want     { background:var(--secondary);       color:var(--muted);   border:1px solid var(--border); }
+    /* ── PILLS ── */
+    .pill { display:inline-block; padding:3px 10px; border-radius:20px; font-size:0.72rem; font-weight:600; font-family:var(--font-display); white-space:nowrap; }
+    .pill-pending   { background:hsla(210,80%,65%,0.12); color:var(--blue);    border:1px solid hsla(210,80%,65%,0.25); }
+    .pill-waitlist  { background:hsla(30,90%,58%,0.12);  color:var(--orange);  border:1px solid hsla(30,90%,58%,0.25); }
+    .pill-ready     { background:hsla(152,60%,52%,0.12); color:var(--green);   border:1px solid hsla(152,60%,52%,0.25); }
+    .pill-collected { background:var(--secondary);        color:var(--muted);   border:1px solid var(--border); }
+    .pill-expired   { background:hsla(0,70%,60%,0.12);   color:var(--red);     border:1px solid hsla(0,70%,60%,0.25); }
+    .pill-reading   { background:hsla(43,55%,54%,0.12);  color:var(--primary); border:1px solid hsla(43,55%,54%,0.3); }
+    .pill-finished  { background:hsla(210,80%,65%,0.12); color:var(--blue);    border:1px solid hsla(210,80%,65%,0.25); }
+    .pill-want      { background:var(--secondary);        color:var(--muted);   border:1px solid var(--border); }
 
-    /* READING LIST GRID */
-    .reading-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:12px; }
+    /* ── HOLD TIMELINE CARDS ── */
+    .holds-feed { display:flex; flex-direction:column; gap:10px; }
+    .hold-row { background:var(--secondary); border:1px solid var(--border); border-radius:12px; padding:14px 18px; display:flex; align-items:center; gap:16px; flex-wrap:wrap; transition:border-color .2s; }
+    .hold-row:hover { border-color:hsla(43,55%,54%,0.3); }
+    .hold-row.status-ready    { border-left:3px solid var(--green); }
+    .hold-row.status-pending  { border-left:3px solid var(--blue); }
+    .hold-row.status-waitlist { border-left:3px solid var(--orange); }
+    .hold-row.status-expired  { border-left:3px solid var(--red); opacity:.7; }
+    .hold-row.status-collected{ border-left:3px solid var(--muted); }
+    .hold-cover { width:40px; height:52px; border-radius:6px; background:var(--card); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; overflow:hidden; }
+    .hold-cover img { width:100%;height:100%;object-fit:cover; }
+    .hold-body { flex:1; min-width:0; }
+    .hold-title  { font-size:0.88rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .hold-author { font-size:0.75rem; color:var(--muted); }
+    .hold-detail { font-size:0.72rem; color:var(--muted); margin-top:3px; display:flex; gap:10px; flex-wrap:wrap; }
+    .hold-actions-col { display:flex; gap:6px; flex-shrink:0; }
+    .ha-btn { padding:5px 12px; border-radius:7px; font-family:var(--font-display); font-size:0.72rem; font-weight:700; cursor:pointer; border:none; transition:all .2s; }
+    .ha-cancel { background:hsla(0,70%,60%,0.1); border:1px solid hsla(0,70%,60%,0.2); color:var(--red); }
+    .ha-cancel:hover { background:hsla(0,70%,60%,0.2); }
+
+    /* ── READY ALERT ── */
+    .ready-alert { background:hsla(152,60%,52%,0.08); border:1px solid hsla(152,60%,52%,0.3); border-radius:12px; padding:14px 18px; display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+    .ready-alert .ra-icon { font-size:1.4rem; }
+    .ready-alert .ra-text strong { display:block; color:var(--green); font-family:var(--font-display); font-size:0.88rem; }
+    .ready-alert .ra-text span   { font-size:0.75rem; color:var(--muted); }
+
+    /* ── READING LIST ── */
+    .reading-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(175px,1fr)); gap:12px; }
     .rl-card { background:var(--secondary); border:1px solid var(--border); border-radius:10px; padding:14px; display:flex; flex-direction:column; gap:6px; transition:border-color .2s; }
     .rl-card:hover { border-color:hsla(43,55%,54%,0.3); }
-    .rl-title  { font-size:0.85rem; font-weight:600; line-height:1.3; display:-webkit-box; -webkit-lineclamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-    .rl-author { font-size:0.75rem; color:var(--muted); }
-    .rl-actions { display:flex; gap:6px; margin-top:4px; }
-    .rl-btn { flex:1; padding:5px 8px; border-radius:7px; font-family:var(--font-display); font-size:0.72rem; font-weight:700; cursor:pointer; border:none; transition:all .2s; text-align:center; }
-    .rl-view { background:var(--card); border:1px solid var(--border); color:var(--fg); }
-    .rl-view:hover { border-color:var(--primary); }
-    .rl-pdf  { background:hsla(210,80%,65%,0.12); border:1px solid hsla(210,80%,65%,0.25); color:var(--blue); }
-    .status-sel { font-size:0.72rem; background:var(--card); border:1px solid var(--border); color:var(--fg); border-radius:6px; padding:3px 6px; cursor:pointer; font-family:var(--font-display); width:100%; margin-top:2px; }
+    .rl-title  { font-size:0.84rem; font-weight:600; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .rl-author { font-size:0.73rem; color:var(--muted); }
+    .status-sel { font-size:0.72rem; background:var(--card); border:1px solid var(--border); color:var(--fg); border-radius:6px; padding:3px 6px; cursor:pointer; font-family:var(--font-display); width:100%; margin-top:4px; outline:none; }
+    .status-sel:focus { border-color:var(--primary); }
+    .rl-view-btn { width:100%; margin-top:4px; padding:5px; border-radius:6px; background:var(--card); border:1px solid var(--border); color:var(--muted); font-size:0.7rem; font-family:var(--font-display); font-weight:600; cursor:pointer; transition:all .2s; text-align:center; }
+    .rl-view-btn:hover { border-color:var(--primary); color:var(--primary); }
 
-    /* FINES */
-    .fines-stats { display:flex; gap:16px; margin-bottom:20px; flex-wrap:wrap; }
-    .fine-stat { flex:1; min-width:110px; background:var(--secondary); border:1px solid var(--border); border-radius:10px; padding:16px 18px; }
-    .fine-stat .amt { font-family:var(--font-display); font-size:1.5rem; font-weight:700; color:var(--primary); }
-    .fine-stat .lbl { font-size:0.75rem; color:var(--muted); margin-top:2px; }
-
-    /* BUTTONS */
-    .btn { display:inline-flex; align-items:center; justify-content:center; padding:10px 24px; border-radius:8px; font-family:var(--font-display); font-size:0.875rem; font-weight:600; cursor:pointer; border:none; transition:all .2s; }
-    .btn-primary { background:var(--primary); color:var(--primary-fg); }
-    .btn-primary:hover { opacity:.9; box-shadow:var(--glow-gold); }
-    .btn-outline { background:transparent; border:1px solid hsla(45,30%,92%,0.2); color:var(--fg); }
-    .btn-outline:hover { background:var(--secondary); }
-    .btn-sm { padding:6px 14px; font-size:0.8rem; }
-    .btn-ghost { background:transparent; border:1px solid hsla(45,30%,92%,0.2); color:var(--fg); }
-    .btn-ghost:hover { background:var(--secondary); }
-
-    /* FORM */
+    /* ── FORM ── */
     .form-group { margin-bottom:14px; }
-    .form-group label { display:block; font-size:0.75rem; color:var(--muted); margin-bottom:6px; font-family:var(--font-display); font-weight:500; letter-spacing:.04em; text-transform:uppercase; }
+    .form-group label { display:block; font-size:0.72rem; color:var(--muted); margin-bottom:6px; font-family:var(--font-display); font-weight:600; letter-spacing:.05em; text-transform:uppercase; }
     .form-group input { width:100%; padding:11px 14px; background:var(--secondary); border:1px solid var(--border); border-radius:8px; outline:none; color:var(--fg); font-family:var(--font-body); font-size:0.9rem; transition:border-color .2s; }
     .form-group input:focus { border-color:var(--primary); }
     .form-group input::placeholder { color:var(--muted); }
 
-    /* MODAL */
-    .modal-overlay { display:none; position:fixed; inset:0; z-index:100; background:hsla(220,40%,5%,0.8); backdrop-filter:blur(6px); align-items:center; justify-content:center; }
+    /* ── BUTTONS ── */
+    .btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:9px 20px; border-radius:8px; font-family:var(--font-display); font-size:0.82rem; font-weight:600; cursor:pointer; border:none; transition:all .2s; }
+    .btn-primary { background:var(--primary); color:var(--primary-fg); }
+    .btn-primary:hover { opacity:.9; box-shadow:var(--glow-gold); }
+    .btn-outline { background:transparent; border:1px solid hsla(45,30%,92%,0.2); color:var(--fg); }
+    .btn-outline:hover { background:var(--secondary); }
+    .btn-sm { padding:6px 14px; font-size:0.78rem; }
+
+    /* ── MODAL ── */
+    .modal-overlay { display:none; position:fixed; inset:0; z-index:200; background:hsla(220,40%,5%,0.85); backdrop-filter:blur(8px); align-items:center; justify-content:center; }
     .modal-overlay.open { display:flex; }
-    .modal { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:32px 36px; width:90%; max-width:440px; box-shadow:0 20px 60px rgba(0,0,0,0.6); animation:scaleIn .22s ease; }
+    .modal { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:32px 36px; width:90%; max-width:440px; box-shadow:0 24px 70px rgba(0,0,0,0.6); animation:scaleIn .22s ease; }
     .modal-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; }
     .modal-top h3 { font-size:1.1rem; font-weight:600; }
-    .modal-close { background:none; border:none; color:var(--muted); font-size:1.2rem; cursor:pointer; }
+    .modal-close { background:none; border:none; color:var(--muted); font-size:1.3rem; cursor:pointer; }
     .modal-close:hover { color:var(--fg); }
 
-    /* FOOTER */
+    /* ── TOAST ── */
+    .toast { position:fixed; bottom:24px; right:24px; z-index:500; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 20px; font-size:0.875rem; font-family:var(--font-display); font-weight:600; box-shadow:var(--glow-gold); transform:translateY(80px); opacity:0; transition:all .3s; pointer-events:none; max-width:320px; }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .toast.success { border-color:hsla(152,60%,52%,0.4); color:var(--green); }
+    .toast.info    { border-color:hsla(43,55%,54%,0.4);  color:var(--primary); }
+    .toast.warn    { border-color:hsla(0,70%,60%,0.4);   color:var(--red); }
+
+    /* ── FOOTER ── */
     .site-footer { border-top:1px solid var(--border); padding:32px 24px; text-align:center; }
-    .site-footer p { font-family:var(--font-display); font-size:0.875rem; color:var(--muted); }
+    .site-footer p { font-family:var(--font-display); font-size:0.875rem; color:var(--muted); line-height:1.7; }
     .site-footer strong { color:var(--fg); }
     .site-footer a { color:var(--primary); }
-    .site-footer a:hover { text-decoration:underline; }
     .site-footer small { display:block; margin-top:6px; font-size:0.75rem; color:var(--muted); }
 
-    @keyframes fadeUp  { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+    /* ── LIVE BADGE ── */
+    .live-badge { display:inline-flex; align-items:center; gap:5px; font-size:0.68rem; font-weight:600; color:var(--green); font-family:var(--font-display); }
+    .live-dot { width:6px; height:6px; border-radius:50%; background:var(--green); animation:pulse 2s infinite; flex-shrink:0; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
+
+    @keyframes fadeUp  { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
     @keyframes scaleIn { from{opacity:0;transform:scale(.94)} to{opacity:1;transform:scale(1)} }
 
-    @media (max-width:640px) {
-      .profile-hero  { flex-direction:column; text-align:center; padding:24px 20px; }
-      .badges        { justify-content:center; }
-      .quick-actions { grid-template-columns:repeat(2,1fr); }
-      .stats-row     { grid-template-columns:repeat(2,1fr); }
-      .card          { padding:20px 16px; }
-      .main-nav a    { display:none; }
+    @media (max-width:860px)  { .stats-row{grid-template-columns:repeat(3,1fr)} }
+    @media (max-width:640px)  {
+      .profile-hero{flex-direction:column;text-align:center;padding:24px 20px} .badges{justify-content:center}
+      .quick-actions{grid-template-columns:repeat(2,1fr)} .stats-row{grid-template-columns:repeat(2,1fr)}
+      .card{padding:20px 16px} .main-nav a{display:none}
     }
   </style>
 </head>
 <body>
 
-  <!-- HEADER -->
-  <header class="site-header">
-    <div class="header-inner">
-      <div class="header-left">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEC31GlH03Kf6NAmmiIHqInFd0q1bQz2gmDg&s" alt="UCC logo" class="ucc-logo">
-        <span class="header-title">UCC Knowledge Hub</span>
-      </div>
-      <nav class="main-nav">
-        <a href="ucc_knowledge_hub.html">Home</a>
-        <a href="Loaners.html">Library</a>
-        <a href="forum.html">Forum</a>
-        <a href="study_rooms.html">Study Rooms</a>
-        <a href="leaderboard.html">🏆 Leaderboard</a>
-        <button class="nav-logout" id="logoutBtn">Log Out</button>
-      </nav>
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-left">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEC31GlH03Kf6NAmmiIHqInFd0q1bQz2gmDg&s" alt="UCC logo" class="ucc-logo">
+      <span class="header-title">UCC Knowledge Hub</span>
     </div>
-  </header>
+    <nav class="main-nav">
+      <a href="ucc_knowledge_hub.html">Home</a>
+      <a href="Loaners.html">Library</a>
+      <a href="forum.html">Forum</a>
+      <a href="profile.html" class="active">Profile</a>
+      <button class="nav-logout" id="logoutBtn">Log Out</button>
+    </nav>
+  </div>
+</header>
 
-  <main>
+<main>
 
-    <!-- PROFILE HERO -->
-    <div class="profile-hero">
-      <div class="avatar-wrap">
-        <div class="avatar-initials" id="avatarEl">?</div>
-        <div class="status-dot"></div>
-      </div>
-      <div class="hero-info">
-        <h1 id="heroName">Loading…</h1>
-        <p class="hero-email" id="heroEmail"></p>
-        <div class="badges">
-          <span class="badge badge-id"    id="heroBadgeId"></span>
-          <span class="badge badge-role">Student</span>
-          <span class="badge badge-active">✓ Active Member</span>
-        </div>
-      </div>
+  <!-- PROFILE HERO -->
+  <div class="profile-hero">
+    <div class="avatar-wrap">
+      <div class="avatar-initials" id="avatarEl">?</div>
+      <div class="status-dot"></div>
     </div>
-
-    <!-- STATS -->
-    <div class="stats-row">
-      <div class="stat-card"><div class="stat-num" id="statLoans">0</div><div class="stat-lbl">Active Loans</div></div>
-      <div class="stat-card"><div class="stat-num" id="statReading">0</div><div class="stat-lbl">Currently Reading</div></div>
-      <div class="stat-card"><div class="stat-num" id="statFinished">0</div><div class="stat-lbl">Books Finished</div></div>
-      <div class="stat-card"><div class="stat-num" id="statSaved">0</div><div class="stat-lbl">Saved Resources</div></div>
-    </div>
-
-    <!-- QUICK ACTIONS -->
-    <div class="quick-actions">
-      <a class="action-card" href="Loaners.html">
-        <div class="action-icon">📗</div>
-        <span class="action-label">Browse Library</span>
-      </a>
-      <a class="action-card" href="#" onclick="openModal('removeBookModal');return false;">
-        <div class="action-icon">📕</div>
-        <span class="action-label">Return Book</span>
-      </a>
-      <a class="action-card" href="#finesCard">
-        <div class="action-icon">💰</div>
-        <span class="action-label">View Fines</span>
-      </a>
-      <a class="action-card" href="#" onclick="openModal('payFineModal');return false;">
-        <div class="action-icon">💳</div>
-        <span class="action-label">Pay Fines</span>
-      </a>
-    </div>
-
-    <!-- MY READING LIST (from digital library) -->
-    <div class="card">
-      <div class="card-header">
-        <h2>📑 My Reading List</h2>
-        <a href="Loaners.html" class="btn btn-outline btn-sm">+ Find Books</a>
+    <div class="hero-info">
+      <h1 id="heroName">Loading…</h1>
+      <p class="hero-email" id="heroEmail"></p>
+      <div class="badges">
+        <span class="badge badge-id"    id="heroBadgeId">ID: —</span>
+        <span class="badge badge-role">Student</span>
+        <span class="badge badge-active">✓ Active Member</span>
       </div>
-      <div id="readingListContent">
-        <p style="color:var(--muted);font-size:.875rem;">No books saved yet. <a href="Loaners.html" style="color:var(--primary);">Browse the library</a> to add resources.</p>
-      </div>
-    </div>
-
-    <!-- LOANS TABLE -->
-    <div class="card">
-      <div class="card-header">
-        <h2>📚 My Loans</h2>
-        <button class="btn btn-outline btn-sm" onclick="loadLoans()">↻ Refresh</button>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Book Title</th><th>Author</th><th>Format</th><th>Added</th><th>Due Date</th><th>Status</th><th>Access</th></tr></thead>
-          <tbody id="loansTableBody"><tr class="empty-row"><td colspan="7">Loading loans…</td></tr></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- FINES -->
-    <div class="card" id="finesCard">
-      <div class="card-header">
-        <h2>💰 Fines &amp; Fees</h2>
-        <button class="btn btn-primary" onclick="openModal('payFineModal')">Pay Now</button>
-      </div>
-      <div class="fines-stats">
-        <div class="fine-stat"><div class="amt" id="fineTotal">$0.00</div><div class="lbl">Outstanding</div></div>
-        <div class="fine-stat"><div class="amt" id="fineDays">0</div><div class="lbl">Overdue Days</div></div>
-        <div class="fine-stat"><div class="amt">$0.00</div><div class="lbl">Paid This Month</div></div>
-      </div>
-    </div>
-
-    <!-- CHANGE PASSWORD -->
-    <div class="card">
-      <div class="card-header"><h2>🔒 Change Password</h2></div>
-      <form id="passwordForm">
-        <div class="form-group"><label>Current Password</label><input type="password" id="currentPassword" placeholder="Enter current password" required></div>
-        <div class="form-group"><label>New Password</label><input type="password" id="newPassword" placeholder="Enter new password" required></div>
-        <div class="form-group"><label>Confirm New Password</label><input type="password" id="confirmPassword" placeholder="Repeat new password" required></div>
-        <button class="btn btn-primary" type="submit">Update Password</button>
-        <p id="passwordResult" style="margin-top:10px;font-size:.85rem;"></p>
-      </form>
-    </div>
-
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="site-footer">
-    <p>
-      <strong>University of the Commonwealth Caribbean</strong><br>
-      17 Worthington Avenue, Kingston 5, Jamaica W.I. &nbsp;·&nbsp;
-      <a href="https://www.ucc.edu.jm">www.ucc.edu.jm</a>
-    </p>
-    <small>© <span id="year"></span> UCC — All Rights Reserved</small>
-  </footer>
-
-  <!-- MODALS -->
-  <div class="modal-overlay" id="removeBookModal">
-    <div class="modal">
-      <div class="modal-top"><h3>📕 Return a Book</h3><button class="modal-close" onclick="closeModal('removeBookModal')">✕</button></div>
-      <div class="form-group"><label>Book Title or Loan ID</label><input type="text" id="returnBookInput" placeholder="Enter book title or loan ID"></div>
-      <button class="btn btn-primary" style="width:100%" onclick="closeModal('removeBookModal')">Confirm Return</button>
     </div>
   </div>
 
-  <div class="modal-overlay" id="payFineModal">
-    <div class="modal">
-      <div class="modal-top"><h3>💳 Pay Fines</h3><button class="modal-close" onclick="closeModal('payFineModal')">✕</button></div>
-      <p style="font-size:.85rem;color:var(--muted);margin-bottom:18px;">Outstanding: <strong style="color:var(--primary)" id="payFineAmt">$0.00</strong></p>
-      <div class="form-group"><label>Card Number</label><input type="text" placeholder="•••• •••• •••• ••••" maxlength="19"></div>
-      <div style="display:flex;gap:12px;">
-        <div class="form-group" style="flex:1"><label>Expiry</label><input type="text" placeholder="MM / YY" maxlength="7"></div>
-        <div class="form-group" style="flex:1"><label>CVV</label><input type="text" placeholder="•••" maxlength="3"></div>
+  <!-- STATS — all pulled from real data -->
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num"        id="statActiveHolds">0</div><div class="stat-lbl">Active Holds</div></div>
+    <div class="stat-card"><div class="stat-num green"  id="statReady">0</div><div class="stat-lbl">Ready for Pickup</div></div>
+    <div class="stat-card"><div class="stat-num"        id="statCollected">0</div><div class="stat-lbl">Books Collected</div></div>
+    <div class="stat-card"><div class="stat-num blue"   id="statReading">0</div><div class="stat-lbl">Currently Reading</div></div>
+    <div class="stat-card"><div class="stat-num orange" id="statFinished">0</div><div class="stat-lbl">Books Finished</div></div>
+  </div>
+
+  <!-- QUICK ACTIONS -->
+  <div class="quick-actions">
+    <a class="action-card" href="Loaners.html">
+      <div class="action-icon">📗</div>
+      <span class="action-label">Browse Library</span>
+    </a>
+    <a class="action-card" href="pdf-materials.html">
+      <div class="action-icon">📕</div>
+      <span class="action-label">Books Returned</span>
+    </a>
+    <a class="action-card" href="forum.html">
+      <div class="action-icon">💰</div>
+      <span class="action-label">View Fines</span>
+    </a>
+    <a class="action-card" href="#" onclick="openModal('payFineModal');return false;">
+      <div class="action-icon">💳</div>
+      <span class="action-label">Pay Fines</span>
+    </a>
+  </div>
+
+  <!-- MY HOLDS — live from Supabase book_holds -->
+  <div class="card">
+    <div class="card-header">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <h2>🔖 My Book Holds</h2>
+        <!--<span class="live-badge"><span class="live-dot"></span> Live</span>-->
       </div>
-      <button class="btn btn-primary" style="width:100%;margin-top:4px" onclick="closeModal('payFineModal')">Pay Now</button>
+      <button class="btn btn-outline btn-sm" onclick="loadHolds()">↻ Refresh</button>
+    </div>
+    <div id="holdsArea">
+      <p style="color:var(--muted);font-size:.875rem;">Loading holds…</p>
     </div>
   </div>
 
-  <script>
-  const API_BASE = "/api";
+  <!-- MY READING LIST — from localStorage (matches Loaners.html) -->
+  <div class="card">
+    <div class="card-header">
+      <h2>📑 My Reading List</h2>
+      <a href="Loaners.html" class="btn btn-outline btn-sm"> Find Books</a>
+    </div>
+    <div id="readingListContent">
+      <p style="color:var(--muted);font-size:.875rem;">Loading…</p>
+    </div>
+  </div>
 
-  document.getElementById("year").textContent = new Date().getFullYear();
+  <!-- CHANGE PASSWORD -->
+  <div class="card">
+    <div class="card-header"><h2>🔒 Change Password</h2></div>
+    <form id="passwordForm">
+      <div class="form-group"><label>Current Password</label><input type="password" id="currentPassword" placeholder="Enter current password" required></div>
+      <div class="form-group"><label>New Password</label><input type="password" id="newPassword" placeholder="Enter new password" required></div>
+      <div class="form-group"><label>Confirm New Password</label><input type="password" id="confirmPassword" placeholder="Repeat new password" required></div>
+      <button class="btn btn-primary" type="submit">Update Password</button>
+      <p id="passwordResult" style="margin-top:10px;font-size:.85rem;min-height:18px;"></p>
+    </form>
+  </div>
 
-  const token    = getToken();
-  const _user    = getCurrentUser();
-  const userId   = _user?.userId   || null;
-  const fullname = _user?.fullname || "Student";
+</main>
 
-  document.getElementById("logoutBtn").addEventListener("click", () => logout());
+<footer class="site-footer">
+  <p>
+    <strong>University of the Commonwealth Caribbean</strong><br>
+    17 Worthington Avenue, Kingston 5, Jamaica W.I. &nbsp;·&nbsp;
+    <a href="https://www.ucc.edu.jm">www.ucc.edu.jm</a>
+  </p>
+  <small>© <span id="year"></span> UCC — All Rights Reserved</small>
+</footer>
 
-  function openModal(id)  { document.getElementById(id).classList.add("open"); }
-  function closeModal(id) { document.getElementById(id).classList.remove("open"); }
-  document.querySelectorAll(".modal-overlay").forEach(o =>
-    o.addEventListener("click", e => { if (e.target===o) o.classList.remove("open"); })
-  );
+<div class="toast" id="toast"></div>
 
-  async function loadUser() {
-    try {
-      const res  = await fetch("/api/user", { headers: { "Authorization":"Bearer "+token } });
-      if (!res.ok) return;
-      const user = await res.json();
-      document.getElementById("heroName").textContent    = user.fullname  || "Unknown";
-      document.getElementById("heroEmail").textContent   = user.email     || "";
-      document.getElementById("heroBadgeId").textContent = "ID: " + (user.school_id || "—");
-      const avatarEl = document.getElementById("avatarEl");
-      avatarEl.textContent = (user.fullname||"?").split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase();
-    } catch {
-      document.getElementById("heroName").textContent = "Error loading profile";
-    }
-  }
+<!-- PAY FINE MODAL -->
+<div class="modal-overlay" id="payFineModal">
+  <div class="modal">
+    <div class="modal-top">
+      <h3>💳 Pay Fines</h3>
+      <button class="modal-close" onclick="closeModal('payFineModal')">✕</button>
+    </div>
+    <p style="font-size:.85rem;color:var(--muted);margin-bottom:18px;">Outstanding: <strong style="color:var(--primary)" id="payFineAmt">$0.00</strong></p>
+    <div class="form-group"><label>Card Number</label><input type="text" placeholder="•••• •••• •••• ••••" maxlength="19"></div>
+    <div style="display:flex;gap:12px;">
+      <div class="form-group" style="flex:1"><label>Expiry</label><input type="text" placeholder="MM / YY" maxlength="7"></div>
+      <div class="form-group" style="flex:1"><label>CVV</label><input type="text" placeholder="•••" maxlength="3"></div>
+    </div>
+    <button class="btn btn-primary" style="width:100%;margin-top:4px" onclick="closeModal('payFineModal');showToast('Payment submitted!','success');">Pay Now</button>
+  </div>
+</div>
 
-  async function loadLoans() {
-    const tbody = document.getElementById("loansTableBody");
-    try {
-      const res   = await fetch(`${API_BASE}/loans/user`, { headers:{ "Authorization":"Bearer "+token } });
-      if (!res.ok) throw new Error();
-      const loans = await res.json();
-      document.getElementById("statLoans").textContent = loans.filter(l=>l.status==="active").length;
-      if (!loans.length) {
-        tbody.innerHTML = `<tr class="empty-row"><td colspan="7">No loans yet. <a href="Loaners.html" style="color:var(--primary)">Browse the library</a> to get started.</td></tr>`;
-        return;
-      }
-      tbody.innerHTML = loans.map(l => {
-        const isOver = l.due_date && new Date(l.due_date) < new Date() && l.status==="active";
-        const status = isOver ? "overdue" : l.status;
-        const added  = l.borrowed_at ? new Date(l.borrowed_at).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"}) : "—";
-        const due    = l.due_date    ? new Date(l.due_date).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"}) : "—";
-        const pillMap = { active:"pill-active", overdue:"pill-overdue", hold:"pill-reading", returned:"pill-returned" };
-        return `<tr>
-          <td><strong>${escHtml(l.book_title||"—")}</strong></td>
-          <td>${escHtml(l.book_author||"—")}</td>
-          <td>${l.format||"—"}</td>
-          <td>${added}</td>
-          <td style="${isOver?"color:var(--red)":""}">${due}</td>
-          <td><span class="pill ${pillMap[status]||"pill-active"}">${status}</span></td>
-          <td style="display:flex;gap:6px;">
-            ${l.pdf_url    ? `<a class="btn btn-ghost btn-sm" href="${l.pdf_url}"    target="_blank" style="font-size:.75rem;padding:5px 10px;">📄 PDF</a>` : ""}
-            ${l.source_url ? `<a class="btn btn-ghost btn-sm" href="${l.source_url}" target="_blank" style="font-size:.75rem;padding:5px 10px;">👁 View</a>` : ""}
-          </td>
-        </tr>`;
-      }).join("");
-    } catch {
-      tbody.innerHTML = `<tr class="empty-row"><td colspan="7">Could not load loans.</td></tr>`;
-    }
-  }
+<script>
+// ── CONFIG ────────────────────────────────────────────
+const SUPABASE_URL  = "https://bqgtuxhfqfmxvryfljya.supabase.co";
+const SUPABASE_ANON = "sb_publishable_y71RZ0UCDxkcmFQQHGEf-Q_davD0hbm";
+const sb            = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-  function loadReadingList() {
-    const list    = JSON.parse(localStorage.getItem(`rl_${userId}`) || "[]");
-    const content = document.getElementById("readingListContent");
-    document.getElementById("statSaved").textContent    = list.length;
-    document.getElementById("statReading").textContent  = list.filter(b=>b.status==="reading").length;
-    document.getElementById("statFinished").textContent = list.filter(b=>b.status==="finished").length;
-    if (!list.length) {
-      content.innerHTML = `<p style="color:var(--muted);font-size:.875rem;">No books saved yet. <a href="Loaners.html" style="color:var(--primary);">Browse the library</a> to add resources.</p>`;
-      return;
-    }
-    content.innerHTML = `<div class="reading-grid">${list.slice(0,12).map(b => `
-      <div class="rl-card">
-        <div class="rl-title">${escHtml(b.title)}</div>
-        <div class="rl-author">${escHtml(b.author)}</div>
-        <div class="rl-actions">
-          ${b.hasPdf && b.pdfLink
-            ? `<a class="rl-btn rl-pdf" href="${b.pdfLink}" target="_blank">📄 PDF</a>`
-            : `<a class="rl-btn rl-view" href="${b.viewLink||"#"}" target="_blank">👁 View</a>`}
-        </div>
-        <select class="status-sel" onchange="updateReadingStatus('${b.id}',this.value)">
-          <option value="want_to_read" ${b.status==="want_to_read"?"selected":""}>Want to Read</option>
-          <option value="reading"      ${b.status==="reading"     ?"selected":""}>Reading</option>
-          <option value="finished"     ${b.status==="finished"    ?"selected":""}>Finished ✓</option>
-        </select>
-      </div>`).join("")}</div>`;
-  }
+document.getElementById("year").textContent = new Date().getFullYear();
 
-  function updateReadingStatus(bookId, status) {
-    const list = JSON.parse(localStorage.getItem(`rl_${userId}`) || "[]");
-    const book = list.find(b=>b.id===bookId);
-    if (!book) return;
-    book.status = status;
-    localStorage.setItem(`rl_${userId}`, JSON.stringify(list));
-    loadReadingList();
-  }
+// ── AUTH ─────────────────────────────────────────────
+const token    = getToken();
+const _user    = getCurrentUser();
+const userId   = _user?.userId   || null;
+const fullname = _user?.fullname || "Student";
+const email    = _user?.email    || "";
 
-  async function loadFines() {
-    try {
-      const res = await fetch(`${API_BASE}/fines/user`, { headers:{ "Authorization":"Bearer "+token } });
-      if (!res.ok) return;
-      const data = await res.json();
-      const total = (data||[]).reduce((s,f)=>s+parseFloat(f.amount||0), 0);
-      const days  = (data||[]).reduce((s,f)=>s+(f.days_overdue||0), 0);
-      document.getElementById("fineTotal").textContent  = `$${total.toFixed(2)}`;
-      document.getElementById("fineDays").textContent   = days;
-      document.getElementById("payFineAmt").textContent = `$${total.toFixed(2)}`;
-    } catch { /* silent */ }
-  }
+document.getElementById("logoutBtn").addEventListener("click", () => logout());
 
-  document.getElementById("passwordForm").addEventListener("submit", async e => {
-    e.preventDefault();
-    const current = document.getElementById("currentPassword").value;
-    const newPass = document.getElementById("newPassword").value;
-    const confirm = document.getElementById("confirmPassword").value;
-    const result  = document.getElementById("passwordResult");
-    if (newPass !== confirm) { result.style.color="var(--red)"; result.textContent="Passwords do not match."; return; }
-    try {
-      const res  = await fetch("/setpassword", { method:"POST", headers:{"Content-Type":"application/json","Authorization":"Bearer "+token}, body:JSON.stringify({current,newPass}) });
-      const data = await res.json();
-      result.style.color = res.ok ? "var(--green)" : "var(--red)";
-      result.textContent = data.message || "Done.";
-    } catch { result.style.color="var(--red)"; result.textContent="Could not update password."; }
-  });
+// ── MODAL HELPERS ─────────────────────────────────────
+function openModal(id)  { document.getElementById(id).classList.add("open"); }
+function closeModal(id) { document.getElementById(id).classList.remove("open"); }
+document.querySelectorAll(".modal-overlay").forEach(o =>
+  o.addEventListener("click", e => { if (e.target===o) o.classList.remove("open"); })
+);
 
-  function escHtml(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+// ── TOAST ─────────────────────────────────────────────
+function showToast(msg, type="success") {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove("show"), 3500);
+}
 
-  loadUser();
-  loadLoans();
+// ── INIT ─────────────────────────────────────────────
+window.addEventListener("DOMContentLoaded", () => {
+  loadProfile();
+  loadHolds();
   loadReadingList();
-  loadFines();
-</script>
+  subscribeToHolds();
+});
 
+// ── PROFILE — from auth.js user object ───────────────
+function loadProfile() {
+  const initials = (fullname||"?").split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase();
+  document.getElementById("avatarEl").textContent   = initials;
+  document.getElementById("heroName").textContent   = fullname || "Unknown Student";
+  document.getElementById("heroEmail").textContent  = email || _user?.email || "";
+  document.getElementById("heroBadgeId").textContent= "ID: " + (userId ? userId.toString().slice(0,8).toUpperCase() : "—");
+
+  // Try to fetch richer profile from API
+  if (token) {
+    fetch("/api/user", { headers:{ "Authorization":"Bearer "+token } })
+      .then(r => r.ok ? r.json() : null)
+      .then(user => {
+        if (!user) return;
+        document.getElementById("heroName").textContent    = user.fullname  || fullname;
+        document.getElementById("heroEmail").textContent   = user.email     || email;
+        document.getElementById("heroBadgeId").textContent = "ID: " + (user.school_id || userId?.toString().slice(0,8).toUpperCase() || "—");
+        const initials2 = (user.fullname||fullname||"?").split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase();
+        document.getElementById("avatarEl").textContent = initials2;
+      })
+      .catch(() => {}); // silent — already showing from auth.js
+  }
+}
+
+// ── HOLDS — from Supabase book_holds ─────────────────
+async function loadHolds() {
+  const area = document.getElementById("holdsArea");
+  try {
+    const { data, error } = await sb
+      .from("book_holds")
+      .select("*")
+      .eq("user_id", userId)
+      .order("placed_at", { ascending: false });
+
+    if (error) throw error;
+    const holds = data || [];
+    renderHolds(holds);
+    updateStats(holds);
+  } catch(e) {
+    console.error("loadHolds profile:", e);
+    area.innerHTML = `<p style="color:var(--muted);font-size:.875rem;">Could not load holds. <a href="Loaners.html" style="color:var(--primary);">Go to Library</a></p>`;
+  }
+}
+
+function renderHolds(holds) {
+  const area = document.getElementById("holdsArea");
+
+  if (!holds.length) {
+    area.innerHTML = `<p style="color:var(--muted);font-size:.875rem;">No holds yet. <a href="Loaners.html" style="color:var(--primary);">Browse the library</a> to place a hold.</p>`;
+    return;
+  }
+
+  // Show "ready" alerts at the top
+  const readyHolds = holds.filter(h => h.status === "ready");
+  const readyBanners = readyHolds.map(h => `
+    <div class="ready-alert">
+      <div class="ra-icon">🔔</div>
+      <div class="ra-text">
+        <strong>"${escHtml(h.book_title)}" is ready for pickup!</strong>
+        <span>📍 ${escHtml(h.shelf_location || "Library Front Desk")}
+          ${h.pickup_by ? ` — Pick up by <strong style="color:var(--green)">${new Date(h.pickup_by).toLocaleString("en-JM",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})}</strong>` : ""}
+          ${h.librarian_note ? ` — 📝 "${escHtml(h.librarian_note)}"` : ""}
+        </span>
+      </div>
+    </div>`).join("");
+
+  const rows = holds.map(h => {
+    const cover = h.book_cover
+      ? `<img src="${h.book_cover}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='📚'">`
+      : "📚";
+
+    const pillMap = {
+      pending:   `<span class="pill pill-pending">⏳ Pending Prep</span>`,
+      waitlist:  `<span class="pill pill-waitlist">📋 Waitlist</span>`,
+      ready:     `<span class="pill pill-ready">✅ Ready!</span>`,
+      collected: `<span class="pill pill-collected">📦 Collected</span>`,
+      expired:   `<span class="pill pill-expired">❌ Expired</span>`
+    };
+
+    const placedDate = h.placed_at
+      ? new Date(h.placed_at).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"})
+      : "—";
+
+    const pickupDetail = h.status === "ready" && h.pickup_by
+      ? `<span style="color:var(--green);">⏱ Pick up by ${new Date(h.pickup_by).toLocaleString("en-JM",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})}</span>`
+      : "";
+
+    const libNote = h.librarian_note
+      ? `<span style="color:var(--primary);">📝 "${escHtml(h.librarian_note)}"</span>`
+      : "";
+
+    const canCancel = ["pending","waitlist"].includes(h.status);
+
+    return `<div class="hold-row status-${h.status}">
+      <div class="hold-cover">${cover}</div>
+      <div class="hold-body">
+        <div class="hold-title">${escHtml(h.book_title)}</div>
+        <div class="hold-author">${escHtml(h.book_author || "")}</div>
+        <div class="hold-detail">
+          <span>📅 Placed ${placedDate}</span>
+          ${h.shelf_location ? `<span>📍 ${escHtml(h.shelf_location)}</span>` : ""}
+          ${pickupDetail}
+          ${libNote}
+        </div>
+        ${h.note ? `<div style="margin-top:5px;font-size:0.72rem;color:var(--muted);">Your note: "${escHtml(h.note)}"</div>` : ""}
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;">
+        ${pillMap[h.status] || ""}
+        ${canCancel ? `<button class="ha-btn ha-cancel" onclick="cancelHold('${h.id}')">✕ Cancel</button>` : ""}
+      </div>
+    </div>`;
+  }).join("");
+
+  area.innerHTML = readyBanners + `<div class="holds-feed">${rows}</div>`;
+}
+
+// ── CANCEL HOLD ───────────────────────────────────────
+async function cancelHold(holdId) {
+  if (!confirm("Cancel this hold?")) return;
+  try {
+    const { error } = await sb.from("book_holds").delete().eq("id", holdId);
+    if (error) throw error;
+    showToast("Hold cancelled.", "info");
+    loadHolds();
+  } catch(e) {
+    showToast("Could not cancel. Try again.", "warn");
+    console.error("cancelHold:", e);
+  }
+}
+
+// ── REALTIME — update profile holds when librarian acts ──
+function subscribeToHolds() {
+  if (!userId) return;
+  sb.channel(`profile_holds_${userId}`)
+    .on("postgres_changes", {
+        event:  "*",
+        schema: "public",
+        table:  "book_holds",
+        filter: `user_id=eq.${userId}`
+      },
+      () => loadHolds()   // just reload on any change
+    )
+    .subscribe();
+}
+
+// ── STATS — computed from actual holds + reading list ──
+function updateStats(holds) {
+  const rl = JSON.parse(localStorage.getItem(`rl_${userId}`) || "[]");
+
+  document.getElementById("statActiveHolds").textContent = holds.filter(h => ["pending","waitlist"].includes(h.status)).length;
+  document.getElementById("statReady").textContent       = holds.filter(h => h.status === "ready").length;
+  document.getElementById("statCollected").textContent   = holds.filter(h => h.status === "collected").length;
+  document.getElementById("statReading").textContent     = rl.filter(b => b.status === "reading").length;
+  document.getElementById("statFinished").textContent    = rl.filter(b => b.status === "finished").length;
+}
+
+// ── READING LIST — same localStorage key as Loaners.html ──
+function loadReadingList() {
+  const list    = JSON.parse(localStorage.getItem(`rl_${userId}`) || "[]");
+  const content = document.getElementById("readingListContent");
+
+  if (!list.length) {
+    content.innerHTML = `<p style="color:var(--muted);font-size:.875rem;">No books saved yet. <a href="Loaners.html" style="color:var(--primary);">Browse the library</a> to add resources.</p>`;
+    return;
+  }
+
+  content.innerHTML = `<div class="reading-grid">${list.slice(0,12).map(b => `
+    <div class="rl-card">
+      <div class="rl-title">${escHtml(b.title)}</div>
+      <div class="rl-author">${escHtml(b.author)}</div>
+      <select class="status-sel" onchange="updateReadingStatus('${b.id}',this.value)">
+        <option value="want_to_read" ${b.status==="want_to_read"?"selected":""}>Want to Read</option>
+        <option value="reading"      ${b.status==="reading"     ?"selected":""}>Reading</option>
+        <option value="finished"     ${b.status==="finished"    ?"selected":""}>Finished ✓</option>
+      </select>
+      ${b.viewLink ? `<a class="rl-view-btn" href="${b.viewLink}" target="_blank" rel="noopener">👁 View</a>` : ""}
+    </div>`).join("")}</div>`;
+}
+
+function updateReadingStatus(bookId, status) {
+  const list = JSON.parse(localStorage.getItem(`rl_${userId}`) || "[]");
+  const book = list.find(b => b.id === bookId);
+  if (!book) return;
+  book.status = status;
+  localStorage.setItem(`rl_${userId}`, JSON.stringify(list));
+  // Refresh stats with latest holds count
+  sb.from("book_holds").select("*").eq("user_id", userId)
+    .then(({ data }) => updateStats(data || []));
+  showToast(`Reading status updated to "${status.replace(/_/g," ")}"`, "info");
+}
+
+// ── CHANGE PASSWORD ───────────────────────────────────
+document.getElementById("passwordForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const current = document.getElementById("currentPassword").value;
+  const newPass = document.getElementById("newPassword").value;
+  const confirm = document.getElementById("confirmPassword").value;
+  const result  = document.getElementById("passwordResult");
+
+  if (newPass !== confirm) {
+    result.style.color = "var(--red)";
+    result.textContent = "Passwords do not match.";
+    return;
+  }
+  if (newPass.length < 6) {
+    result.style.color = "var(--red)";
+    result.textContent = "Password must be at least 6 characters.";
+    return;
+  }
+
+  result.style.color = "var(--muted)";
+  result.textContent = "Updating…";
+
+  try {
+    const res  = await fetch("/setpassword", {
+      method: "POST",
+      headers: { "Content-Type":"application/json", "Authorization":"Bearer "+token },
+      body: JSON.stringify({ current, newPass })
+    });
+    const data = await res.json();
+    result.style.color = res.ok ? "var(--green)" : "var(--red)";
+    result.textContent = data.message || (res.ok ? "Password updated!" : "Failed to update.");
+    if (res.ok) document.getElementById("passwordForm").reset();
+  } catch {
+    result.style.color = "var(--red)";
+    result.textContent = "Could not update password. Check your connection.";
+  }
+});
+
+// ── HELPERS ───────────────────────────────────────────
+function escHtml(s) { return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+</script>
 </body>
 </html>

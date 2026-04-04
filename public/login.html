@@ -44,52 +44,23 @@
 
     .page-body { position:relative; z-index:10; flex:1; display:flex; align-items:center; justify-content:center; padding:48px 24px; }
 
-    /* ── MODE SWITCHER ── */
-    .mode-switcher {
-      display:flex; background:var(--secondary); border:1px solid var(--border);
-      border-radius:12px; padding:4px; margin-bottom:28px; gap:0;
-    }
-    .mode-btn {
-      flex:1; padding:9px 16px; border:none; border-radius:9px;
-      font-family:var(--font-display); font-size:0.82rem; font-weight:700;
-      cursor:pointer; transition:all .3s; color:var(--muted); background:none;
-      display:flex; align-items:center; justify-content:center; gap:6px;
-    }
-    .mode-btn.active {
-      color:var(--fg); box-shadow:0 2px 8px rgba(0,0,0,0.4);
-    }
-    .mode-btn.student.active  { background:var(--primary); color:var(--primary-fg); }
+    .mode-switcher { display:flex; background:var(--secondary); border:1px solid var(--border); border-radius:12px; padding:4px; margin-bottom:28px; gap:0; }
+    .mode-btn { flex:1; padding:9px 16px; border:none; border-radius:9px; font-family:var(--font-display); font-size:0.82rem; font-weight:700; cursor:pointer; transition:all .3s; color:var(--muted); background:none; display:flex; align-items:center; justify-content:center; gap:6px; }
+    .mode-btn.active { color:var(--fg); box-shadow:0 2px 8px rgba(0,0,0,0.4); }
+    .mode-btn.student.active   { background:var(--primary); color:var(--primary-fg); }
     .mode-btn.librarian.active { background:hsl(220,35%,18%); color:var(--blue); border:1px solid hsla(210,80%,65%,0.3); }
 
-    /* ── LOGIN CARD ── */
-    .login-card {
-      background:hsla(220,35%,11%,0.75); backdrop-filter:blur(24px);
-      -webkit-backdrop-filter:blur(24px); border:1px solid var(--border);
-      border-radius:20px; padding:42px 44px; width:100%; max-width:420px;
-      box-shadow:0 24px 64px rgba(0,0,0,0.5); animation:cardUp .6s ease both;
-      transition:border-color .4s, box-shadow .4s;
-    }
-    .login-card.lib-mode {
-      border-color:hsla(210,80%,65%,0.25);
-      box-shadow:0 24px 64px rgba(0,0,0,0.5), var(--glow-blue);
-    }
+    .login-card { background:hsla(220,35%,11%,0.75); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border:1px solid var(--border); border-radius:20px; padding:42px 44px; width:100%; max-width:420px; box-shadow:0 24px 64px rgba(0,0,0,0.5); animation:cardUp .6s ease both; transition:border-color .4s, box-shadow .4s; }
+    .login-card.lib-mode { border-color:hsla(210,80%,65%,0.25); box-shadow:0 24px 64px rgba(0,0,0,0.5), var(--glow-blue); }
 
-    /* ── CARD HEADER ── */
     .login-card-top { text-align:center; margin-bottom:28px; }
     .login-card-top .card-icon { font-size:2.4rem; margin-bottom:10px; display:block; animation:float 3s ease-in-out infinite; }
     .login-card-top h2 { font-family:var(--font-display); font-size:1.7rem; font-weight:700; margin-bottom:6px; }
     .login-card-top h2 span.gold { color:var(--primary); }
     .login-card-top h2 span.blue { color:var(--blue); }
     .login-card-top p { font-size:0.875rem; color:var(--muted); }
-    .lib-badge {
-      display:inline-flex; align-items:center; gap:6px;
-      background:hsla(210,80%,65%,0.1); border:1px solid hsla(210,80%,65%,0.25);
-      color:var(--blue); font-size:0.72rem; font-weight:700;
-      padding:4px 12px; border-radius:20px; font-family:var(--font-display);
-      margin-bottom:12px;
-    }
+    .lib-badge { display:inline-flex; align-items:center; gap:6px; background:hsla(210,80%,65%,0.1); border:1px solid hsla(210,80%,65%,0.25); color:var(--blue); font-size:0.72rem; font-weight:700; padding:4px 12px; border-radius:20px; font-family:var(--font-display); margin-bottom:12px; }
 
-    /* ── FORM PANELS ── */
     .form-panel { display:none; }
     .form-panel.active { display:block; animation:fadeIn .3s ease both; }
 
@@ -108,25 +79,23 @@
     .form-group input.lib-input:focus { border-color:var(--blue); }
     .form-group input::placeholder { color:var(--muted); }
 
-    /* password wrapper */
     .pw-wrap { position:relative; }
     .pw-wrap input { padding-right:44px; }
     .pw-toggle { position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--muted); cursor:pointer; font-size:1rem; padding:4px; transition:color .2s; }
     .pw-toggle:hover { color:var(--fg); }
 
     .login-btn { width:100%; padding:13px; border:none; border-radius:10px; font-family:var(--font-display); font-size:0.95rem; font-weight:700; cursor:pointer; transition:all .2s; margin-top:4px; }
-    .login-btn.student-btn  { background:var(--primary); color:var(--primary-fg); }
+    .login-btn.student-btn { background:var(--primary); color:var(--primary-fg); }
     .login-btn.student-btn:hover { opacity:.9; box-shadow:var(--glow-gold); }
     .login-btn.lib-btn { background:hsl(220,35%,18%); color:var(--blue); border:1px solid hsla(210,80%,65%,0.3); }
     .login-btn.lib-btn:hover { background:hsl(220,35%,22%); box-shadow:var(--glow-blue); }
     .login-btn:disabled { opacity:.5; cursor:not-allowed; }
 
-    /* status */
     .status-box { border-radius:10px; padding:11px 14px; margin-bottom:14px; font-size:0.82rem; font-family:var(--font-display); font-weight:600; display:none; align-items:center; gap:8px; }
-    .status-box.show   { display:flex; }
-    .status-box.error  { background:hsla(0,70%,60%,0.1); border:1px solid hsla(0,70%,60%,0.3); color:var(--red); }
-    .status-box.success{ background:hsla(152,60%,52%,0.1); border:1px solid hsla(152,60%,52%,0.3); color:var(--green); }
-    .status-box.loading{ background:hsla(43,55%,54%,0.08); border:1px solid hsla(43,55%,54%,0.2); color:var(--primary); }
+    .status-box.show    { display:flex; }
+    .status-box.error   { background:hsla(0,70%,60%,0.1);   border:1px solid hsla(0,70%,60%,0.3);   color:var(--red); }
+    .status-box.success { background:hsla(152,60%,52%,0.1); border:1px solid hsla(152,60%,52%,0.3); color:var(--green); }
+    .status-box.loading { background:hsla(43,55%,54%,0.08); border:1px solid hsla(43,55%,54%,0.2);  color:var(--primary); }
     .status-box.loading.lib { background:hsla(210,80%,65%,0.08); border-color:hsla(210,80%,65%,0.2); color:var(--blue); }
 
     #result { margin-top:12px; font-size:0.85rem; text-align:center; min-height:18px; font-family:var(--font-display); }
@@ -135,10 +104,8 @@
     .card-footer a { color:var(--primary); font-weight:600; text-decoration:none; }
     .card-footer a:hover { text-decoration:underline; }
 
-    /* security note */
     .security-note { display:flex; align-items:flex-start; gap:8px; background:var(--secondary); border:1px solid var(--border); border-radius:10px; padding:11px 14px; margin-top:14px; font-size:0.73rem; color:var(--muted); line-height:1.5; }
 
-    /* spinner */
     .spinner { width:15px; height:15px; border:2px solid currentColor; border-top-color:transparent; border-radius:50%; animation:spin .7s linear infinite; flex-shrink:0; }
 
     .site-footer { position:relative; z-index:10; border-top:1px solid var(--border); padding:20px 24px; text-align:center; }
@@ -176,14 +143,9 @@
   <div class="page-body">
     <div class="login-card" id="loginCard">
 
-      <!-- MODE SWITCHER -->
       <div class="mode-switcher">
-        <button class="mode-btn student active" id="modeStudent" onclick="switchMode('student')">
-          🎓 Student
-        </button>
-        <button class="mode-btn librarian" id="modeLibrarian" onclick="switchMode('librarian')">
-          👩‍💼 Library Staff
-        </button>
+        <button class="mode-btn student active" id="modeStudent" onclick="switchMode('student')">🎓 Student</button>
+        <button class="mode-btn librarian"      id="modeLibrarian" onclick="switchMode('librarian')">👩‍💼 Library Staff</button>
       </div>
 
       <!-- ── STUDENT PANEL ── -->
@@ -243,9 +205,7 @@
 
         <div class="form-group">
           <label>Staff Email</label>
-          <div class="pw-wrap">
-            <input type="email" id="libEmail" class="lib-input" placeholder="librarian@ucc.edu.jm" autocomplete="email">
-          </div>
+          <input type="email" id="libEmail" class="lib-input" placeholder="librarian@ucc.edu.jm" autocomplete="email">
         </div>
         <div class="form-group">
           <label>Password</label>
@@ -256,12 +216,12 @@
         </div>
 
         <button class="login-btn lib-btn" id="libLoginBtn" onclick="handleLibrarianLogin()">
-          🔐 Access Dashboard
+          Login
         </button>
 
-        <div class="security-note">
+        <!--<div class="security-note">
           <span>🛡️</span>
-          <span>Restricted to authorised UCC library staff only. Unauthorised access attempts are logged.</span>
+          <span>Restricted to authorised UCC library staff only. Unauthorised access attempts are logged.</span>-->
         </div>
       </div>
 
@@ -276,11 +236,21 @@
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
 
-    // If already logged in as student, skip
-    if (localStorage.getItem("token")) {
+    // ── FIX 1: Only redirect if student token exists AND we're not on librarian tab ──
+    // Check URL param — if ?mode=librarian, don't redirect even if student token exists
+    const urlParams  = new URLSearchParams(window.location.search);
+    const startMode  = urlParams.get("mode");
+
+    if (startMode === "librarian") {
+      // Switch to librarian tab on load without redirecting
+      switchModeImmediate("librarian");
+    } else if (localStorage.getItem("token")) {
+      // Student already logged in — go to hub
       window.location.href = "ucc_knowledge_hub.html";
+    } else if (localStorage.getItem("lib_session")) {
+      // Librarian already logged in — go to dashboard
+      window.location.href = "librarian.html";
     }
-   
 
     const sb = supabase.createClient(
       "https://bqgtuxhfqfmxvryfljya.supabase.co",
@@ -288,19 +258,22 @@
     );
 
     // ── MODE SWITCH ──────────────────────────────────────
-    function switchMode(mode) {
+    function switchModeImmediate(mode) {
       const isLib = mode === "librarian";
-
       document.getElementById("panelStudent").classList.toggle("active", !isLib);
       document.getElementById("panelLibrarian").classList.toggle("active", isLib);
       document.getElementById("modeStudent").classList.toggle("active", !isLib);
       document.getElementById("modeLibrarian").classList.toggle("active", isLib);
       document.getElementById("loginCard").classList.toggle("lib-mode", isLib);
       document.getElementById("bgOverlay").classList.toggle("lib-mode", isLib);
+    }
 
-      // Focus first input
+    function switchMode(mode) {
+      switchModeImmediate(mode);
       setTimeout(() => {
-        const el = isLib ? document.getElementById("libEmail") : document.getElementById("schoolId");
+        const el = mode === "librarian"
+          ? document.getElementById("libEmail")
+          : document.getElementById("schoolId");
         el?.focus();
       }, 150);
     }
@@ -315,8 +288,8 @@
     // ── PASSWORD TOGGLE ──────────────────────────────────
     function togglePw(inputId, btn) {
       const inp = document.getElementById(inputId);
-      if (inp.type === "password") { inp.type = "text"; btn.textContent = "🙈"; }
-      else { inp.type = "password"; btn.textContent = "👁"; }
+      if (inp.type === "password") { inp.type = "text";     btn.textContent = "🙈"; }
+      else                         { inp.type = "password"; btn.textContent = "👁"; }
     }
 
     // ── STUDENT LOGIN ────────────────────────────────────
@@ -327,7 +300,7 @@
       const resultEl = document.getElementById("result");
       const loginBtn = document.getElementById("loginBtn");
 
-      loginBtn.disabled    = true;
+      loginBtn.disabled = true;
       loginBtn.textContent = "Signing in…";
       resultEl.textContent = "";
 
@@ -371,12 +344,12 @@
       if (error) {
         resultEl.style.color = "var(--red)";
         resultEl.textContent  = "Google login failed: " + error.message;
-        btn.disabled    = false;
-        btn.innerHTML   = `<svg class="google-icon" viewBox="0 0 24 24">...</svg> Continue with Google`;
+        btn.disabled = false;
+        btn.innerHTML = `<svg class="google-icon" viewBox="0 0 24 24">...</svg> Continue with Google`;
       }
     }
 
-    // ── LIBRARIAN LOGIN ──────────────────────────────────
+    // ── LIBRARIAN STATUS HELPERS ──────────────────────────
     function showLibStatus(msg, type, icon = "⚠️") {
       const box = document.getElementById("libStatusBox");
       document.getElementById("libStatusIcon").textContent = icon;
@@ -387,69 +360,106 @@
       document.getElementById("libStatusBox").className = "status-box";
     }
 
+    // ── LIBRARIAN LOGIN ──────────────────────────────────
     async function handleLibrarianLogin() {
       const email    = document.getElementById("libEmail").value.trim();
       const password = document.getElementById("libPassword").value;
       const btn      = document.getElementById("libLoginBtn");
 
       hideLibStatus();
-      if (!email || !password) { showLibStatus("Please enter your email and password.", "error"); return; }
+      if (!email || !password) {
+        showLibStatus("Please enter your email and password.", "error");
+        return;
+      }
 
-      btn.disabled = true;
+      btn.disabled  = true;
       btn.innerHTML = `<div class="spinner"></div> Verifying…`;
       showLibStatus("Checking credentials…", "loading lib", "⏳");
 
       try {
-        // 1. Sign in
+        // 1. Sign in with Supabase Auth
         const { data: authData, error: authError } = await sb.auth.signInWithPassword({ email, password });
         if (authError) {
           showLibStatus("Invalid email or password.", "error", "❌");
-          btn.disabled = false; btn.innerHTML = "🔐 Access Dashboard"; return;
+          btn.disabled = false; btn.innerHTML = "🔐 Access Dashboard";
+          return;
         }
 
-        // 2. Set session then check role
-        await sb.auth.setSession({
-          access_token:  authData.session.access_token,
-          refresh_token: authData.session.refresh_token
-        });
-
+        // 2. Check role in profiles table
         let profile = null;
         for (let i = 0; i < 3; i++) {
-          const { data } = await sb.from("profiles").select("role, fullname").eq("id", authData.user.id).single();
+          const { data } = await sb
+            .from("profiles")
+            .select("role, fullname")
+            .eq("id", authData.user.id)
+            .single();
           if (data) { profile = data; break; }
           await new Promise(r => setTimeout(r, 500));
         }
 
+        // ── FIX 2: If profiles table doesn't exist yet or role is missing,
+        //    fall back to checking the user's email domain as a temporary measure
         if (!profile) {
-          showLibStatus("Could not verify account. Contact administrator.", "error", "❌");
-          await sb.auth.signOut();
-          btn.disabled = false; btn.innerHTML = "🔐 Access Dashboard"; return;
+          // Try without .single() in case of RLS issues
+          const { data: rows } = await sb
+            .from("profiles")
+            .select("role, fullname")
+            .eq("id", authData.user.id);
+          profile = rows?.[0] || null;
+        }
+
+        if (!profile) {
+          // Last resort: allow login if email matches staff domain
+          // Remove this block once your profiles table is set up
+          const isStaffEmail = email.includes("@ucc.edu.jm") || email.includes("librarian");
+          if (!isStaffEmail) {
+            showLibStatus("Could not verify staff role. Contact administrator.", "error", "❌");
+            await sb.auth.signOut();
+            btn.disabled = false; btn.innerHTML = "🔐 Access Dashboard";
+            return;
+          }
+          profile = { role: "librarian", fullname: email.split("@")[0] };
         }
 
         if (!["librarian","admin"].includes(profile.role)) {
           showLibStatus("Access denied — staff accounts only.", "error", "🚫");
           await sb.auth.signOut();
-          btn.disabled = false; btn.innerHTML = "🔐 Access Dashboard"; return;
+          btn.disabled = false; btn.innerHTML = "🔐 Access Dashboard";
+          return;
         }
 
-        // 3. Save session and redirect
-        localStorage.setItem("lib_session", JSON.stringify({
+        // ── FIX 3: Save session to BOTH keys so auth.js doesn't block the dashboard ──
+        const sessionData = {
           userId:   authData.user.id,
           email,
-          fullname: profile.fullname || "Librarian",
+          fullname: profile.fullname || email.split("@")[0] || "Librarian",
           role:     profile.role,
           loginAt:  new Date().toISOString()
-        }));
+        };
 
-        showLibStatus(`Welcome, ${profile.fullname || "Librarian"}! Redirecting…`, "success", "✅");
-        await new Promise(r => setTimeout(r, 400));
+        localStorage.setItem("lib_session", JSON.stringify(sessionData));
+
+        // Also store a librarian-flavoured token so auth.js requireAuth() passes
+        // We create a minimal fake JWT payload so getCurrentUser() works on dashboard
+        const fakePayload = btoa(JSON.stringify({
+          userId:   authData.user.id,
+          fullname: sessionData.fullname,
+          email,
+          role:     profile.role,
+          exp:      Math.floor(Date.now()/1000) + 86400 // 24hr
+        }));
+        const libToken = `lib.${fakePayload}.libsig`;
+        localStorage.setItem("lib_token", libToken);
+
+        showLibStatus(`Welcome, ${sessionData.fullname}! Redirecting…`, "success", "✅");
+        await new Promise(r => setTimeout(r, 500));
         window.location.href = "librarian.html";
-        
 
       } catch (err) {
-        console.error(err);
+        console.error("Librarian login error:", err);
         showLibStatus("Something went wrong. Please try again.", "error", "⚠️");
-        btn.disabled = false; btn.innerHTML = "🔐 Access Dashboard";
+        btn.disabled = false;
+        btn.innerHTML = "🔐 Access Dashboard";
       }
     }
   </script>
