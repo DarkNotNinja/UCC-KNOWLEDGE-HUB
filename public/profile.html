@@ -452,7 +452,7 @@
 // ── CONFIG ────────────────────────────────────────────────────────────────────
 const SUPABASE_URL  = "https://bqgtuxhfqfmxvryfljya.supabase.co";
 const SUPABASE_ANON = "sb_publishable_y71RZ0UCDxkcmFQQHGEf-Q_davD0hbm"; // ← replace with real eyJ... key
-//const API_BASE      = "https://YOUR-RAILWAY-APP.up.railway.app"; // ← replace with Railway URL
+const API_BASE      = "https://YOUR-RAILWAY-APP.up.railway.app"; // ← replace with Railway URL
 const sb            = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
 document.getElementById("year").textContent = new Date().getFullYear();
@@ -497,24 +497,30 @@ window.addEventListener("DOMContentLoaded", () => {
 
 // ── PROFILE ───────────────────────────────────────────────────────────────────
 function loadProfile() {
-  const initials = (fullname||"?").split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase();
-  document.getElementById("avatarEl").textContent   = initials;
-  document.getElementById("heroName").textContent   = fullname || "Unknown Student";
-  document.getElementById("heroEmail").textContent  = email || "";
-  document.getElementById("heroBadgeId").textContent= "ID: " + (userId ? userId.toString().slice(0,8).toUpperCase() : "—");
+  // Show immediately from auth.js token — no API needed
+  const displayName  = _user?.fullname || fullname || "Unknown Student";
+  const displayEmail = _user?.email || email || "";
+  const displayId    = _user?.school_id || _user?.userId || userId || "";
 
-  if (token) {
+  const initials = displayName.split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase();
+  document.getElementById("avatarEl").textContent    = initials;
+  document.getElementById("heroName").textContent    = displayName;
+  document.getElementById("heroEmail").textContent   = displayEmail;
+  document.getElementById("heroBadgeId").textContent = "ID: " + (displayId ? displayId.toString().slice(0,10).toUpperCase() : "—");
+
+  // Optionally enrich from Railway API if configured
+  if (token && API_BASE && !API_BASE.includes("YOUR-RAILWAY")) {
     fetch(`${API_BASE}/api/user`, { headers:{ "Authorization":"Bearer "+token } })
       .then(r => r.ok ? r.json() : null)
       .then(user => {
         if (!user) return;
-        document.getElementById("heroName").textContent    = user.fullname  || fullname;
-        document.getElementById("heroEmail").textContent   = user.email     || email;
-        document.getElementById("heroBadgeId").textContent = "ID: " + (user.school_id || "—");
-        const i2 = (user.fullname||"?").split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase();
+        document.getElementById("heroName").textContent    = user.fullname  || displayName;
+        document.getElementById("heroEmail").textContent   = user.email     || displayEmail;
+        document.getElementById("heroBadgeId").textContent = "ID: " + (user.school_id || displayId || "—");
+        const i2 = (user.fullname||displayName).split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase();
         document.getElementById("avatarEl").textContent = i2;
       })
-      .catch(() => {});
+      .catch(() => {}); // silent — already showing from token
   }
 }
 
@@ -643,7 +649,7 @@ async function loadFines() {
 
     // Auto-recalculate overdue fines amount based on days
     allFines = allFines.map(f => {
-      if (f.fine_type === "overdue" && f.status === "unpaid" && f.due_date) {
+      if (f.fine_type === "overdue" && f.fine_status === "unpaid" && f.due_date) {
         const daysLate = Math.max(0, Math.floor((Date.now() - new Date(f.due_date)) / 86400000));
         f.amount = daysLate * 200;
         f._accruing = true;
@@ -662,8 +668,8 @@ async function loadFines() {
 
 function renderFines() {
   const section = document.getElementById("finesSection");
-  const unpaid  = allFines.filter(f => f.status === "unpaid");
-  const paid    = allFines.filter(f => f.status !== "unpaid");
+  const unpaid  = allFines.filter(f => f.fine_status === "unpaid");
+  const paid    = allFines.filter(f => f.fine_status !== "unpaid");
   const totalUnpaid = unpaid.reduce((s,f) => s + (f.amount||0), 0);
   const hasConsult  = unpaid.some(f => f.fine_type === "lost");
 
@@ -708,7 +714,7 @@ function renderFines() {
   // Fine rows
   const fineRows = allFines.map(f => {
     const type     = FINE_TYPES[f.fine_type] || FINE_TYPES.overdue;
-    const isPaid   = f.status !== "unpaid";
+    const isPaid   = f.fine_status !== "unpaid";
     const isConsult= f.fine_type === "lost";
     const isSelected = selectedFineIds.has(f.id);
 
@@ -716,9 +722,9 @@ function renderFines() {
       ? `<div class="fine-amount blue">Consult</div>`
       : `<div class="fine-amount ${type.color}">$${(f.amount||0).toLocaleString()}</div>`;
 
-    const pill = f.status === "paid"
+    const pill = f.fine_status === "paid"
       ? `<span class="fine-pill fp-paid">✅ Paid</span>`
-      : f.status === "waived"
+      : f.fine_status === "waived"
         ? `<span class="fine-pill fp-waived">🔓 Waived</span>`
         : isConsult
           ? `<span class="fine-pill fp-consult">📞 See Librarian</span>`
@@ -793,7 +799,7 @@ function renderFines() {
 
 function toggleFineSelection(fineId) {
   const fine = allFines.find(f => f.id === fineId);
-  if (!fine || fine.status !== "unpaid" || fine.fine_type === "lost") return;
+  if (!fine || fine.fine_status !== "unpaid" || fine.fine_type === "lost") return;
 
   if (selectedFineIds.has(fineId)) {
     selectedFineIds.delete(fineId);
@@ -804,7 +810,7 @@ function toggleFineSelection(fineId) {
 }
 
 function selectAllFines() {
-  const payable = allFines.filter(f => f.status === "unpaid" && f.fine_type !== "lost");
+  const payable = allFines.filter(f => f.fine_status === "unpaid" && f.fine_type !== "lost");
   payable.forEach(f => selectedFineIds.add(f.id));
   updateSelectionUI();
 }
@@ -821,7 +827,7 @@ function updateSelectionUI() {
   // Update row highlights
   allFines.forEach(f => {
     const row = document.getElementById(`fine-row-${f.id}`);
-    if (!row || f.status !== "unpaid") return;
+    if (!row || f.fine_status !== "unpaid") return;
     const check = row.querySelector(".fine-check");
     if (selectedFineIds.has(f.id)) {
       row.classList.add("selected");
@@ -852,9 +858,9 @@ function subscribeToFines() {
 }
 
 function updateFineStats() {
-  const unpaid      = allFines.filter(f => f.status === "unpaid" && f.fine_type !== "lost");
+  const unpaid      = allFines.filter(f => f.fine_status === "unpaid" && f.fine_type !== "lost");
   const totalUnpaid = unpaid.reduce((s,f) => s + (f.amount||0), 0);
-  const unpaidCount = allFines.filter(f => f.status === "unpaid").length;
+  const unpaidCount = allFines.filter(f => f.fine_status === "unpaid").length;
 
   document.getElementById("statFinesTotal").textContent = "$" + totalUnpaid.toLocaleString();
 
@@ -950,7 +956,7 @@ function buildPayModal() {
 
 // Rewrite openPayModal cleanly:
 function openPayModal() {
-  const payable = allFines.filter(f => f.status === "unpaid" && f.fine_type !== "lost");
+  const payable = allFines.filter(f => f.fine_status === "unpaid" && f.fine_type !== "lost");
   if (!selectedFineIds.size) {
     payable.forEach(f => selectedFineIds.add(f.id));
     updateSelectionUI();
@@ -985,7 +991,7 @@ async function submitPayment() {
     // Mark each selected fine as paid in Supabase
     const { error } = await sb
       .from("fines")
-      .update({ status: "paid", paid_at: new Date().toISOString() })
+      .update({ fine_status: "paid", paid_at: new Date().toISOString() })
       .in("id", toPayIds);
 
     if (error) throw error;

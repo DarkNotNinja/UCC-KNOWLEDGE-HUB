@@ -292,8 +292,10 @@
 
 
   <script>
-  const API_BASE = "http://localhost:3000/api";
-  const token    = localStorage.getItem("token");
+ const API_BASE =
+  window.location.hostname === "localhost"
+    ? "http://localhost:3000/api"
+    : "https://ucc-knowledge-hub-production.up.railway.app";
 
   document.getElementById("year").textContent = new Date().getFullYear();
 
