@@ -311,7 +311,9 @@
   });
 
   // SOCKET
-  const socket = io({ auth: { token } });
+  const socket = io("https://ucc-knowledge-hub-production.up.railway.app", {
+  auth: { token }
+});
 
   let currentRoom    = null;
   let currentCreator = null;
