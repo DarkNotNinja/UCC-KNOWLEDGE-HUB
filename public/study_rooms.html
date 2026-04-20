@@ -292,7 +292,10 @@
 
 
   <script>
- const API_BASE = "https://ucc-knowledge-hub-production.up.railway.app/api";
+ const API_BASE =
+  window.location.hostname === "localhost"
+    ? "http://localhost:3000/api"
+    : "https://ucc-knowledge-hub-production.up.railway.app/api";
 
   document.getElementById("year").textContent = new Date().getFullYear();
 
@@ -301,6 +304,8 @@
     try { return JSON.parse(atob(t.split(".")[1].replace(/-/g,"+").replace(/_/g,"/"))); }
     catch { return null; }
   }
+
+  const token = localStorage.getItem("token");
   const jwt      = parseJwt(token);
   const userId   = jwt?.userId   ? String(jwt.userId) : null;
   const fullname = jwt?.fullname || "Student";
@@ -310,10 +315,10 @@
     window.location.href = "ucc_landing_page.html";
   });
 
-  // SOCKET
+  // SOCKET (FIXED)
   const socket = io("https://ucc-knowledge-hub-production.up.railway.app", {
-  auth: { token }
-});
+    auth: { token }
+  });
 
   let currentRoom    = null;
   let currentCreator = null;
@@ -328,25 +333,37 @@
       renderRooms(data);
     } catch {
       document.getElementById("roomsGrid").innerHTML =
-        `<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">Could not load rooms. Is your server running?</div>`;
+        `<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">
+          Could not load rooms. Is your server running?
+        </div>`;
     }
   }
 
   function renderRooms(rooms) {
     const grid = document.getElementById("roomsGrid");
+
     if (!rooms.length) {
-      grid.innerHTML = `<div class="empty-rooms" style="grid-column:1/-1"><div class="icon">🏫</div><p>No rooms yet. Create one to get started!</p></div>`;
+      grid.innerHTML = `<div class="empty-rooms" style="grid-column:1/-1">
+        <div class="icon">🏫</div>
+        <p>No rooms yet. Create one to get started!</p>
+      </div>`;
       return;
     }
+
     const icons = { General:"📚", IT:"💻", Business:"📊", Research:"🔬", "Caribbean Studies":"🌴" };
+
     grid.innerHTML = rooms.map(r => `
-      <div class="room-card" onclick="joinRoom(${r.id},'${esc(r.name)}','${esc(r.topic||"")}','${r.created_by||""}')">
+      <div class="room-card"
+        onclick="joinRoom(${r.id},'${esc(r.name)}','${esc(r.topic||"")}','${r.created_by||""}')">
+
         <div class="room-card-top">
           <div class="room-icon">${icons[r.category]||"📚"}</div>
           <div class="room-live-dot"><div class="live-dot"></div>Live</div>
         </div>
+
         <div class="room-name">${r.name}</div>
         <div class="room-topic">${r.topic||"Open discussion"}</div>
+
         <div class="room-footer">
           <div class="room-meta">
             ${r.book_ref?`<span class="room-book">📖 ${r.book_ref}</span>`:""}
@@ -356,6 +373,12 @@
         </div>
       </div>`).join("");
   }
+
+  // KEEP EVERYTHING ELSE FROM YOUR ORIGINAL FILE BELOW THIS LINE
+
+  loadRooms();
+
+
 
   // ── CREATE ROOM ─────────────────────────────────────
   function switchTab(tab) {
