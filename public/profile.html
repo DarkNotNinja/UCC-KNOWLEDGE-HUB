@@ -25,15 +25,11 @@
       --blue:       hsl(210,80%,65%);
       --orange:     hsl(30,90%,58%);
       --glow-gold:  0 0 40px hsla(43,55%,54%,0.25);
-      --glow-red:   0 0 30px hsla(0,70%,60%,0.2);
-      --font-display: 'Space Grotesk', sans-serif;
-      --font-body:    'Inter', sans-serif;
-    }
     body { background:var(--bg); color:var(--fg); font-family:var(--font-body); line-height:1.6; min-height:100vh; display:flex; flex-direction:column; }
     a { text-decoration:none; color:inherit; }
     h1,h2,h3,h4 { font-family:var(--font-display); }
-
     /* HEADER */
+    /* ── HEADER ── */
     .site-header { position:sticky; top:0; z-index:50; background:hsla(220,35%,11%,0.75); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); }
     .header-inner { max-width:1280px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:12px 24px; }
     .header-left { display:flex; align-items:center; gap:12px; }
@@ -47,17 +43,7 @@
 
     main { flex:1; max-width:1040px; width:100%; margin:0 auto; padding:48px 24px 80px; display:flex; flex-direction:column; gap:24px; }
 
-    /* FINES ALERT BANNER */
-    .fines-alert-banner { background:linear-gradient(135deg, hsla(0,70%,60%,0.12), hsla(30,90%,58%,0.08)); border:1px solid hsla(0,70%,60%,0.4); border-radius:14px; padding:18px 24px; display:flex; align-items:center; gap:16px; animation:fadeUp .3s ease both; }
-    .fines-alert-banner .fal-icon { font-size:2rem; flex-shrink:0; }
-    .fines-alert-banner .fal-body { flex:1; }
-    .fines-alert-banner .fal-body strong { font-family:var(--font-display); font-size:1rem; color:var(--red); display:block; margin-bottom:2px; }
-    .fines-alert-banner .fal-body span  { font-size:0.82rem; color:var(--muted); }
-    .fines-alert-banner .fal-amount { font-family:var(--font-display); font-size:1.6rem; font-weight:700; color:var(--red); flex-shrink:0; }
-    .fines-alert-banner .fal-btn { background:var(--red); color:#fff; border:none; border-radius:8px; padding:9px 18px; font-family:var(--font-display); font-size:0.82rem; font-weight:700; cursor:pointer; transition:opacity .2s; flex-shrink:0; }
-    .fines-alert-banner .fal-btn:hover { opacity:.85; }
-
-    /* PROFILE HERO */
+    /* ── PROFILE HERO ── */
     .profile-hero { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:32px 36px; display:flex; align-items:center; gap:28px; transition:border-color .3s,box-shadow .3s; animation:fadeUp .4s ease both; }
     .profile-hero:hover { border-color:var(--primary); box-shadow:var(--glow-gold); }
     .avatar-wrap { position:relative; flex-shrink:0; }
@@ -71,102 +57,52 @@
     .badge-id     { background:var(--secondary); border:1px solid var(--border); color:var(--muted); }
     .badge-role   { background:hsla(43,55%,54%,0.12); border:1px solid hsla(43,55%,54%,0.3); color:var(--primary); }
     .badge-active { background:hsla(152,60%,52%,0.12); border:1px solid hsla(152,60%,52%,0.3); color:var(--green); }
-    .badge-fines  { background:hsla(0,70%,60%,0.12); border:1px solid hsla(0,70%,60%,0.3); color:var(--red); }
 
-    /* STATS */
+    /* ── STATS ── */
     .stats-row { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; animation:fadeUp .4s .05s ease both; }
-    .stat-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px 18px; transition:border-color .3s; cursor:default; }
+    .stat-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px 18px; transition:border-color .3s; }
     .stat-card:hover { border-color:hsla(43,55%,54%,0.3); }
-    .stat-card.clickable { cursor:pointer; }
-    .stat-card.clickable:hover { border-color:var(--red); box-shadow:var(--glow-red); }
     .stat-num { font-family:var(--font-display); font-size:1.6rem; font-weight:700; color:var(--primary); }
     .stat-num.green  { color:var(--green); }
     .stat-num.orange { color:var(--orange); }
     .stat-num.blue   { color:var(--blue); }
-    .stat-num.red    { color:var(--red); }
     .stat-lbl { font-size:0.75rem; color:var(--muted); margin-top:2px; }
 
-    /* QUICK ACTIONS */
+    /* ── QUICK ACTIONS ── */
     .quick-actions { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; animation:fadeUp .4s .08s ease both; }
     .action-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px 16px; display:flex; flex-direction:column; align-items:center; gap:10px; cursor:pointer; transition:all .25s; text-align:center; color:inherit; }
     .action-card:hover { border-color:var(--primary); box-shadow:0 0 24px hsla(43,55%,54%,0.1); transform:translateY(-3px); }
-    .action-card.danger:hover { border-color:var(--red); box-shadow:var(--glow-red); }
     .action-icon { width:44px; height:44px; border-radius:12px; font-size:1.3rem; display:flex; align-items:center; justify-content:center; background:var(--secondary); }
     .action-label { font-size:0.8rem; font-weight:600; font-family:var(--font-display); color:var(--muted); }
-    .action-badge { font-size:0.68rem; font-weight:700; padding:2px 8px; border-radius:10px; background:hsla(0,70%,60%,0.15); color:var(--red); border:1px solid hsla(0,70%,60%,0.3); font-family:var(--font-display); }
 
-    /* CARD */
+    /* ── CARD ── */
     .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:28px 32px; transition:border-color .3s; animation:fadeUp .4s .12s ease both; }
     .card:hover { border-color:hsla(43,55%,54%,0.2); }
     .card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; padding-bottom:14px; border-bottom:1px solid var(--border); }
     .card-header h2 { font-size:1rem; font-weight:600; }
 
-    /* ── FINES SECTION ── */
-    .fines-section { display:flex; flex-direction:column; gap:10px; }
+    /* ── HOLDS TABLE ── */
+    .table-wrap { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; font-size:0.875rem; }
+    thead tr { border-bottom:1px solid var(--border); }
+    th { color:var(--muted); font-weight:600; padding:10px 14px; text-align:left; font-family:var(--font-display); font-size:0.72rem; letter-spacing:.05em; text-transform:uppercase; }
+    td { padding:12px 14px; border-bottom:1px solid hsla(220,25%,18%,0.5); vertical-align:middle; }
+    tr:last-child td { border-bottom:none; }
+    tbody tr:hover td { background:var(--secondary); }
+    .empty-row td { text-align:center; padding:32px; color:var(--muted); font-size:0.875rem; }
 
-    /* Fine summary bar */
-    .fines-summary-bar { background:var(--secondary); border:1px solid var(--border); border-radius:12px; padding:16px 20px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; margin-bottom:4px; }
-    .fsb-item { display:flex; flex-direction:column; }
-    .fsb-label { font-size:0.68rem; color:var(--muted); font-family:var(--font-display); font-weight:600; text-transform:uppercase; letter-spacing:.05em; }
-    .fsb-val { font-family:var(--font-display); font-size:1.2rem; font-weight:700; }
-    .fsb-val.red    { color:var(--red); }
-    .fsb-val.orange { color:var(--orange); }
-    .fsb-val.green  { color:var(--green); }
-    .fsb-divider { width:1px; height:36px; background:var(--border); }
-    .fsb-actions { margin-left:auto; display:flex; gap:8px; }
+    /* ── PILLS ── */
+    .pill { display:inline-block; padding:3px 10px; border-radius:20px; font-size:0.72rem; font-weight:600; font-family:var(--font-display); white-space:nowrap; }
+    .pill-pending   { background:hsla(210,80%,65%,0.12); color:var(--blue);    border:1px solid hsla(210,80%,65%,0.25); }
+    .pill-waitlist  { background:hsla(30,90%,58%,0.12);  color:var(--orange);  border:1px solid hsla(30,90%,58%,0.25); }
+    .pill-ready     { background:hsla(152,60%,52%,0.12); color:var(--green);   border:1px solid hsla(152,60%,52%,0.25); }
+    .pill-collected { background:var(--secondary);        color:var(--muted);   border:1px solid var(--border); }
+    .pill-expired   { background:hsla(0,70%,60%,0.12);   color:var(--red);     border:1px solid hsla(0,70%,60%,0.25); }
+    .pill-reading   { background:hsla(43,55%,54%,0.12);  color:var(--primary); border:1px solid hsla(43,55%,54%,0.3); }
+    .pill-finished  { background:hsla(210,80%,65%,0.12); color:var(--blue);    border:1px solid hsla(210,80%,65%,0.25); }
+    .pill-want      { background:var(--secondary);        color:var(--muted);   border:1px solid var(--border); }
 
-    /* Fine row */
-    .fine-row { background:var(--secondary); border:1px solid var(--border); border-radius:12px; padding:16px 18px; display:flex; align-items:flex-start; gap:14px; transition:border-color .2s, background .2s; cursor:pointer; position:relative; }
-    .fine-row:hover { border-color:hsla(43,55%,54%,0.3); }
-    .fine-row.selected { border-color:var(--primary); background:hsla(43,55%,54%,0.06); }
-    .fine-row.paid { opacity:.5; cursor:default; }
-    .fine-row.paid:hover { border-color:var(--border); background:var(--secondary); }
-
-    .fine-check { width:20px; height:20px; border-radius:6px; border:2px solid var(--border); display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px; transition:all .2s; font-size:0.7rem; background:var(--card); }
-    .fine-row.selected .fine-check { background:var(--primary); border-color:var(--primary); color:var(--primary-fg); }
-    .fine-row.paid .fine-check { background:var(--green); border-color:var(--green); color:#fff; }
-
-    .fine-type-icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0; }
-    .fine-type-icon.overdue  { background:hsla(0,70%,60%,0.12); }
-    .fine-type-icon.damage   { background:hsla(30,90%,58%,0.12); }
-    .fine-type-icon.lost     { background:hsla(210,80%,65%,0.12); }
-
-    .fine-body { flex:1; min-width:0; }
-    .fine-book-title { font-size:0.9rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:2px; }
-    .fine-reason { font-size:0.75rem; color:var(--muted); margin-bottom:6px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
-    .fine-meta { display:flex; gap:12px; flex-wrap:wrap; font-size:0.72rem; color:var(--muted); }
-    .fine-meta span { display:flex; align-items:center; gap:4px; }
-
-    .fine-right { display:flex; flex-direction:column; align-items:flex-end; gap:6px; flex-shrink:0; }
-    .fine-amount { font-family:var(--font-display); font-size:1.2rem; font-weight:700; }
-    .fine-amount.red    { color:var(--red); }
-    .fine-amount.orange { color:var(--orange); }
-    .fine-amount.blue   { color:var(--blue); }
-    .fine-amount.green  { color:var(--green); }
-
-    .fine-pill { font-size:0.68rem; font-weight:700; padding:3px 10px; border-radius:20px; font-family:var(--font-display); white-space:nowrap; }
-    .fp-unpaid   { background:hsla(0,70%,60%,0.12); color:var(--red); border:1px solid hsla(0,70%,60%,0.3); }
-    .fp-paid     { background:hsla(152,60%,52%,0.12); color:var(--green); border:1px solid hsla(152,60%,52%,0.3); }
-    .fp-waived   { background:var(--secondary); color:var(--muted); border:1px solid var(--border); }
-    .fp-consult  { background:hsla(210,80%,65%,0.12); color:var(--blue); border:1px solid hsla(210,80%,65%,0.3); }
-
-    .accruing-tag { font-size:0.65rem; font-weight:700; padding:2px 8px; border-radius:10px; background:hsla(0,70%,60%,0.15); color:var(--red); border:1px solid hsla(0,70%,60%,0.3); font-family:var(--font-display); animation:pulse 2s infinite; }
-
-    /* Payment selection bar */
-    .pay-selection-bar { background:hsla(43,55%,54%,0.08); border:1px solid hsla(43,55%,54%,0.3); border-radius:12px; padding:14px 18px; display:flex; align-items:center; gap:14px; margin-top:4px; flex-wrap:wrap; }
-    .psb-text { flex:1; font-size:0.85rem; font-family:var(--font-display); }
-    .psb-text span { color:var(--muted); font-size:0.78rem; display:block; }
-    .psb-amount { font-family:var(--font-display); font-size:1.3rem; font-weight:700; color:var(--primary); }
-    .psb-pay-btn { background:var(--primary); color:var(--primary-fg); border:none; border-radius:8px; padding:10px 22px; font-family:var(--font-display); font-size:0.88rem; font-weight:700; cursor:pointer; transition:all .2s; }
-    .psb-pay-btn:hover { opacity:.9; box-shadow:var(--glow-gold); }
-    .psb-pay-btn:disabled { opacity:.4; cursor:not-allowed; }
-    .psb-clear { background:transparent; border:1px solid var(--border); border-radius:8px; padding:10px 14px; font-family:var(--font-display); font-size:0.82rem; color:var(--muted); cursor:pointer; transition:all .2s; }
-    .psb-clear:hover { border-color:var(--red); color:var(--red); }
-
-    /* consult badge */
-    .consult-badge { background:hsla(210,80%,65%,0.08); border:1px solid hsla(210,80%,65%,0.25); border-radius:10px; padding:12px 16px; font-size:0.78rem; color:var(--blue); display:flex; align-items:center; gap:8px; }
-
-    /* HOLDS TABLE */
+    /* ── HOLD TIMELINE CARDS ── */
     .holds-feed { display:flex; flex-direction:column; gap:10px; }
     .hold-row { background:var(--secondary); border:1px solid var(--border); border-radius:12px; padding:14px 18px; display:flex; align-items:center; gap:16px; flex-wrap:wrap; transition:border-color .2s; }
     .hold-row:hover { border-color:hsla(43,55%,54%,0.3); }
@@ -186,13 +122,13 @@
     .ha-cancel { background:hsla(0,70%,60%,0.1); border:1px solid hsla(0,70%,60%,0.2); color:var(--red); }
     .ha-cancel:hover { background:hsla(0,70%,60%,0.2); }
 
-    /* READY ALERT */
+    /* ── READY ALERT ── */
     .ready-alert { background:hsla(152,60%,52%,0.08); border:1px solid hsla(152,60%,52%,0.3); border-radius:12px; padding:14px 18px; display:flex; align-items:center; gap:12px; margin-bottom:14px; }
     .ready-alert .ra-icon { font-size:1.4rem; }
     .ready-alert .ra-text strong { display:block; color:var(--green); font-family:var(--font-display); font-size:0.88rem; }
     .ready-alert .ra-text span   { font-size:0.75rem; color:var(--muted); }
 
-    /* READING LIST */
+    /* ── READING LIST ── */
     .reading-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(175px,1fr)); gap:12px; }
     .rl-card { background:var(--secondary); border:1px solid var(--border); border-radius:10px; padding:14px; display:flex; flex-direction:column; gap:6px; transition:border-color .2s; }
     .rl-card:hover { border-color:hsla(43,55%,54%,0.3); }
@@ -203,63 +139,49 @@
     .rl-view-btn { width:100%; margin-top:4px; padding:5px; border-radius:6px; background:var(--card); border:1px solid var(--border); color:var(--muted); font-size:0.7rem; font-family:var(--font-display); font-weight:600; cursor:pointer; transition:all .2s; text-align:center; }
     .rl-view-btn:hover { border-color:var(--primary); color:var(--primary); }
 
-    /* FORM */
+    /* ── FORM ── */
     .form-group { margin-bottom:14px; }
     .form-group label { display:block; font-size:0.72rem; color:var(--muted); margin-bottom:6px; font-family:var(--font-display); font-weight:600; letter-spacing:.05em; text-transform:uppercase; }
     .form-group input { width:100%; padding:11px 14px; background:var(--secondary); border:1px solid var(--border); border-radius:8px; outline:none; color:var(--fg); font-family:var(--font-body); font-size:0.9rem; transition:border-color .2s; }
     .form-group input:focus { border-color:var(--primary); }
     .form-group input::placeholder { color:var(--muted); }
 
-    /* BUTTONS */
+    /* ── BUTTONS ── */
     .btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:9px 20px; border-radius:8px; font-family:var(--font-display); font-size:0.82rem; font-weight:600; cursor:pointer; border:none; transition:all .2s; }
     .btn-primary { background:var(--primary); color:var(--primary-fg); }
     .btn-primary:hover { opacity:.9; box-shadow:var(--glow-gold); }
     .btn-outline { background:transparent; border:1px solid hsla(45,30%,92%,0.2); color:var(--fg); }
     .btn-outline:hover { background:var(--secondary); }
     .btn-sm { padding:6px 14px; font-size:0.78rem; }
-    .btn-red { background:hsla(0,70%,60%,0.15); color:var(--red); border:1px solid hsla(0,70%,60%,0.3); }
-    .btn-red:hover { background:hsla(0,70%,60%,0.25); }
 
-    /* MODAL */
-    .modal-overlay { display:none; position:fixed; inset:0; z-index:200; background:hsla(220,40%,5%,0.85); backdrop-filter:blur(8px); align-items:center; justify-content:center; padding:20px; }
+    /* ── MODAL ── */
+    .modal-overlay { display:none; position:fixed; inset:0; z-index:200; background:hsla(220,40%,5%,0.85); backdrop-filter:blur(8px); align-items:center; justify-content:center; }
     .modal-overlay.open { display:flex; }
-    .modal { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:32px 36px; width:90%; max-width:500px; box-shadow:0 24px 70px rgba(0,0,0,0.6); animation:scaleIn .22s ease; max-height:90vh; overflow-y:auto; }
+    .modal { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:32px 36px; width:90%; max-width:440px; box-shadow:0 24px 70px rgba(0,0,0,0.6); animation:scaleIn .22s ease; }
     .modal-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; }
     .modal-top h3 { font-size:1.1rem; font-weight:600; }
     .modal-close { background:none; border:none; color:var(--muted); font-size:1.3rem; cursor:pointer; }
     .modal-close:hover { color:var(--fg); }
 
-    /* Payment modal fine items */
-    .pay-modal-fine-list { display:flex; flex-direction:column; gap:8px; margin-bottom:18px; }
-    .pay-modal-fine-item { background:var(--secondary); border:1px solid var(--border); border-radius:10px; padding:12px 14px; display:flex; align-items:center; justify-content:space-between; gap:10px; }
-    .pmfi-left { display:flex; flex-direction:column; }
-    .pmfi-title { font-size:0.85rem; font-weight:600; }
-    .pmfi-reason { font-size:0.72rem; color:var(--muted); }
-    .pmfi-amount { font-family:var(--font-display); font-weight:700; color:var(--primary); }
-
-    .pay-total-row { background:hsla(43,55%,54%,0.08); border:1px solid hsla(43,55%,54%,0.3); border-radius:10px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
-    .pay-total-label { font-family:var(--font-display); font-weight:600; font-size:0.9rem; }
-    .pay-total-amount { font-family:var(--font-display); font-weight:700; font-size:1.4rem; color:var(--primary); }
-
-    /* TOAST */
+    /* ── TOAST ── */
     .toast { position:fixed; bottom:24px; right:24px; z-index:500; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 20px; font-size:0.875rem; font-family:var(--font-display); font-weight:600; box-shadow:var(--glow-gold); transform:translateY(80px); opacity:0; transition:all .3s; pointer-events:none; max-width:320px; }
     .toast.show { transform:translateY(0); opacity:1; }
     .toast.success { border-color:hsla(152,60%,52%,0.4); color:var(--green); }
     .toast.info    { border-color:hsla(43,55%,54%,0.4);  color:var(--primary); }
     .toast.warn    { border-color:hsla(0,70%,60%,0.4);   color:var(--red); }
 
-    /* FOOTER */
+    /* ── FOOTER ── */
     .site-footer { border-top:1px solid var(--border); padding:32px 24px; text-align:center; }
     .site-footer p { font-family:var(--font-display); font-size:0.875rem; color:var(--muted); line-height:1.7; }
     .site-footer strong { color:var(--fg); }
     .site-footer a { color:var(--primary); }
     .site-footer small { display:block; margin-top:6px; font-size:0.75rem; color:var(--muted); }
 
-    /* LIVE BADGE */
+    /* ── LIVE BADGE ── */
     .live-badge { display:inline-flex; align-items:center; gap:5px; font-size:0.68rem; font-weight:600; color:var(--green); font-family:var(--font-display); }
     .live-dot { width:6px; height:6px; border-radius:50%; background:var(--green); animation:pulse 2s infinite; flex-shrink:0; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
 
-    @keyframes pulse  { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
     @keyframes fadeUp  { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
     @keyframes scaleIn { from{opacity:0;transform:scale(.94)} to{opacity:1;transform:scale(1)} }
 
@@ -268,7 +190,6 @@
       .profile-hero{flex-direction:column;text-align:center;padding:24px 20px} .badges{justify-content:center}
       .quick-actions{grid-template-columns:repeat(2,1fr)} .stats-row{grid-template-columns:repeat(2,1fr)}
       .card{padding:20px 16px} .main-nav a{display:none}
-      .fines-alert-banner{flex-wrap:wrap} .fsb-actions{width:100%}
     }
   </style>
 </head>
@@ -283,7 +204,7 @@
     <nav class="main-nav">
       <a href="ucc_knowledge_hub.html">Home</a>
       <a href="Loaners.html">Library</a>
-      <a href="Forum.html">Forum</a>
+      <a href="forum.html">Forum</a>
       <a href="profile.html" class="active">Profile</a>
       <button class="nav-logout" id="logoutBtn">Log Out</button>
     </nav>
@@ -291,17 +212,6 @@
 </header>
 
 <main>
-
-  <!-- FINES ALERT BANNER (shown only if unpaid fines exist) -->
-  <div class="fines-alert-banner" id="finesAlertBanner" style="display:none;">
-    <div class="fal-icon">⚠️</div>
-    <div class="fal-body">
-      <strong>You have outstanding fines</strong>
-      <span>Fines accumulate $200/day for overdue books. Please settle your balance to avoid restrictions.</span>
-    </div>
-    <div class="fal-amount" id="finesAlertAmount">$0</div>
-    <button class="fal-btn" onclick="scrollToFines()">View Fines</button>
-  </div>
 
   <!-- PROFILE HERO -->
   <div class="profile-hero">
@@ -316,21 +226,17 @@
         <span class="badge badge-id"    id="heroBadgeId">ID: —</span>
         <span class="badge badge-role">Student</span>
         <span class="badge badge-active">✓ Active Member</span>
-        <span class="badge badge-fines" id="finesBadge" style="display:none;">⚠️ Fines Due</span>
       </div>
     </div>
   </div>
 
-  <!-- STATS -->
+  <!-- STATS — all pulled from real data -->
   <div class="stats-row">
     <div class="stat-card"><div class="stat-num"        id="statActiveHolds">0</div><div class="stat-lbl">Active Holds</div></div>
     <div class="stat-card"><div class="stat-num green"  id="statReady">0</div><div class="stat-lbl">Ready for Pickup</div></div>
     <div class="stat-card"><div class="stat-num"        id="statCollected">0</div><div class="stat-lbl">Books Collected</div></div>
     <div class="stat-card"><div class="stat-num blue"   id="statReading">0</div><div class="stat-lbl">Currently Reading</div></div>
-    <div class="stat-card clickable" id="finesStatCard" onclick="scrollToFines()">
-      <div class="stat-num red" id="statFinesTotal">$0</div>
-      <div class="stat-lbl">Outstanding Fines</div>
-    </div>
+    <div class="stat-card"><div class="stat-num orange" id="statFinished">0</div><div class="stat-lbl">Books Finished</div></div>
   </div>
 
   <!-- QUICK ACTIONS -->
@@ -343,22 +249,22 @@
       <div class="action-icon">📕</div>
       <span class="action-label">Books Returned</span>
     </a>
-    <div class="action-card danger" onclick="scrollToFines()">
+    <a class="action-card" href="forum.html">
       <div class="action-icon">💰</div>
       <span class="action-label">View Fines</span>
-      <span class="action-badge" id="finesCountBadge" style="display:none;">0 unpaid</span>
-    </div>
-    <div class="action-card danger" onclick="openPayModal()">
+    </a>
+    <a class="action-card" href="#" onclick="openModal('payFineModal');return false;">
       <div class="action-icon">💳</div>
       <span class="action-label">Pay Fines</span>
-    </div>
+    </a>
   </div>
 
-  <!-- MY HOLDS -->
+  <!-- MY HOLDS — live from Supabase book_holds -->
   <div class="card">
     <div class="card-header">
       <div style="display:flex;align-items:center;gap:10px;">
         <h2>🔖 My Book Holds</h2>
+        <!--<span class="live-badge"><span class="live-dot"></span> Live</span>-->
       </div>
       <button class="btn btn-outline btn-sm" onclick="loadHolds()">↻ Refresh</button>
     </div>
@@ -367,21 +273,7 @@
     </div>
   </div>
 
-  <!-- ── MY FINES ── -->
-  <div class="card" id="finesCard">
-    <div class="card-header">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <h2>💸 My Fines</h2>
-        <span class="live-badge"><span class="live-dot"></span> Live</span>
-      </div>
-      <button class="btn btn-outline btn-sm" onclick="loadFines()">↻ Refresh</button>
-    </div>
-    <div id="finesSection">
-      <p style="color:var(--muted);font-size:.875rem;">Loading fines…</p>
-    </div>
-  </div>
-
-  <!-- READING LIST -->
+  <!-- MY READING LIST — from localStorage (matches Loaners.html) -->
   <div class="card">
     <div class="card-header">
       <h2>📑 My Reading List</h2>
@@ -417,47 +309,32 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- ── PAY FINES MODAL ── -->
+<!-- PAY FINE MODAL -->
 <div class="modal-overlay" id="payFineModal">
   <div class="modal">
     <div class="modal-top">
-      <h3>💳 Pay Selected Fines</h3>
+      <h3>💳 Pay Fines</h3>
       <button class="modal-close" onclick="closeModal('payFineModal')">✕</button>
     </div>
-
-    <!-- List of selected fines to pay -->
-    <div class="pay-modal-fine-list" id="payModalFineList"></div>
-
-    <!-- Total -->
-    <div class="pay-total-row">
-      <span class="pay-total-label">Total to pay</span>
-      <span class="pay-total-amount" id="payModalTotal">$0.00</span>
-    </div>
-
-    <!-- Card inputs -->
-    <div class="form-group"><label>Cardholder Name</label><input type="text" id="cardName" placeholder="Name on card"></div>
-    <div class="form-group"><label>Card Number</label><input type="text" id="cardNumber" placeholder="•••• •••• •••• ••••" maxlength="19" oninput="fmtCard(this)"></div>
+    <p style="font-size:.85rem;color:var(--muted);margin-bottom:18px;">Outstanding: <strong style="color:var(--primary)" id="payFineAmt">$0.00</strong></p>
+    <div class="form-group"><label>Card Number</label><input type="text" placeholder="•••• •••• •••• ••••" maxlength="19"></div>
     <div style="display:flex;gap:12px;">
-      <div class="form-group" style="flex:1"><label>Expiry</label><input type="text" id="cardExpiry" placeholder="MM / YY" maxlength="7" oninput="fmtExpiry(this)"></div>
-      <div class="form-group" style="flex:1"><label>CVV</label><input type="text" id="cardCvv" placeholder="•••" maxlength="3"></div>
+      <div class="form-group" style="flex:1"><label>Expiry</label><input type="text" placeholder="MM / YY" maxlength="7"></div>
+      <div class="form-group" style="flex:1"><label>CVV</label><input type="text" placeholder="•••" maxlength="3"></div>
     </div>
-    <button class="btn btn-primary" style="width:100%;margin-top:4px;padding:14px;" id="payNowBtn" onclick="submitPayment()">
-      Pay Now
-    </button>
-    <p style="text-align:center;font-size:0.72rem;color:var(--muted);margin-top:10px;">🔒 Secure payment — your card details are encrypted</p>
+    <button class="btn btn-primary" style="width:100%;margin-top:4px" onclick="closeModal('payFineModal');showToast('Payment submitted!','success');">Pay Now</button>
   </div>
 </div>
 
 <script>
-// ── CONFIG ────────────────────────────────────────────────────────────────────
+// ── CONFIG ────────────────────────────────────────────
 const SUPABASE_URL  = "https://bqgtuxhfqfmxvryfljya.supabase.co";
-const SUPABASE_ANON = "sb_publishable_y71RZ0UCDxkcmFQQHGEf-Q_davD0hbm"; // ← replace with real eyJ... key
-const API_BASE      = "https://YOUR-RAILWAY-APP.up.railway.app"; // ← replace with Railway URL
+const SUPABASE_ANON = "sb_publishable_y71RZ0UCDxkcmFQQHGEf-Q_davD0hbm";
 const sb            = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
 document.getElementById("year").textContent = new Date().getFullYear();
 
-// ── AUTH ──────────────────────────────────────────────────────────────────────
+// ── AUTH ─────────────────────────────────────────────
 const token    = getToken();
 const _user    = getCurrentUser();
 const userId   = _user?.userId   || null;
@@ -466,59 +343,53 @@ const email    = _user?.email    || "";
 
 document.getElementById("logoutBtn").addEventListener("click", () => logout());
 
-// ── MODAL HELPERS ─────────────────────────────────────────────────────────────
+// ── MODAL HELPERS ─────────────────────────────────────
 function openModal(id)  { document.getElementById(id).classList.add("open"); }
 function closeModal(id) { document.getElementById(id).classList.remove("open"); }
 document.querySelectorAll(".modal-overlay").forEach(o =>
   o.addEventListener("click", e => { if (e.target===o) o.classList.remove("open"); })
 );
 
-// ── TOAST ─────────────────────────────────────────────────────────────────────
+// ── TOAST ─────────────────────────────────────────────
 function showToast(msg, type="success") {
   const t = document.getElementById("toast");
   t.textContent = msg; t.className = `toast ${type} show`;
   setTimeout(() => t.classList.remove("show"), 3500);
 }
 
-// ── SCROLL TO FINES ───────────────────────────────────────────────────────────
-function scrollToFines() {
-  document.getElementById("finesCard").scrollIntoView({ behavior:"smooth", block:"start" });
-}
-
-// ── INIT ──────────────────────────────────────────────────────────────────────
+// ── INIT ─────────────────────────────────────────────
 window.addEventListener("DOMContentLoaded", () => {
   loadProfile();
   loadHolds();
-  loadFines();
   loadReadingList();
   subscribeToHolds();
-  subscribeToFines();
 });
 
-// ── PROFILE ───────────────────────────────────────────────────────────────────
+// ── PROFILE — from auth.js user object ───────────────
 function loadProfile() {
   const initials = (fullname||"?").split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase();
   document.getElementById("avatarEl").textContent   = initials;
   document.getElementById("heroName").textContent   = fullname || "Unknown Student";
-  document.getElementById("heroEmail").textContent  = email || "";
+  document.getElementById("heroEmail").textContent  = email || _user?.email || "";
   document.getElementById("heroBadgeId").textContent= "ID: " + (userId ? userId.toString().slice(0,8).toUpperCase() : "—");
 
+  // Try to fetch richer profile from API
   if (token) {
-    fetch(`${API_BASE}/api/user`, { headers:{ "Authorization":"Bearer "+token } })
+    fetch("/api/user", { headers:{ "Authorization":"Bearer "+token } })
       .then(r => r.ok ? r.json() : null)
       .then(user => {
         if (!user) return;
         document.getElementById("heroName").textContent    = user.fullname  || fullname;
         document.getElementById("heroEmail").textContent   = user.email     || email;
-        document.getElementById("heroBadgeId").textContent = "ID: " + (user.school_id || "—");
-        const i2 = (user.fullname||"?").split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase();
-        document.getElementById("avatarEl").textContent = i2;
+        document.getElementById("heroBadgeId").textContent = "ID: " + (user.school_id || userId?.toString().slice(0,8).toUpperCase() || "—");
+        const initials2 = (user.fullname||fullname||"?").split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase();
+        document.getElementById("avatarEl").textContent = initials2;
       })
-      .catch(() => {});
+      .catch(() => {}); // silent — already showing from auth.js
   }
 }
 
-// ── HOLDS ─────────────────────────────────────────────────────────────────────
+// ── HOLDS — from Supabase book_holds ─────────────────
 async function loadHolds() {
   const area = document.getElementById("holdsArea");
   try {
@@ -531,27 +402,30 @@ async function loadHolds() {
     if (error) throw error;
     const holds = data || [];
     renderHolds(holds);
-    updateHoldStats(holds);
+    updateStats(holds);
   } catch(e) {
-    console.error("loadHolds:", e);
+    console.error("loadHolds profile:", e);
     area.innerHTML = `<p style="color:var(--muted);font-size:.875rem;">Could not load holds. <a href="Loaners.html" style="color:var(--primary);">Go to Library</a></p>`;
   }
 }
 
 function renderHolds(holds) {
   const area = document.getElementById("holdsArea");
+
   if (!holds.length) {
     area.innerHTML = `<p style="color:var(--muted);font-size:.875rem;">No holds yet. <a href="Loaners.html" style="color:var(--primary);">Browse the library</a> to place a hold.</p>`;
     return;
   }
 
-  const readyBanners = holds.filter(h=>h.status==="ready").map(h => `
+  // Show "ready" alerts at the top
+  const readyHolds = holds.filter(h => h.status === "ready");
+  const readyBanners = readyHolds.map(h => `
     <div class="ready-alert">
       <div class="ra-icon">🔔</div>
       <div class="ra-text">
         <strong>"${escHtml(h.book_title)}" is ready for pickup!</strong>
-        <span>📍 ${escHtml(h.shelf_location||"Library Front Desk")}
-          ${h.pickup_by ? ` — Pick up by <strong style="color:var(--green)">${fmtDate(h.pickup_by)}</strong>` : ""}
+        <span>📍 ${escHtml(h.shelf_location || "Library Front Desk")}
+          ${h.pickup_by ? ` — Pick up by <strong style="color:var(--green)">${new Date(h.pickup_by).toLocaleString("en-JM",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})}</strong>` : ""}
           ${h.librarian_note ? ` — 📝 "${escHtml(h.librarian_note)}"` : ""}
         </span>
       </div>
@@ -561,30 +435,44 @@ function renderHolds(holds) {
     const cover = h.book_cover
       ? `<img src="${h.book_cover}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='📚'">`
       : "📚";
+
     const pillMap = {
-      pending:  `<span class="fine-pill fp-unpaid">⏳ Pending Prep</span>`,
-      waitlist: `<span class="fine-pill fp-consult">📋 Waitlist</span>`,
-      ready:    `<span class="fine-pill fp-paid" style="background:hsla(152,60%,52%,0.12);color:var(--green);border-color:hsla(152,60%,52%,0.3);">✅ Ready!</span>`,
-      collected:`<span class="fine-pill fp-waived">📦 Collected</span>`,
-      expired:  `<span class="fine-pill fp-unpaid">❌ Expired</span>`
+      pending:   `<span class="pill pill-pending">⏳ Pending Prep</span>`,
+      waitlist:  `<span class="pill pill-waitlist">📋 Waitlist</span>`,
+      ready:     `<span class="pill pill-ready">✅ Ready!</span>`,
+      collected: `<span class="pill pill-collected">📦 Collected</span>`,
+      expired:   `<span class="pill pill-expired">❌ Expired</span>`
     };
+
+    const placedDate = h.placed_at
+      ? new Date(h.placed_at).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"})
+      : "—";
+
+    const pickupDetail = h.status === "ready" && h.pickup_by
+      ? `<span style="color:var(--green);">⏱ Pick up by ${new Date(h.pickup_by).toLocaleString("en-JM",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})}</span>`
+      : "";
+
+    const libNote = h.librarian_note
+      ? `<span style="color:var(--primary);">📝 "${escHtml(h.librarian_note)}"</span>`
+      : "";
+
     const canCancel = ["pending","waitlist"].includes(h.status);
-    const placedDate = h.placed_at ? new Date(h.placed_at).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"}) : "—";
 
     return `<div class="hold-row status-${h.status}">
       <div class="hold-cover">${cover}</div>
       <div class="hold-body">
         <div class="hold-title">${escHtml(h.book_title)}</div>
-        <div class="hold-author">${escHtml(h.book_author||"")}</div>
+        <div class="hold-author">${escHtml(h.book_author || "")}</div>
         <div class="hold-detail">
           <span>📅 Placed ${placedDate}</span>
           ${h.shelf_location ? `<span>📍 ${escHtml(h.shelf_location)}</span>` : ""}
-          ${h.pickup_by && h.status==="ready" ? `<span style="color:var(--green);">⏱ Pick up by ${fmtDate(h.pickup_by)}</span>` : ""}
-          ${h.librarian_note ? `<span style="color:var(--primary);">📝 "${escHtml(h.librarian_note)}"</span>` : ""}
+          ${pickupDetail}
+          ${libNote}
         </div>
+        ${h.note ? `<div style="margin-top:5px;font-size:0.72rem;color:var(--muted);">Your note: "${escHtml(h.note)}"</div>` : ""}
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;">
-        ${pillMap[h.status]||""}
+        ${pillMap[h.status] || ""}
         ${canCancel ? `<button class="ha-btn ha-cancel" onclick="cancelHold('${h.id}')">✕ Cancel</button>` : ""}
       </div>
     </div>`;
@@ -593,6 +481,7 @@ function renderHolds(holds) {
   area.innerHTML = readyBanners + `<div class="holds-feed">${rows}</div>`;
 }
 
+// ── CANCEL HOLD ───────────────────────────────────────
 async function cancelHold(holdId) {
   if (!confirm("Cancel this hold?")) return;
   try {
@@ -602,411 +491,37 @@ async function cancelHold(holdId) {
     loadHolds();
   } catch(e) {
     showToast("Could not cancel. Try again.", "warn");
+    console.error("cancelHold:", e);
   }
 }
 
+// ── REALTIME — update profile holds when librarian acts ──
 function subscribeToHolds() {
   if (!userId) return;
   sb.channel(`profile_holds_${userId}`)
-    .on("postgres_changes",{ event:"*", schema:"public", table:"book_holds", filter:`user_id=eq.${userId}` },
-      () => loadHolds())
+    .on("postgres_changes", {
+        event:  "*",
+        schema: "public",
+        table:  "book_holds",
+        filter: `user_id=eq.${userId}`
+      },
+      () => loadHolds()   // just reload on any change
+    )
     .subscribe();
 }
 
-function updateHoldStats(holds) {
-  document.getElementById("statActiveHolds").textContent = holds.filter(h=>["pending","waitlist"].includes(h.status)).length;
-  document.getElementById("statReady").textContent       = holds.filter(h=>h.status==="ready").length;
-  document.getElementById("statCollected").textContent   = holds.filter(h=>h.status==="collected").length;
+// ── STATS — computed from actual holds + reading list ──
+function updateStats(holds) {
+  const rl = JSON.parse(localStorage.getItem(`rl_${userId}`) || "[]");
+
+  document.getElementById("statActiveHolds").textContent = holds.filter(h => ["pending","waitlist"].includes(h.status)).length;
+  document.getElementById("statReady").textContent       = holds.filter(h => h.status === "ready").length;
+  document.getElementById("statCollected").textContent   = holds.filter(h => h.status === "collected").length;
+  document.getElementById("statReading").textContent     = rl.filter(b => b.status === "reading").length;
+  document.getElementById("statFinished").textContent    = rl.filter(b => b.status === "finished").length;
 }
 
-// ── FINES ─────────────────────────────────────────────────────────────────────
-let allFines       = [];
-let selectedFineIds = new Set();
-
-const FINE_TYPES = {
-  overdue: { label:"Overdue Return", icon:"⏰", color:"red",    rate:"$200/day" },
-  damage:  { label:"Book Damage",    icon:"💥", color:"orange", rate:"$500 flat" },
-  lost:    { label:"Lost Book",      icon:"❓", color:"blue",   rate:"Consult librarian" }
-};
-
-async function loadFines() {
-  const section = document.getElementById("finesSection");
-  try {
-    const { data, error } = await sb
-      .from("fines")
-      .select("*")
-      .eq("user_id", userId)
-      .order("issued_at", { ascending: false });
-
-    if (error) throw error;
-    allFines = data || [];
-
-    // Auto-recalculate overdue fines amount based on days
-    allFines = allFines.map(f => {
-      if (f.fine_type === "overdue" && f.status === "unpaid" && f.due_date) {
-        const daysLate = Math.max(0, Math.floor((Date.now() - new Date(f.due_date)) / 86400000));
-        f.amount = daysLate * 200;
-        f._accruing = true;
-        f._daysLate = daysLate;
-      }
-      return f;
-    });
-
-    renderFines();
-    updateFineStats();
-  } catch(e) {
-    console.error("loadFines:", e);
-    section.innerHTML = `<p style="color:var(--muted);font-size:.875rem;">Could not load fines data.</p>`;
-  }
-}
-
-function renderFines() {
-  const section = document.getElementById("finesSection");
-  const unpaid  = allFines.filter(f => f.status === "unpaid");
-  const paid    = allFines.filter(f => f.status !== "unpaid");
-  const totalUnpaid = unpaid.reduce((s,f) => s + (f.amount||0), 0);
-  const hasConsult  = unpaid.some(f => f.fine_type === "lost");
-
-  if (!allFines.length) {
-    section.innerHTML = `
-      <div style="text-align:center;padding:32px;color:var(--muted);">
-        <div style="font-size:2.5rem;margin-bottom:10px;">✅</div>
-        <div style="font-family:var(--font-display);font-weight:600;margin-bottom:4px;">No fines on your account</div>
-        <div style="font-size:0.82rem;">Keep returning books on time to stay fine-free!</div>
-      </div>`;
-    return;
-  }
-
-  // Summary bar
-  const summaryBar = `
-    <div class="fines-summary-bar">
-      <div class="fsb-item">
-        <div class="fsb-label">Unpaid</div>
-        <div class="fsb-val red">$${totalUnpaid.toLocaleString()}</div>
-      </div>
-      <div class="fsb-divider"></div>
-      <div class="fsb-item">
-        <div class="fsb-label">Total Fines</div>
-        <div class="fsb-val">${allFines.length}</div>
-      </div>
-      <div class="fsb-divider"></div>
-      <div class="fsb-item">
-        <div class="fsb-label">Unpaid</div>
-        <div class="fsb-val orange">${unpaid.length}</div>
-      </div>
-      <div class="fsb-divider"></div>
-      <div class="fsb-item">
-        <div class="fsb-label">Paid / Waived</div>
-        <div class="fsb-val green">${paid.length}</div>
-      </div>
-      <div class="fsb-actions">
-        <button class="btn btn-outline btn-sm" onclick="selectAllFines()">Select All</button>
-        <button class="btn btn-primary btn-sm" onclick="openPayModal()" ${unpaid.length===0?"disabled":""}>Pay Selected</button>
-      </div>
-    </div>`;
-
-  // Fine rows
-  const fineRows = allFines.map(f => {
-    const type     = FINE_TYPES[f.fine_type] || FINE_TYPES.overdue;
-    const isPaid   = f.status !== "unpaid";
-    const isConsult= f.fine_type === "lost";
-    const isSelected = selectedFineIds.has(f.id);
-
-    const amountDisplay = isConsult
-      ? `<div class="fine-amount blue">Consult</div>`
-      : `<div class="fine-amount ${type.color}">$${(f.amount||0).toLocaleString()}</div>`;
-
-    const pill = f.status === "paid"
-      ? `<span class="fine-pill fp-paid">✅ Paid</span>`
-      : f.status === "waived"
-        ? `<span class="fine-pill fp-waived">🔓 Waived</span>`
-        : isConsult
-          ? `<span class="fine-pill fp-consult">📞 See Librarian</span>`
-          : `<span class="fine-pill fp-unpaid">⚠️ Unpaid</span>`;
-
-    const accruing = f._accruing
-      ? `<span class="accruing-tag">+$200/day · ${f._daysLate} day${f._daysLate!==1?"s":""} late</span>`
-      : "";
-
-    const dueDateStr = f.due_date
-      ? `<span>📅 Due ${new Date(f.due_date).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"})}</span>`
-      : "";
-
-    const issuedStr = f.issued_at
-      ? `<span>🕐 Issued ${new Date(f.issued_at).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"})}</span>`
-      : "";
-
-    const noteStr = f.librarian_note
-      ? `<span style="color:var(--primary);">📝 ${escHtml(f.librarian_note)}</span>`
-      : "";
-
-    const clickHandler = (!isPaid && !isConsult)
-      ? `onclick="toggleFineSelection('${f.id}')"`
-      : "";
-
-    return `
-      <div class="fine-row ${isSelected?"selected":""} ${isPaid?"paid":""}" id="fine-row-${f.id}" ${clickHandler}>
-        <div class="fine-check">${isPaid ? "✓" : isSelected ? "✓" : ""}</div>
-        <div class="fine-type-icon ${f.fine_type}">${type.icon}</div>
-        <div class="fine-body">
-          <div class="fine-book-title">${escHtml(f.book_title||"Unknown Book")}</div>
-          <div class="fine-reason">
-            ${type.label}
-            ${accruing}
-          </div>
-          <div class="fine-meta">
-            ${dueDateStr}
-            ${issuedStr}
-            ${noteStr}
-            ${f.book_author ? `<span>✍️ ${escHtml(f.book_author)}</span>` : ""}
-          </div>
-        </div>
-        <div class="fine-right">
-          ${amountDisplay}
-          ${pill}
-        </div>
-      </div>`;
-  }).join("");
-
-  // Consult note
-  const consultNote = hasConsult ? `
-    <div class="consult-badge">
-      📞 <strong>Lost book fine(s):</strong> Please visit or contact the library to determine the replacement cost.
-      The amount will be set by the librarian based on the book's value.
-    </div>` : "";
-
-  // Selection bar (shown when items selected)
-  const selectionBar = `
-    <div class="pay-selection-bar" id="selectionBar" style="${selectedFineIds.size===0?"display:none":""}">
-      <div class="psb-text">
-        <strong>${selectedFineIds.size} fine${selectedFineIds.size!==1?"s":""} selected</strong>
-        <span>Click a fine to select/deselect</span>
-      </div>
-      <div class="psb-amount" id="selectionTotal">$0</div>
-      <button class="psb-clear" onclick="clearSelection()">Clear</button>
-      <button class="psb-pay-btn" id="selPayBtn" onclick="openPayModal()">Pay Selected →</button>
-    </div>`;
-
-  section.innerHTML = summaryBar + `<div class="fines-section">${fineRows}</div>` + consultNote + selectionBar;
-  updateSelectionUI();
-}
-
-function toggleFineSelection(fineId) {
-  const fine = allFines.find(f => f.id === fineId);
-  if (!fine || fine.status !== "unpaid" || fine.fine_type === "lost") return;
-
-  if (selectedFineIds.has(fineId)) {
-    selectedFineIds.delete(fineId);
-  } else {
-    selectedFineIds.add(fineId);
-  }
-  updateSelectionUI();
-}
-
-function selectAllFines() {
-  const payable = allFines.filter(f => f.status === "unpaid" && f.fine_type !== "lost");
-  payable.forEach(f => selectedFineIds.add(f.id));
-  updateSelectionUI();
-}
-
-function clearSelection() {
-  selectedFineIds.clear();
-  updateSelectionUI();
-}
-
-function updateSelectionUI() {
-  const selected = allFines.filter(f => selectedFineIds.has(f.id));
-  const total    = selected.reduce((s,f) => s + (f.amount||0), 0);
-
-  // Update row highlights
-  allFines.forEach(f => {
-    const row = document.getElementById(`fine-row-${f.id}`);
-    if (!row || f.status !== "unpaid") return;
-    const check = row.querySelector(".fine-check");
-    if (selectedFineIds.has(f.id)) {
-      row.classList.add("selected");
-      if(check) check.textContent = "✓";
-    } else {
-      row.classList.remove("selected");
-      if(check) check.textContent = "";
-    }
-  });
-
-  // Selection bar
-  const bar = document.getElementById("selectionBar");
-  if (bar) {
-    bar.style.display = selectedFineIds.size > 0 ? "flex" : "none";
-    const totalEl = document.getElementById("selectionTotal");
-    if (totalEl) totalEl.textContent = "$" + total.toLocaleString();
-    const countEl = bar.querySelector("strong");
-    if (countEl) countEl.textContent = `${selectedFineIds.size} fine${selectedFineIds.size!==1?"s":""} selected`;
-  }
-}
-
-function subscribeToFines() {
-  if (!userId) return;
-  sb.channel(`profile_fines_${userId}`)
-    .on("postgres_changes",{ event:"*", schema:"public", table:"fines", filter:`user_id=eq.${userId}` },
-      () => { selectedFineIds.clear(); loadFines(); })
-    .subscribe();
-}
-
-function updateFineStats() {
-  const unpaid      = allFines.filter(f => f.status === "unpaid" && f.fine_type !== "lost");
-  const totalUnpaid = unpaid.reduce((s,f) => s + (f.amount||0), 0);
-  const unpaidCount = allFines.filter(f => f.status === "unpaid").length;
-
-  document.getElementById("statFinesTotal").textContent = "$" + totalUnpaid.toLocaleString();
-
-  // Alert banner
-  const banner = document.getElementById("finesAlertBanner");
-  if (unpaidCount > 0) {
-    banner.style.display = "flex";
-    document.getElementById("finesAlertAmount").textContent = "$" + totalUnpaid.toLocaleString();
-    document.getElementById("finesBadge").style.display = "inline-block";
-    const cb = document.getElementById("finesCountBadge");
-    cb.style.display = "inline-block";
-    cb.textContent   = `${unpaidCount} unpaid`;
-  } else {
-    banner.style.display = "none";
-    document.getElementById("finesBadge").style.display = "none";
-    document.getElementById("finesCountBadge").style.display = "none";
-  }
-}
-
-// ── PAY MODAL ─────────────────────────────────────────────────────────────────
-function openPayModal() {
-  const selected = allFines.filter(f => selectedFineIds.has(f.id));
-  if (!selected.length) {
-    // Auto-select all unpaid non-consult fines
-    selectAllFines();
-    const selected2 = allFines.filter(f => selectedFineIds.has(f.id));
-    if (!selected2.length) {
-      showToast("No payable fines selected.", "warn");
-      return;
-    }
-  }
-
-  const toPay  = allFines.filter(f => selectedFineIds.has(f.id));
-  const total  = toPay.reduce((s,f) => s + (f.amount||0), 0);
-
-  document.getElementById("payModalFineList").innerHTML = toPayItems(toPlay => toPay);
-
-  // Build fine list
-  const listEl = document.getElementById("payModalFineList");
-  listEl.innerHTML = toPayItems(toPayFn => toPayFn, toPayArr => toPayArr);
-
-  // Simpler direct build:
-  listEl.innerHTML = toPayListHtml(toPayList => toPayList);
-
-  const listHTML = toPayListHtmlDirect(toPayArr => toPayArr, toPayArr2 => toPayArr2);
-
-  // Direct approach:
-  listEl.innerHTML = toPayFinesHtml(toPayFines => toPayFines);
-
-  // OK just build it directly:
-  listEl.innerHTML = "";
-  toPayFinal(toPayFin => {
-    toPayFin.forEach(f => {
-      const t = FINE_TYPES[f.fine_type]||FINE_TYPES.overdue;
-      const div = document.createElement("div");
-      div.className = "pay-modal-fine-item";
-      div.innerHTML = `
-        <div class="pmfi-left">
-          <div class="pmfi-title">${t.icon} ${escHtml(f.book_title||"Unknown Book")}</div>
-          <div class="pmfi-reason">${t.label}${f._daysLate ? ` · ${f._daysLate} days late` : ""}</div>
-        </div>
-        <div class="pmfi-amount">$${(f.amount||0).toLocaleString()}</div>`;
-      listEl.appendChild(div);
-    });
-  });
-
-  function toPayFinal(cb) { cb(toPayList2()); }
-  function toPayList2() { return allFines.filter(f => selectedFineIds.has(f.id)); }
-
-  // Flush all the above, just do it cleanly:
-  buildPayModal();
-  openModal("payFineModal");
-}
-
-function buildPayModal() {
-  const toPayArr  = allFines.filter(f => selectedFineIds.has(f.id));
-  const total     = toPayArr.reduce((s,f) => s + (f.amount||0), 0);
-  const listEl    = document.getElementById("payModalFineList");
-
-  listEl.innerHTML = toPayArr.map(f => {
-    const t = FINE_TYPES[f.fine_type] || FINE_TYPES.overdue;
-    return `<div class="pay-modal-fine-item">
-      <div class="pmfi-left">
-        <div class="pmfi-title">${t.icon} ${escHtml(f.book_title||"Unknown Book")}</div>
-        <div class="pmfi-reason">${t.label}${f._daysLate ? ` · ${f._daysLate} day${f._daysLate!==1?"s":""} late` : ""}</div>
-      </div>
-      <div class="pmfi-amount">$${(f.amount||0).toLocaleString()}</div>
-    </div>`;
-  }).join("");
-
-  document.getElementById("payModalTotal").textContent = "$" + total.toLocaleString() + ".00";
-}
-
-// Rewrite openPayModal cleanly:
-function openPayModal() {
-  const payable = allFines.filter(f => f.status === "unpaid" && f.fine_type !== "lost");
-  if (!selectedFineIds.size) {
-    payable.forEach(f => selectedFineIds.add(f.id));
-    updateSelectionUI();
-  }
-
-  const toPayArr = allFines.filter(f => selectedFineIds.has(f.id));
-  if (!toPayArr.length) { showToast("No payable fines. Select at least one fine.", "warn"); return; }
-
-  buildPayModal();
-  openModal("payFineModal");
-}
-
-// ── SUBMIT PAYMENT ────────────────────────────────────────────────────────────
-async function submitPayment() {
-  const name   = document.getElementById("cardName").value.trim();
-  const number = document.getElementById("cardNumber").value.replace(/\s/g,"");
-  const expiry = document.getElementById("cardExpiry").value.trim();
-  const cvv    = document.getElementById("cardCvv").value.trim();
-
-  if (!name || number.length < 16 || expiry.length < 5 || cvv.length < 3) {
-    showToast("Please fill in all card details correctly.", "warn");
-    return;
-  }
-
-  const btn = document.getElementById("payNowBtn");
-  btn.disabled = true;
-  btn.textContent = "Processing…";
-
-  const toPayIds = [...selectedFineIds];
-
-  try {
-    // Mark each selected fine as paid in Supabase
-    const { error } = await sb
-      .from("fines")
-      .update({ status: "paid", paid_at: new Date().toISOString() })
-      .in("id", toPayIds);
-
-    if (error) throw error;
-
-    closeModal("payFineModal");
-    selectedFineIds.clear();
-    showToast("✅ Payment successful! Fines marked as paid.", "success");
-
-    // Reload fines
-    await loadFines();
-
-  } catch(err) {
-    console.error("Payment error:", err);
-    showToast("Payment failed. Please try again.", "warn");
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "Pay Now";
-  }
-}
-
-// ── READING LIST ──────────────────────────────────────────────────────────────
+// ── READING LIST — same localStorage key as Loaners.html ──
 function loadReadingList() {
   const list    = JSON.parse(localStorage.getItem(`rl_${userId}`) || "[]");
   const content = document.getElementById("readingListContent");
@@ -1035,10 +550,13 @@ function updateReadingStatus(bookId, status) {
   if (!book) return;
   book.status = status;
   localStorage.setItem(`rl_${userId}`, JSON.stringify(list));
-  showToast(`Reading status updated.`, "info");
+  // Refresh stats with latest holds count
+  sb.from("book_holds").select("*").eq("user_id", userId)
+    .then(({ data }) => updateStats(data || []));
+  showToast(`Reading status updated to "${status.replace(/_/g," ")}"`, "info");
 }
 
-// ── CHANGE PASSWORD ───────────────────────────────────────────────────────────
+// ── CHANGE PASSWORD ───────────────────────────────────
 document.getElementById("passwordForm").addEventListener("submit", async e => {
   e.preventDefault();
   const current = document.getElementById("currentPassword").value;
@@ -1046,14 +564,22 @@ document.getElementById("passwordForm").addEventListener("submit", async e => {
   const confirm = document.getElementById("confirmPassword").value;
   const result  = document.getElementById("passwordResult");
 
-  if (newPass !== confirm) { result.style.color="var(--red)"; result.textContent="Passwords do not match."; return; }
-  if (newPass.length < 6)  { result.style.color="var(--red)"; result.textContent="Password must be at least 6 characters."; return; }
+  if (newPass !== confirm) {
+    result.style.color = "var(--red)";
+    result.textContent = "Passwords do not match.";
+    return;
+  }
+  if (newPass.length < 6) {
+    result.style.color = "var(--red)";
+    result.textContent = "Password must be at least 6 characters.";
+    return;
+  }
 
   result.style.color = "var(--muted)";
   result.textContent = "Updating…";
 
   try {
-    const res  = await fetch(`${API_BASE}/setpassword`, {
+    const res  = await fetch("/setpassword", {
       method: "POST",
       headers: { "Content-Type":"application/json", "Authorization":"Bearer "+token },
       body: JSON.stringify({ current, newPass })
@@ -1068,20 +594,8 @@ document.getElementById("passwordForm").addEventListener("submit", async e => {
   }
 });
 
-// ── CARD FORMATTING ───────────────────────────────────────────────────────────
-function fmtCard(el) {
-  let v = el.value.replace(/\D/g,"").slice(0,16);
-  el.value = v.replace(/(.{4})/g,"$1 ").trim();
-}
-function fmtExpiry(el) {
-  let v = el.value.replace(/\D/g,"").slice(0,4);
-  if (v.length >= 2) v = v.slice(0,2) + " / " + v.slice(2);
-  el.value = v;
-}
-
-// ── HELPERS ───────────────────────────────────────────────────────────────────
+// ── HELPERS ───────────────────────────────────────────
 function escHtml(s) { return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-function fmtDate(d) { return new Date(d).toLocaleString("en-JM",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}); }
 </script>
 </body>
 </html>
