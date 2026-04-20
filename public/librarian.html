@@ -17,12 +17,14 @@
       --border: hsl(220,25%,18%); --secondary: hsl(220,30%,16%);
       --green: hsl(152,60%,52%); --red: hsl(0,70%,60%); --blue: hsl(210,80%,65%);
       --orange: hsl(30,90%,58%); --glow-gold: 0 0 40px hsla(43,55%,54%,0.25);
+      --glow-red: 0 0 30px hsla(0,70%,60%,0.2);
       --font-display: 'Space Grotesk', sans-serif; --font-body: 'Inter', sans-serif;
     }
     body { background:var(--bg); color:var(--fg); font-family:var(--font-body); line-height:1.6; min-height:100vh; display:flex; flex-direction:column; }
     a { text-decoration:none; color:inherit; }
     h1,h2,h3,h4,h5,h6 { font-family:var(--font-display); }
 
+    /* ── HEADER ── */
     .site-header { position:sticky; top:0; z-index:50; background:hsla(220,35%,11%,0.75); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); }
     .header-inner { max-width:1400px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:12px 24px; gap:16px; }
     .logo-wrap { display:flex; align-items:center; gap:12px; }
@@ -31,8 +33,16 @@
     .title-wrap .subtitle { font-size:0.72rem; color:var(--orange); font-weight:600; font-family:var(--font-display); }
     .header-right { display:flex; align-items:center; gap:10px; }
     .librarian-badge { background:hsla(43,55%,54%,0.15); border:1px solid hsla(43,55%,54%,0.3); color:var(--primary); font-size:0.72rem; font-weight:700; padding:5px 12px; border-radius:20px; font-family:var(--font-display); }
+    .fines-nav-badge { display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; background:var(--red); color:#fff; border-radius:10px; font-size:0.62rem; font-weight:700; padding:0 5px; font-family:var(--font-display); margin-left:5px; }
+    .nav-logout { font-size:0.875rem; color:hsl(0,70%,70%); padding:7px 14px; border-radius:8px; border:1px solid hsla(0,70%,60%,0.25); background:hsla(0,70%,60%,0.08); cursor:pointer; transition:all .2s; font-family:var(--font-body); }
+    .nav-logout:hover { background:hsla(0,70%,60%,0.18); color:#fff; }
 
-    /* LIVE STATUS */
+    /* ── TAB NAV ── */
+    .tab-nav { display:flex; gap:4px; background:var(--secondary); border:1px solid var(--border); border-radius:10px; padding:4px; }
+    .tab-nav-btn { padding:7px 16px; border-radius:7px; border:none; font-family:var(--font-display); font-size:0.8rem; font-weight:700; cursor:pointer; transition:all .2s; color:var(--muted); background:none; display:flex; align-items:center; gap:5px; }
+    .tab-nav-btn.active { background:var(--card); color:var(--fg); box-shadow:0 2px 6px rgba(0,0,0,0.3); }
+
+    /* ── LIVE STATUS ── */
     .live-indicator { display:flex; align-items:center; gap:7px; font-size:0.72rem; font-weight:600; font-family:var(--font-display); padding:5px 12px; border-radius:20px; border:1px solid; transition:all .4s; }
     .live-indicator.connected    { color:var(--green);  background:hsla(152,60%,52%,0.08); border-color:hsla(152,60%,52%,0.25); }
     .live-indicator.connecting   { color:var(--orange); background:hsla(30,90%,58%,0.08);  border-color:hsla(30,90%,58%,0.25); }
@@ -41,22 +51,23 @@
     .connected  .live-dot { background:var(--green);  animation:pulse 2s infinite; }
     .connecting .live-dot { background:var(--orange); animation:pulse .8s infinite; }
     .disconnected .live-dot { background:var(--red); }
-    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.35)} }
 
-    /* NEW HOLD FLASH */
     @keyframes newHoldFlash { 0%{box-shadow:0 0 0 0 hsla(43,55%,54%,.6)} 70%{box-shadow:0 0 0 14px hsla(43,55%,54%,0)} 100%{box-shadow:0 0 0 0 hsla(43,55%,54%,0)} }
     .hold-card.new-flash { animation:newHoldFlash .8s ease 2; }
 
-    .nav-logout { font-size:0.875rem; color:hsl(0,70%,70%); padding:7px 14px; border-radius:8px; border:1px solid hsla(0,70%,60%,0.25); background:hsla(0,70%,60%,0.08); cursor:pointer; transition:all .2s; font-family:var(--font-body); }
-    .nav-logout:hover { background:hsla(0,70%,60%,0.18); color:#fff; }
-
     main { flex:1; max-width:1400px; width:100%; margin:0 auto; padding:40px 24px 80px; display:flex; flex-direction:column; gap:28px; }
 
+    /* ── TAB PANELS ── */
+    .tab-panel { display:none; flex-direction:column; gap:28px; }
+    .tab-panel.active { display:flex; }
+
+    /* ── PAGE HEADER ── */
     .page-header { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; animation:fadeUp .4s ease both; }
     .page-header h2 { font-size:1.6rem; font-weight:700; margin-bottom:4px; }
     .page-header p  { font-size:0.875rem; color:var(--muted); }
     .header-actions { display:flex; gap:10px; flex-shrink:0; flex-wrap:wrap; }
 
+    /* ── STATS ── */
     .stats-row { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; animation:fadeUp .4s .05s ease both; }
     .stat-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px 18px; transition:border-color .3s; cursor:default; }
     .stat-card.clickable { cursor:pointer; }
@@ -68,11 +79,10 @@
     .stat-num.red    { color:var(--red); }
     .stat-num.blue   { color:var(--blue); }
     .stat-lbl { font-size:0.75rem; color:var(--muted); margin-top:4px; }
-
-    /* STAT BUMP ANIMATION */
     @keyframes statBump { 0%{transform:scale(1)} 30%{transform:scale(1.25)} 100%{transform:scale(1)} }
     .stat-num.bump { animation:statBump .4s ease; }
 
+    /* ── FILTER ROW ── */
     .filter-row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
     .search-input-wrap { flex:1; min-width:200px; display:flex; align-items:center; gap:8px; background:var(--card); border:1px solid var(--border); border-radius:10px; padding:8px 14px; transition:border-color .2s; }
     .search-input-wrap:focus-within { border-color:var(--primary); }
@@ -80,6 +90,7 @@
     .search-input-wrap input::placeholder { color:var(--muted); }
     .filter-sel { padding:9px 13px; background:var(--card); border:1px solid var(--border); border-radius:10px; color:var(--fg); font-family:var(--font-body); font-size:0.875rem; outline:none; cursor:pointer; }
 
+    /* ── STATUS TABS ── */
     .status-tabs { display:flex; gap:6px; flex-wrap:wrap; }
     .stab { padding:7px 16px; border-radius:8px; border:1px solid var(--border); background:var(--secondary); color:var(--muted); font-size:0.8rem; font-weight:600; cursor:pointer; transition:all .2s; font-family:var(--font-display); }
     .stab:hover { color:var(--fg); }
@@ -87,10 +98,10 @@
     .stab .tab-count { display:inline-block; min-width:18px; text-align:center; background:var(--card); border-radius:10px; padding:0 5px; margin-left:5px; font-size:0.7rem; }
     .stab.active .tab-count { background:hsla(43,55%,54%,0.15); }
 
+    /* ── HOLD CARDS ── */
     .holds-table-wrap { animation:fadeUp .4s .1s ease both; }
     .holds-table-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
     .holds-table-header h3 { font-size:1rem; font-weight:600; }
-
     .hold-cards { display:flex; flex-direction:column; gap:10px; }
     .hold-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px 22px; display:flex; align-items:flex-start; gap:18px; transition:border-color .2s, opacity .3s; flex-wrap:wrap; }
     .hold-card:hover { border-color:hsla(43,55%,54%,0.25); }
@@ -99,7 +110,6 @@
     .hold-card.status-waitlist { border-left:3px solid var(--orange); }
     .hold-card.status-expired  { border-left:3px solid var(--red); opacity:.7; }
     .hold-card.status-collected{ border-left:3px solid var(--muted); opacity:.6; }
-
     .hc-cover { width:48px; height:62px; border-radius:7px; background:var(--secondary); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:1.5rem; flex-shrink:0; overflow:hidden; }
     .hc-cover img { width:100%; height:100%; object-fit:cover; }
     .hc-info { flex:1; min-width:200px; }
@@ -111,17 +121,13 @@
     .hc-shelf   { font-size:0.72rem; color:var(--muted); display:flex; align-items:center; gap:4px; }
     .hc-note    { font-size:0.75rem; color:var(--primary); background:hsla(43,55%,54%,0.08); border:1px solid hsla(43,55%,54%,0.2); border-radius:6px; padding:4px 10px; margin-top:6px; display:inline-block; }
     .hc-time    { font-size:0.72rem; color:var(--muted); }
-
-    /* NEW badge on incoming holds */
-    .new-badge { font-size:0.65rem; font-weight:700; padding:2px 8px; border-radius:20px; background:hsla(43,55%,54%,0.15); color:var(--primary); border:1px solid hsla(43,55%,54%,0.35); font-family:var(--font-display); animation:pulse 1.5s 3; }
-
+    .new-badge  { font-size:0.65rem; font-weight:700; padding:2px 8px; border-radius:20px; background:hsla(43,55%,54%,0.15); color:var(--primary); border:1px solid hsla(43,55%,54%,0.35); font-family:var(--font-display); animation:pulse 1.5s 3; }
     .status-badge { font-size:0.68rem; font-weight:700; padding:3px 10px; border-radius:20px; font-family:var(--font-display); white-space:nowrap; }
     .sb-pending  { background:hsla(210,80%,65%,0.12); color:var(--blue);   border:1px solid hsla(210,80%,65%,0.25); }
     .sb-waitlist { background:hsla(30,90%,58%,0.12);  color:var(--orange); border:1px solid hsla(30,90%,58%,0.25); }
     .sb-ready    { background:hsla(152,60%,52%,0.12); color:var(--green);  border:1px solid hsla(152,60%,52%,0.25); }
     .sb-expired  { background:hsla(0,70%,60%,0.12);   color:var(--red);    border:1px solid hsla(0,70%,60%,0.25); }
     .sb-collected{ background:var(--secondary); color:var(--muted); border:1px solid var(--border); }
-
     .hc-actions { display:flex; flex-direction:column; gap:6px; flex-shrink:0; min-width:140px; }
     .action-btn { width:100%; padding:8px 14px; border-radius:8px; font-family:var(--font-display); font-size:0.75rem; font-weight:700; cursor:pointer; border:none; transition:all .2s; text-align:center; }
     .btn-ready     { background:var(--green); color:hsl(220,40%,7%); }
@@ -132,12 +138,12 @@
     .btn-cancel:hover { background:hsla(0,70%,60%,0.2); }
     .btn-ghost-sm  { background:var(--secondary); border:1px solid var(--border); color:var(--muted); }
     .btn-ghost-sm:hover { color:var(--fg); border-color:var(--primary); }
-
     .pickup-deadline { font-size:0.72rem; font-family:var(--font-display); font-weight:600; display:flex; align-items:center; gap:4px; margin-top:4px; }
     .pickup-deadline.urgent { color:var(--red); }
     .pickup-deadline.ok     { color:var(--green); }
     .pickup-deadline.warn   { color:var(--orange); }
 
+    /* ── INVENTORY ── */
     .inventory-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; }
     .inv-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px 18px; }
     .inv-card-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
@@ -149,29 +155,90 @@
     .inv-btn { flex:1; padding:6px 10px; border-radius:7px; font-size:0.72rem; font-weight:700; cursor:pointer; font-family:var(--font-display); border:1px solid var(--border); transition:all .2s; text-align:center; background:var(--secondary); color:var(--muted); }
     .inv-btn:hover { color:var(--primary); border-color:var(--primary); }
 
+    /* ── FINES ALERT BANNER ── */
+    .lib-fines-alert { background:linear-gradient(135deg,hsla(0,70%,60%,0.12),hsla(30,90%,58%,0.07)); border:1px solid hsla(0,70%,60%,0.4); border-radius:14px; padding:16px 22px; display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+    .lfa-icon { font-size:1.8rem; flex-shrink:0; }
+    .lfa-body { flex:1; }
+    .lfa-body strong { font-family:var(--font-display); color:var(--red); display:block; margin-bottom:2px; font-size:0.95rem; }
+    .lfa-body span   { font-size:0.78rem; color:var(--muted); }
+    .lfa-stats { display:flex; gap:20px; flex-wrap:wrap; }
+    .lfa-stat  { display:flex; flex-direction:column; align-items:center; }
+    .lfa-stat .n { font-family:var(--font-display); font-size:1.4rem; font-weight:700; }
+    .lfa-stat .l { font-size:0.68rem; color:var(--muted); }
+    .lfa-btn  { background:var(--red); color:#fff; border:none; border-radius:8px; padding:9px 18px; font-family:var(--font-display); font-size:0.82rem; font-weight:700; cursor:pointer; transition:opacity .2s; white-space:nowrap; }
+    .lfa-btn:hover { opacity:.85; }
+
+    /* ── FINES TABLE ── */
+    .fines-table-wrap { overflow-x:auto; }
+    .fines-table { width:100%; border-collapse:collapse; font-size:0.875rem; }
+    .fines-table thead tr { border-bottom:1px solid var(--border); }
+    .fines-table th { color:var(--muted); font-weight:600; padding:10px 14px; text-align:left; font-family:var(--font-display); font-size:0.7rem; letter-spacing:.05em; text-transform:uppercase; }
+    .fines-table td { padding:12px 14px; border-bottom:1px solid hsla(220,25%,18%,.5); vertical-align:middle; }
+    .fines-table tr:last-child td { border-bottom:none; }
+    .fines-table tbody tr:hover td { background:var(--secondary); }
+    .ft-user { font-weight:600; font-size:0.85rem; }
+    .ft-book { font-size:0.78rem; color:var(--muted); }
+    .fp { display:inline-block; padding:3px 10px; border-radius:20px; font-size:0.68rem; font-weight:700; font-family:var(--font-display); white-space:nowrap; }
+    .fp-unpaid  { background:hsla(0,70%,60%,.12); color:var(--red);    border:1px solid hsla(0,70%,60%,.3); }
+    .fp-paid    { background:hsla(152,60%,52%,.12); color:var(--green); border:1px solid hsla(152,60%,52%,.3); }
+    .fp-waived  { background:var(--secondary); color:var(--muted); border:1px solid var(--border); }
+    .fp-overdue { background:hsla(0,70%,60%,.12); color:var(--red);    border:1px solid hsla(0,70%,60%,.2); }
+    .fp-damage  { background:hsla(30,90%,58%,.12); color:var(--orange); border:1px solid hsla(30,90%,58%,.3); }
+    .fp-lost    { background:hsla(210,80%,65%,.12); color:var(--blue);  border:1px solid hsla(210,80%,65%,.3); }
+    .acc-tag { font-size:0.62rem; font-weight:700; padding:1px 7px; border-radius:8px; background:hsla(0,70%,60%,.15); color:var(--red); border:1px solid hsla(0,70%,60%,.3); font-family:var(--font-display); }
+    .tbl-btn { padding:4px 10px; border-radius:6px; font-family:var(--font-display); font-size:0.68rem; font-weight:700; cursor:pointer; border:none; transition:all .2s; }
+    .tbl-btn-waive  { background:hsla(152,60%,52%,.1); color:var(--green);  border:1px solid hsla(152,60%,52%,.25); }
+    .tbl-btn-waive:hover  { background:hsla(152,60%,52%,.2); }
+    .tbl-btn-delete { background:hsla(0,70%,60%,.1); color:var(--red);    border:1px solid hsla(0,70%,60%,.25); }
+    .tbl-btn-delete:hover { background:hsla(0,70%,60%,.2); }
+    .tbl-btn-edit   { background:hsla(43,55%,54%,.1); color:var(--primary); border:1px solid hsla(43,55%,54%,.25); }
+    .tbl-btn-edit:hover   { background:hsla(43,55%,54%,.2); }
+
+    /* ── ISSUE FINE FORM ── */
+    .issue-fine-form { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .issue-fine-form .full { grid-column:1/-1; }
+    .iff-group { display:flex; flex-direction:column; gap:5px; }
+    .iff-group label { font-size:0.68rem; color:var(--muted); font-family:var(--font-display); font-weight:600; letter-spacing:.05em; text-transform:uppercase; }
+    .iff-group input, .iff-group select, .iff-group textarea {
+      background:var(--secondary); border:1px solid var(--border); border-radius:8px;
+      padding:9px 12px; color:var(--fg); font-family:var(--font-body); font-size:0.875rem;
+      outline:none; transition:border-color .2s; width:100%;
+    }
+    .iff-group input:focus, .iff-group select:focus, .iff-group textarea:focus { border-color:var(--primary); }
+    .iff-group textarea { resize:vertical; min-height:60px; }
+    .iff-group select option { background:hsl(220,35%,11%); }
+
+    /* ── CARD ── */
+    .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:28px 32px; transition:border-color .3s; animation:fadeUp .4s .1s ease both; }
+    .card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; padding-bottom:14px; border-bottom:1px solid var(--border); }
+    .card-header h2 { font-size:1rem; font-weight:600; }
+
+    /* ── MISC UI ── */
     .empty-state { text-align:center; padding:50px 20px; color:var(--muted); }
     .empty-state .icon { font-size:2.5rem; margin-bottom:10px; }
     .loading-row { display:flex; flex-direction:column; gap:10px; }
     .skeleton-row { background:var(--card); border:1px solid var(--border); border-radius:14px; height:90px; animation:shimmer 1.5s infinite; }
     @keyframes shimmer { 0%,100%{opacity:.6} 50%{opacity:1} }
 
-    .toast { position:fixed; bottom:24px; right:24px; z-index:500; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 20px; font-size:0.875rem; font-family:var(--font-display); font-weight:600; box-shadow:var(--glow-gold); transform:translateY(80px); opacity:0; transition:all .3s; pointer-events:none; max-width:340px; }
-    .toast.show { transform:translateY(0); opacity:1; }
-    .toast.success { border-color:hsla(152,60%,52%,0.4); color:var(--green); }
-    .toast.info    { border-color:hsla(43,55%,54%,0.4);  color:var(--primary); }
-    .toast.warn    { border-color:hsla(0,70%,60%,0.4);   color:var(--red); }
-
-    /* NEW HOLD NOTIFICATION BANNER */
-    .new-hold-banner { background:hsla(43,55%,54%,0.1); border:1px solid hsla(43,55%,54%,0.4); border-radius:12px; padding:12px 18px; display:flex; align-items:center; gap:12px; margin-bottom:14px; animation:fadeUp .3s ease; cursor:pointer; transition:opacity .3s; }
+    /* ── NEW HOLD NOTIFICATION ── */
+    .new-hold-banner { background:hsla(43,55%,54%,0.1); border:1px solid hsla(43,55%,54%,0.4); border-radius:12px; padding:12px 18px; display:flex; align-items:center; gap:12px; animation:fadeUp .3s ease; cursor:pointer; transition:opacity .3s; }
     .new-hold-banner:hover { opacity:.8; }
     .new-hold-banner .nb-icon { font-size:1.4rem; flex-shrink:0; }
     .new-hold-banner .nb-text strong { display:block; font-family:var(--font-display); font-size:0.85rem; color:var(--primary); }
     .new-hold-banner .nb-text span   { font-size:0.75rem; color:var(--muted); }
     .new-hold-banner .nb-dismiss { margin-left:auto; font-size:0.72rem; color:var(--muted); font-family:var(--font-display); font-weight:600; padding:4px 10px; border-radius:6px; border:1px solid var(--border); background:var(--card); cursor:pointer; flex-shrink:0; }
 
-    .modal-overlay { display:none; position:fixed; inset:0; z-index:200; background:hsla(220,40%,5%,0.88); backdrop-filter:blur(8px); align-items:center; justify-content:center; }
+    /* ── TOAST ── */
+    .toast { position:fixed; bottom:24px; right:24px; z-index:500; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 20px; font-size:0.875rem; font-family:var(--font-display); font-weight:600; box-shadow:var(--glow-gold); transform:translateY(80px); opacity:0; transition:all .3s; pointer-events:none; max-width:340px; }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .toast.success { border-color:hsla(152,60%,52%,0.4); color:var(--green); }
+    .toast.info    { border-color:hsla(43,55%,54%,0.4);  color:var(--primary); }
+    .toast.warn    { border-color:hsla(0,70%,60%,0.4);   color:var(--red); }
+
+    /* ── MODALS ── */
+    .modal-overlay { display:none; position:fixed; inset:0; z-index:200; background:hsla(220,40%,5%,0.88); backdrop-filter:blur(8px); align-items:center; justify-content:center; padding:20px; }
     .modal-overlay.open { display:flex; }
-    .modal-box { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:30px 34px; width:90%; max-width:480px; box-shadow:0 24px 70px rgba(0,0,0,0.6); animation:scaleIn .22s ease; }
+    .modal-box { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:30px 34px; width:90%; max-width:480px; box-shadow:0 24px 70px rgba(0,0,0,0.6); animation:scaleIn .22s ease; max-height:90vh; overflow-y:auto; }
     .modal-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; }
     .modal-top h3 { font-size:1.1rem; font-weight:700; }
     .modal-close { background:none; border:none; color:var(--muted); font-size:1.3rem; cursor:pointer; }
@@ -184,12 +251,15 @@
     .modal-submit { width:100%; padding:12px; border:none; border-radius:10px; background:var(--primary); color:var(--primary-fg); font-family:var(--font-display); font-size:0.9rem; font-weight:700; cursor:pointer; transition:all .2s; }
     .modal-submit:hover { opacity:.9; box-shadow:var(--glow-gold); }
 
+    /* ── BUTTONS ── */
     .btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:9px 20px; border-radius:9px; font-family:var(--font-display); font-size:0.82rem; font-weight:600; cursor:pointer; border:none; transition:all .2s; }
     .btn-primary { background:var(--primary); color:var(--primary-fg); }
     .btn-primary:hover { opacity:.9; box-shadow:var(--glow-gold); }
     .btn-ghost { background:transparent; border:1px solid hsla(45,30%,92%,0.2); color:var(--fg); }
     .btn-ghost:hover { background:var(--secondary); }
+    .btn-sm { padding:6px 14px; font-size:0.78rem; }
 
+    /* ── FOOTER ── */
     .site-footer { border-top:1px solid var(--border); padding:28px 24px; margin-top:auto; }
     .footer-inner { max-width:1400px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
     .site-footer p { font-family:var(--font-display); font-size:0.875rem; color:var(--muted); }
@@ -197,10 +267,25 @@
     .site-footer a { color:var(--primary); }
     .site-footer small { font-size:0.75rem; color:var(--muted); }
 
+    @keyframes pulse  { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.35)} }
     @keyframes fadeUp  { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
     @keyframes scaleIn { from{opacity:0;transform:scale(.94)} to{opacity:1;transform:scale(1)} }
     @media (max-width:1100px) { .stats-row{grid-template-columns:repeat(3,1fr)} }
-    @media (max-width:700px)  { .stats-row{grid-template-columns:repeat(2,1fr)} main{padding:28px 16px 60px} .hc-actions{min-width:unset;width:100%} }
+    @media (max-width:700px)  {
+      .stats-row{grid-template-columns:repeat(2,1fr)} main{padding:28px 16px 60px}
+      .hc-actions{min-width:unset;width:100%} .issue-fine-form{grid-template-columns:1fr}
+      .issue-fine-form .full{grid-column:1} .tab-nav{flex-wrap:wrap}
+    }
+
+    /* ── STUDENT SEARCH DROPDOWN ── */
+    .student-result { display:flex; align-items:center; gap:12px; padding:10px 14px; cursor:pointer; transition:background .15s; border-bottom:1px solid var(--border); }
+    .student-result:last-child { border-bottom:none; }
+    .student-result:hover { background:var(--secondary); }
+    .sr-avatar { width:32px; height:32px; border-radius:50%; background:var(--secondary); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:0.72rem; font-weight:700; color:var(--primary); font-family:var(--font-display); flex-shrink:0; }
+    .sr-name  { font-size:0.875rem; font-weight:600; }
+    .sr-meta  { font-size:0.75rem; color:var(--muted); }
+    .sr-empty { padding:14px; text-align:center; color:var(--muted); font-size:0.82rem; }
+    .sr-loading { padding:14px; text-align:center; color:var(--muted); font-size:0.82rem; }
   </style>
 </head>
 <body>
@@ -211,97 +296,250 @@
       <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEC31GlH03Kf6NAmmiIHqInFd0q1bQz2gmDg&s" alt="UCC logo" class="ucc-logo">
       <div class="title-wrap"><h1>UCC Knowledge Hub</h1><p class="subtitle">📚 Librarian Dashboard</p></div>
     </div>
-    <!--<div class="header-right">
+    <div class="header-right">
+      <!-- Tab navigation in header -->
+      <div class="tab-nav">
+        <button class="tab-nav-btn active" onclick="switchTab('holds')">📋 Hold Queue</button>
+        <button class="tab-nav-btn" onclick="switchTab('fines')" id="finesTabBtn">
+          💸 Fines
+          <span class="fines-nav-badge" id="finesNavBadge" style="display:none;">0</span>
+        </button>
+        <button class="tab-nav-btn" onclick="switchTab('inventory')">📦 Inventory</button>
+      </div>
       <div class="live-indicator connecting" id="liveIndicator">
         <span class="live-dot"></span>
         <span id="liveLabel">Connecting…</span>
       </div>
       <span class="librarian-badge">👩‍💼 Librarian</span>
-      <a href="Loaners.html" style="font-size:0.82rem;color:var(--muted);padding:7px 14px;border-radius:8px;background:var(--secondary);border:1px solid var(--border);">← Student View</a>-->
       <button class="nav-logout" id="logoutBtn">Log Out</button>
     </div>
   </div>
 </header>
 
 <main>
-
-  <div class="page-header">
-    <div>
-      <h2>📋 Hold Queue</h2>
-      <p>Manage student book holds, mark books ready for pickup and track collections. Updates appear instantly when students place holds.</p>
-    </div>
-    <div class="header-actions">
-      <button class="btn btn-ghost" onclick="loadHolds()">↻ Refresh</button>
-      <button class="btn btn-primary" onclick="openInventoryModal()">📦 Update Inventory</button>
-    </div>
-  </div>
-
-  <!-- New hold notification area (injected by realtime) -->
   <div id="notifArea"></div>
 
-  <div class="stats-row">
-    <div class="stat-card clickable" onclick="filterStatus('all')" id="sc-all">
-      <div class="stat-num" id="statTotal">0</div>
-      <div class="stat-lbl">Total Holds</div>
-    </div>
-    <div class="stat-card clickable" onclick="filterStatus('pending')" id="sc-pending">
-      <div class="stat-num blue"   id="statPending">0</div>
-      <div class="stat-lbl">⏳ Pending Prep</div>
-    </div>
-    <div class="stat-card clickable" onclick="filterStatus('ready')" id="sc-ready">
-      <div class="stat-num green"  id="statReady">0</div>
-      <div class="stat-lbl">✅ Ready for Pickup</div>
-    </div>
-    <div class="stat-card clickable" onclick="filterStatus('expired')" id="sc-expired">
-      <div class="stat-num red"    id="statExpired">0</div>
-      <div class="stat-lbl">❌ Expired</div>
-    </div>
-    <div class="stat-card clickable" onclick="filterStatus('waitlist')" id="sc-waitlist">
-      <div class="stat-num orange" id="statWaitlist">0</div>
-      <div class="stat-lbl">📋 Waitlist</div>
-    </div>
-  </div>
+  <!-- ════════════════════════════════════════════
+       TAB 1: HOLD QUEUE
+  ════════════════════════════════════════════ -->
+  <div class="tab-panel active" id="tab-holds">
 
-  <div class="filter-row">
-    <div class="search-input-wrap">
-      <span style="color:var(--muted);">🔍</span>
-      <input type="search" id="searchHolds" placeholder="Search by student name or book title…" oninput="applyFilters()">
+    <div class="page-header">
+      <div>
+        <h2>📋 Hold Queue</h2>
+        <p>Manage student book holds, mark books ready for pickup and track collections. Updates appear instantly.</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-ghost" onclick="loadHolds()">↻ Refresh</button>
+      </div>
     </div>
-    <select class="filter-sel" id="sortHolds" onchange="applyFilters()">
-      <option value="newest">Newest First</option>
-      <option value="oldest">Oldest First</option>
-      <option value="expiring">Expiring Soon</option>
-    </select>
-  </div>
 
-  <div class="status-tabs">
-    <button class="stab active" id="stab-all"       onclick="filterStatus('all')">All <span class="tab-count" id="tc-all">0</span></button>
-    <button class="stab"        id="stab-pending"   onclick="filterStatus('pending')">⏳ Pending <span class="tab-count" id="tc-pending">0</span></button>
-    <button class="stab"        id="stab-ready"     onclick="filterStatus('ready')">✅ Ready <span class="tab-count" id="tc-ready">0</span></button>
-    <button class="stab"        id="stab-waitlist"  onclick="filterStatus('waitlist')">📋 Waitlist <span class="tab-count" id="tc-waitlist">0</span></button>
-    <button class="stab"        id="stab-collected" onclick="filterStatus('collected')">📦 Collected <span class="tab-count" id="tc-collected">0</span></button>
-    <button class="stab"        id="stab-expired"   onclick="filterStatus('expired')">❌ Expired <span class="tab-count" id="tc-expired">0</span></button>
-  </div>
+    <div class="stats-row">
+      <div class="stat-card clickable" onclick="filterStatus('all')" id="sc-all">
+        <div class="stat-num" id="statTotal">0</div>
+        <div class="stat-lbl">Total Holds</div>
+      </div>
+      <div class="stat-card clickable" onclick="filterStatus('pending')" id="sc-pending">
+        <div class="stat-num blue" id="statPending">0</div>
+        <div class="stat-lbl">⏳ Pending Prep</div>
+      </div>
+      <div class="stat-card clickable" onclick="filterStatus('ready')" id="sc-ready">
+        <div class="stat-num green" id="statReady">0</div>
+        <div class="stat-lbl">✅ Ready for Pickup</div>
+      </div>
+      <div class="stat-card clickable" onclick="filterStatus('expired')" id="sc-expired">
+        <div class="stat-num red" id="statExpired">0</div>
+        <div class="stat-lbl">❌ Expired</div>
+      </div>
+      <div class="stat-card clickable" onclick="filterStatus('waitlist')" id="sc-waitlist">
+        <div class="stat-num orange" id="statWaitlist">0</div>
+        <div class="stat-lbl">📋 Waitlist</div>
+      </div>
+    </div>
 
-  <div class="holds-table-wrap">
-    <div class="holds-table-header">
-      <h3 id="holdsListTitle">All Holds</h3>
-      <span id="holdsListCount" style="font-size:0.82rem;color:var(--muted);"></span>
+    <div class="filter-row">
+      <div class="search-input-wrap">
+        <span style="color:var(--muted);">🔍</span>
+        <input type="search" id="searchHolds" placeholder="Search by student name or book title…" oninput="applyFilters()">
+      </div>
+      <select class="filter-sel" id="sortHolds" onchange="applyFilters()">
+        <option value="newest">Newest First</option>
+        <option value="oldest">Oldest First</option>
+        <option value="expiring">Expiring Soon</option>
+      </select>
     </div>
-    <div id="holdsArea">
-      <div class="loading-row">${Array(4).fill('<div class="skeleton-row"></div>').join("")}</div>
-    </div>
-  </div>
 
-  <div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-      <h3 style="font-size:1rem;font-weight:600;">📦 Shelf Inventory</h3>
-      <button class="btn btn-ghost" style="font-size:0.75rem;padding:6px 14px;" onclick="renderInventory()">↻ Refresh</button>
+    <div class="status-tabs">
+      <button class="stab active" id="stab-all"       onclick="filterStatus('all')">All <span class="tab-count" id="tc-all">0</span></button>
+      <button class="stab"        id="stab-pending"   onclick="filterStatus('pending')">⏳ Pending <span class="tab-count" id="tc-pending">0</span></button>
+      <button class="stab"        id="stab-ready"     onclick="filterStatus('ready')">✅ Ready <span class="tab-count" id="tc-ready">0</span></button>
+      <button class="stab"        id="stab-waitlist"  onclick="filterStatus('waitlist')">📋 Waitlist <span class="tab-count" id="tc-waitlist">0</span></button>
+      <button class="stab"        id="stab-collected" onclick="filterStatus('collected')">📦 Collected <span class="tab-count" id="tc-collected">0</span></button>
+      <button class="stab"        id="stab-expired"   onclick="filterStatus('expired')">❌ Expired <span class="tab-count" id="tc-expired">0</span></button>
     </div>
+
+    <div class="holds-table-wrap">
+      <div class="holds-table-header">
+        <h3 id="holdsListTitle">All Holds</h3>
+        <span id="holdsListCount" style="font-size:0.82rem;color:var(--muted);"></span>
+      </div>
+      <div id="holdsArea">
+        <div class="loading-row">${"<div class='skeleton-row'></div>".repeat(4)}</div>
+      </div>
+    </div>
+
+  </div><!-- /tab-holds -->
+
+  <!-- ════════════════════════════════════════════
+       TAB 2: FINES
+  ════════════════════════════════════════════ -->
+  <div class="tab-panel" id="tab-fines">
+
+    <div class="page-header">
+      <div>
+        <h2>💸 Fines Management</h2>
+        <p>Issue fines for overdue books ($200/day), damage ($500), or lost books. Monitor and waive outstanding balances.</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-ghost" onclick="loadAllFines()">↻ Refresh</button>
+      </div>
+    </div>
+
+    <!-- Alert banner (auto-shown when unpaid fines exist) -->
+    <div class="lib-fines-alert" id="libFinesAlert" style="display:none;">
+      <div class="lfa-icon">🚨</div>
+      <div class="lfa-body">
+        <strong>Outstanding Student Fines</strong>
+        <span>Issue, waive or delete fines below. Students can pay from their profile page.</span>
+      </div>
+      <div class="lfa-stats">
+        <div class="lfa-stat"><div class="n" id="libFineStatUnpaid" style="color:var(--red);">0</div><div class="l">Unpaid</div></div>
+        <div class="lfa-stat"><div class="n" id="libFineStatTotal"  style="color:var(--primary);">$0</div><div class="l">Total Owed</div></div>
+        <div class="lfa-stat"><div class="n" id="libFineStatPaid"   style="color:var(--green);">0</div><div class="l">Paid</div></div>
+      </div>
+    </div>
+
+    <!-- Issue Fine Card -->
+    <div class="card">
+      <div class="card-header"><h2>➕ Issue New Fine</h2></div>
+      <div class="issue-fine-form">
+        <div class="iff-group full" style="position:relative;">
+          <label>Search Student</label>
+          <input type="text" id="studentSearchInput"
+            placeholder="Type student name or school ID…"
+            autocomplete="off"
+            oninput="searchStudents(this.value)"
+            onfocus="if(this.value.length>1) searchStudents(this.value)">
+          <!-- hidden field that holds the actual user_id sent to DB -->
+          <input type="hidden" id="fineUserId">
+          <!-- selected student chip -->
+          <div id="selectedStudentChip" style="display:none;margin-top:8px;background:hsla(43,55%,54%,0.1);border:1px solid hsla(43,55%,54%,0.3);border-radius:8px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
+            <div>
+              <span id="selectedStudentName" style="font-weight:600;font-size:0.875rem;"></span>
+              <span id="selectedStudentMeta" style="font-size:0.75rem;color:var(--muted);margin-left:8px;"></span>
+            </div>
+            <button type="button" onclick="clearStudentSelection()"
+              style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:0 4px;">✕</button>
+          </div>
+          <!-- dropdown results -->
+          <div id="studentDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:100;background:var(--card);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.4);margin-top:4px;max-height:240px;overflow-y:auto;"></div>
+        </div>
+        <div class="iff-group full">
+          <label>Book Title</label>
+          <input type="text" id="fineBookTitle" placeholder="e.g. Introduction to Algorithms">
+        </div>
+        <div class="iff-group">
+          <label>Book Author</label>
+          <input type="text" id="fineBookAuthor" placeholder="e.g. Cormen et al.">
+        </div>
+        <div class="iff-group">
+          <label>Fine Type</label>
+          <select id="fineType" onchange="onFineTypeChange()">
+            <option value="overdue">⏰ Overdue Return ($200/day, auto-calc)</option>
+            <option value="damage">💥 Book Damage ($500 flat)</option>
+            <option value="lost">❓ Lost Book (set custom amount)</option>
+          </select>
+        </div>
+        <div class="iff-group" id="fineAmountGroup" style="display:none;">
+          <label>Amount (JMD $)</label>
+          <input type="number" id="fineAmount" placeholder="e.g. 500" min="0">
+        </div>
+        <div class="iff-group" id="fineDueDateGroup">
+          <label>Book Due Date (for overdue auto-calc)</label>
+          <input type="datetime-local" id="fineDueDate">
+        </div>
+        <div class="iff-group full">
+          <label>Librarian Note (optional)</label>
+          <textarea id="fineNote" placeholder="e.g. Water damage on pages 34-56, spine torn…"></textarea>
+        </div>
+        <div class="full" style="display:flex;align-items:center;gap:14px;">
+          <button class="btn btn-primary" onclick="issueFine()" id="issueFineBtn">Issue Fine</button>
+          <p id="issueFineResult" style="font-size:.82rem;min-height:16px;font-family:var(--font-display);"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- All Fines Table -->
+    <div class="card">
+      <div class="card-header">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <h2>📋 All Student Fines</h2>
+          <span class="fines-nav-badge" id="finesTableBadge" style="display:none;">0</span>
+        </div>
+        <select id="finesFilter" onchange="filterFinesTable()" style="background:var(--secondary);border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--fg);font-size:0.78rem;outline:none;">
+          <option value="all">All Fines</option>
+          <option value="unpaid">Unpaid Only</option>
+          <option value="paid">Paid Only</option>
+          <option value="waived">Waived Only</option>
+          <option value="overdue">Overdue Type</option>
+          <option value="damage">Damage Type</option>
+          <option value="lost">Lost Books</option>
+        </select>
+      </div>
+      <div class="fines-table-wrap">
+        <table class="fines-table">
+          <thead>
+            <tr>
+              <th>Student ID</th>
+              <th>Book</th>
+              <th>Type</th>
+              <th>Due Date</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Issued</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="finesTableBody">
+            <tr><td colspan="8" style="text-align:center;padding:28px;color:var(--muted);">Loading fines…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /tab-fines -->
+
+  <!-- ════════════════════════════════════════════
+       TAB 3: INVENTORY
+  ════════════════════════════════════════════ -->
+  <div class="tab-panel" id="tab-inventory">
+
+    <div class="page-header">
+      <div>
+        <h2>📦 Shelf Inventory</h2>
+        <p>Track book availability across shelves and sections.</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-ghost" onclick="renderInventory()">↻ Refresh</button>
+        <button class="btn btn-primary" onclick="openInventoryModal()">+ Update Stock</button>
+      </div>
+    </div>
+
     <div class="inventory-grid" id="inventoryGrid">
       <p style="color:var(--muted);font-size:.85rem;">Loading inventory…</p>
     </div>
-  </div>
+
+  </div><!-- /tab-inventory -->
 
 </main>
 
@@ -326,7 +564,7 @@
       <div id="readyStudentName" style="font-size:0.8rem;color:var(--muted);"></div>
     </div>
     <div class="form-group">
-      <label>Pickup Deadline (student has 24hrs from now)</label>
+      <label>Pickup Deadline (student has 24hrs by default)</label>
       <input type="datetime-local" id="pickupDeadline">
     </div>
     <div class="form-group">
@@ -342,35 +580,24 @@
   </div>
 </div>
 
-<!-- INVENTORY UPDATE MODAL -->
+<!-- INVENTORY MODAL -->
 <div class="modal-overlay" id="inventoryModal">
   <div class="modal-box">
     <div class="modal-top">
       <h3>📦 Update Inventory</h3>
       <button class="modal-close" onclick="document.getElementById('inventoryModal').classList.remove('open')">✕</button>
     </div>
-    <div class="form-group">
-      <label>Book Title</label>
-      <input type="text" id="invTitle" placeholder="Enter book title">
-    </div>
-    <div class="form-group">
-      <label>Shelf / Location</label>
-      <input type="text" id="invShelf" placeholder="e.g. IT & Computing / Shelf B">
-    </div>
-    <div class="form-group">
-      <label>Total Copies</label>
-      <input type="number" id="invCopies" min="0" value="3">
-    </div>
-    <div class="form-group">
-      <label>Currently Available</label>
-      <input type="number" id="invAvailable" min="0" value="2">
-    </div>
+    <div class="form-group"><label>Book / Section Title</label><input type="text" id="invTitle" placeholder="e.g. IT & Computing"></div>
+    <div class="form-group"><label>Shelf / Location</label><input type="text" id="invShelf" placeholder="e.g. IT & Computing / Shelf B"></div>
+    <div class="form-group"><label>Total Copies</label><input type="number" id="invCopies" min="0" value="3"></div>
+    <div class="form-group"><label>Currently Available</label><input type="number" id="invAvailable" min="0" value="2"></div>
     <button class="modal-submit" onclick="saveInventory()">💾 Save Inventory</button>
   </div>
 </div>
 
 <script>
-// ── CONFIG ────────────────────────────────────────────
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+
 const SUPABASE_URL  = "https://bqgtuxhfqfmxvryfljya.supabase.co";
 const SUPABASE_ANON = "sb_publishable_y71RZ0UCDxkcmFQQHGEf-Q_davD0hbm";
 const sb            = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
@@ -382,36 +609,52 @@ const _user    = getCurrentUser();
 const fullname = _user?.fullname || "Librarian";
 document.getElementById("logoutBtn").addEventListener("click", () => logout());
 
-// ── STATE ─────────────────────────────────────────────
+// ── TAB SWITCHING ─────────────────────────────────────────────────────────────
+let activeTab = "holds";
+function switchTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+  document.querySelectorAll(".tab-nav-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById(`tab-${tab}`).classList.add("active");
+  // Find matching nav btn by onclick
+  document.querySelectorAll(".tab-nav-btn").forEach(b => {
+    if (b.getAttribute("onclick")?.includes(`'${tab}'`)) b.classList.add("active");
+  });
+  // Load fines lazily on first visit
+  if (tab === "fines" && !finesLoaded) { loadAllFines(); finesLoaded = true; }
+  if (tab === "inventory") renderInventory();
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+function showToast(msg, type="success") {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove("show"), 4000);
+}
+
+// ── HOLDS STATE ───────────────────────────────────────────────────────────────
 let allHolds     = [];
 let activeStatus = "all";
 let _readyHold   = null;
-let realtimeChannel = null;
 
-// ── INIT ─────────────────────────────────────────────
+// ── INIT ──────────────────────────────────────────────────────────────────────
 window.addEventListener("DOMContentLoaded", () => {
   loadHolds();
-  renderInventory();
-  const d = new Date(); d.setHours(d.getHours()+24);
-  document.getElementById("pickupDeadline").value = d.toISOString().slice(0,16);
-  subscribeToAllHolds(); // ← real-time for all students
+  subscribeToAllHolds();
+  const d = new Date(); d.setHours(d.getHours() + 24);
+  document.getElementById("pickupDeadline").value = d.toISOString().slice(0, 16);
+  onFineTypeChange(); // init fine form state
 });
 
-// ── REAL-TIME: subscribe to ALL holds (librarian sees everything) ──
+// ── REALTIME: all holds ───────────────────────────────────────────────────────
 function subscribeToAllHolds() {
   setLiveStatus("connecting");
-
-  realtimeChannel = sb.channel("holds_librarian_all")
-    .on("postgres_changes", {
-        event:  "*",
-        schema: "public",
-        table:  "book_holds"
-      },
-      payload => handleRealtimeChange(payload)
-    )
+  sb.channel("holds_librarian_all")
+    .on("postgres_changes", { event:"*", schema:"public", table:"book_holds" },
+      payload => handleRealtimeChange(payload))
     .subscribe(status => {
-      if (status === "SUBSCRIBED")   setLiveStatus("connected");
-      if (status === "CLOSED")       setLiveStatus("disconnected");
+      if (status === "SUBSCRIBED")    setLiveStatus("connected");
+      if (status === "CLOSED")        setLiveStatus("disconnected");
       if (status === "CHANNEL_ERROR") setLiveStatus("disconnected");
     });
 }
@@ -419,35 +662,31 @@ function subscribeToAllHolds() {
 function setLiveStatus(s) {
   const el = document.getElementById("liveIndicator");
   const lb = document.getElementById("liveLabel");
+  if (!el) return;
   el.className = `live-indicator ${s}`;
   lb.textContent = s==="connected" ? "Live" : s==="connecting" ? "Connecting…" : "Disconnected";
 }
 
-function handleRealtimeChange(payload) {
-  const { eventType, new: newRow, old: oldRow } = payload;
-
+function handleRealtimeChange({ eventType, new: newRow, old: oldRow }) {
   if (eventType === "INSERT") {
-    // New hold from a student — show notification banner + add to list
-    if (!allHolds.find(h => String(h.id)===String(newRow.id))) {
+    if (!allHolds.find(h => String(h.id) === String(newRow.id))) {
       allHolds.unshift(newRow);
       showNewHoldBanner(newRow);
       bumpStat("statPending");
     }
   } else if (eventType === "UPDATE") {
-    const idx = allHolds.findIndex(h => String(h.id)===String(newRow.id));
-    if (idx !== -1) allHolds[idx] = newRow;
-    else allHolds.unshift(newRow);
+    const idx = allHolds.findIndex(h => String(h.id) === String(newRow.id));
+    if (idx !== -1) allHolds[idx] = newRow; else allHolds.unshift(newRow);
   } else if (eventType === "DELETE") {
-    allHolds = allHolds.filter(h => String(h.id)!==String(oldRow.id));
+    allHolds = allHolds.filter(h => String(h.id) !== String(oldRow.id));
     showToast("A hold was cancelled by the student.", "info");
   }
-
   updateStats();
   applyFilters();
 }
 
 function showNewHoldBanner(hold) {
-  const area = document.getElementById("notifArea");
+  const area   = document.getElementById("notifArea");
   const banner = document.createElement("div");
   banner.className = "new-hold-banner";
   banner.id = `banner-${hold.id}`;
@@ -458,86 +697,73 @@ function showNewHoldBanner(hold) {
       <span>"${escHtml(hold.book_title)}" — ${hold.status==="waitlist"?"Waitlist":"Pending prep"}</span>
     </div>
     <button class="nb-dismiss" onclick="dismissBanner('${hold.id}')">Dismiss</button>`;
-  banner.onclick = (e) => {
+  banner.onclick = e => {
     if (!e.target.classList.contains("nb-dismiss")) {
+      switchTab("holds");
       filterStatus("pending");
-      const card = document.getElementById(`hcard-${hold.id}`);
-      if (card) { card.scrollIntoView({behavior:"smooth",block:"center"}); card.classList.add("new-flash"); setTimeout(()=>card.classList.remove("new-flash"),2000); }
+      setTimeout(() => {
+        const card = document.getElementById(`hcard-${hold.id}`);
+        if (card) { card.scrollIntoView({behavior:"smooth",block:"center"}); card.classList.add("new-flash"); setTimeout(()=>card.classList.remove("new-flash"),2000); }
+      }, 200);
       dismissBanner(hold.id);
     }
   };
   area.prepend(banner);
-  showToast(`🔔 New hold: "${hold.book_title.slice(0,30)}" from ${hold.student_name}`, "info");
-  // Auto-dismiss after 15s
+  showToast(`🔔 New hold: "${hold.book_title?.slice(0,30)}" from ${hold.student_name}`, "info");
   setTimeout(() => dismissBanner(hold.id), 15000);
 }
 
 function dismissBanner(id) {
   const b = document.getElementById(`banner-${id}`);
-  if (b) { b.style.opacity="0"; setTimeout(()=>b.remove(),300); }
+  if (b) { b.style.opacity = "0"; setTimeout(() => b.remove(), 300); }
 }
 
 function bumpStat(id) {
   const el = document.getElementById(id);
   if (!el) return;
-  el.classList.remove("bump");
-  void el.offsetWidth; // reflow
+  el.classList.remove("bump"); void el.offsetWidth;
   el.classList.add("bump");
-  setTimeout(()=>el.classList.remove("bump"),500);
+  setTimeout(() => el.classList.remove("bump"), 500);
 }
 
-// ── TOAST ─────────────────────────────────────────────
-function showToast(msg, type="success") {
-  const t=document.getElementById("toast");
-  t.textContent=msg; t.className=`toast ${type} show`;
-  setTimeout(()=>t.classList.remove("show"),4000);
-}
-
-// ── LOAD HOLDS ────────────────────────────────────────
+// ── LOAD HOLDS ────────────────────────────────────────────────────────────────
 async function loadHolds() {
   document.getElementById("holdsArea").innerHTML =
-    `<div class="loading-row">${Array(4).fill('<div class="skeleton-row"></div>').join("")}</div>`;
-
+    `<div class="loading-row">${"<div class='skeleton-row'></div>".repeat(4)}</div>`;
   try {
-    // Load ALL holds from Supabase (all students, sorted newest first)
-    const { data, error } = await sb.from("book_holds").select("*").order("placed_at",{ascending:false});
+    const { data, error } = await sb.from("book_holds").select("*").order("placed_at", {ascending:false});
     if (error) throw error;
     allHolds = data || [];
   } catch(e) {
     console.error("loadHolds:", e);
-    // Fallback to demo data if Supabase isn't set up yet
     allHolds = getSeedHolds();
   }
 
-  // Auto-expire: any "ready" hold past its pickup_by
+  // Auto-expire ready holds past pickup_by
   const now = new Date();
-  allHolds = allHolds.map(h => {
-    if (h.status==="ready" && h.pickup_by && new Date(h.pickup_by)<now) {
-      return {...h, status:"expired"};
-    }
-    return h;
-  });
-
+  allHolds = allHolds.map(h =>
+    (h.status==="ready" && h.pickup_by && new Date(h.pickup_by)<now)
+      ? {...h, status:"expired"} : h
+  );
   updateStats();
   applyFilters();
-  renderInventory();
 }
 
 function getSeedHolds() {
   const now = new Date();
   return [
-    { id:"h1", student_name:"Jada Williams",   book_title:"CompTIA A+ Core 1 (220-1101)", book_author:"Mike Meyers",   book_cover:null, shelf_location:"IT & Computing / Shelf B",       status:"pending",   placed_at:new Date(now-7200000).toISOString(),  pickup_by:null, note:"Please hold near front desk", copies_available:2 },
-    { id:"h2", student_name:"Marcus Brown",    book_title:"Caribbean History vol. 2",      book_author:"B. Brereton",   book_cover:null, shelf_location:"Caribbean Studies / Shelf D",   status:"ready",     placed_at:new Date(now-18000000).toISOString(), pickup_by:new Date(now+79200000).toISOString(), note:null, copies_available:1 },
-    { id:"h3", student_name:"Alicia Thompson", book_title:"Principles of Accounting",      book_author:"Frank Wood",    book_cover:null, shelf_location:"Business & Mgmt / Shelf C",     status:"waitlist",  placed_at:new Date(now-3600000).toISOString(),  pickup_by:null, note:"Need for assignment due Friday", copies_available:0 },
-    { id:"h4", student_name:"Devon Clarke",    book_title:"Python Crash Course",           book_author:"Eric Matthes",  book_cover:null, shelf_location:"IT & Computing / Shelf B",       status:"collected", placed_at:new Date(now-172800000).toISOString(),pickup_by:null, note:null, copies_available:3 },
+    { id:"h1", student_name:"Jada Williams",   book_title:"CompTIA A+ Core 1",          book_author:"Mike Meyers",  book_cover:null, shelf_location:"IT & Computing / Shelf B",     status:"pending",   placed_at:new Date(now-7200000).toISOString(),   pickup_by:null,                              note:"Please hold near front desk" },
+    { id:"h2", student_name:"Marcus Brown",    book_title:"Caribbean History vol. 2",    book_author:"B. Brereton", book_cover:null, shelf_location:"Caribbean Studies / Shelf D", status:"ready",     placed_at:new Date(now-18000000).toISOString(),  pickup_by:new Date(now+79200000).toISOString(), note:null },
+    { id:"h3", student_name:"Alicia Thompson", book_title:"Principles of Accounting",    book_author:"Frank Wood",  book_cover:null, shelf_location:"Business & Mgmt / Shelf C",   status:"waitlist",  placed_at:new Date(now-3600000).toISOString(),   pickup_by:null,                              note:"Need for assignment due Friday" },
+    { id:"h4", student_name:"Devon Clarke",    book_title:"Python Crash Course",         book_author:"Eric Matthes",book_cover:null, shelf_location:"IT & Computing / Shelf B",     status:"collected", placed_at:new Date(now-172800000).toISOString(), pickup_by:null,                              note:null },
   ];
 }
 
-// ── FILTER & RENDER ───────────────────────────────────
+// ── FILTER & RENDER ───────────────────────────────────────────────────────────
 function filterStatus(status) {
-  activeStatus=status;
-  document.querySelectorAll(".stab").forEach(t=>t.classList.remove("active"));
-  document.querySelectorAll(".stat-card").forEach(c=>c.classList.remove("active-filter"));
+  activeStatus = status;
+  document.querySelectorAll(".stab").forEach(t => t.classList.remove("active"));
+  document.querySelectorAll(".stat-card").forEach(c => c.classList.remove("active-filter"));
   document.getElementById(`stab-${status}`)?.classList.add("active");
   document.getElementById(`sc-${status}`)?.classList.add("active-filter");
   applyFilters();
@@ -546,18 +772,15 @@ function filterStatus(status) {
 function applyFilters() {
   const q    = document.getElementById("searchHolds").value.toLowerCase().trim();
   const sort = document.getElementById("sortHolds").value;
-
   let filtered = allHolds.filter(h => {
-    const statusMatch = activeStatus==="all" || h.status===activeStatus;
-    const qMatch      = !q || h.book_title?.toLowerCase().includes(q) || h.student_name?.toLowerCase().includes(q);
-    return statusMatch && qMatch;
+    const statusOk = activeStatus==="all" || h.status===activeStatus;
+    const qOk      = !q || h.book_title?.toLowerCase().includes(q) || h.student_name?.toLowerCase().includes(q);
+    return statusOk && qOk;
   });
-
   if (sort==="newest")   filtered.sort((a,b)=>new Date(b.placed_at)-new Date(a.placed_at));
   if (sort==="oldest")   filtered.sort((a,b)=>new Date(a.placed_at)-new Date(b.placed_at));
   if (sort==="expiring") filtered.sort((a,b)=>{ if(!a.pickup_by) return 1; if(!b.pickup_by) return -1; return new Date(a.pickup_by)-new Date(b.pickup_by); });
-
-  const label={all:"All Holds",pending:"Pending Prep",ready:"Ready for Pickup",waitlist:"Waitlist",collected:"Collected",expired:"Expired"};
+  const label = {all:"All Holds",pending:"Pending Prep",ready:"Ready for Pickup",waitlist:"Waitlist",collected:"Collected",expired:"Expired"};
   document.getElementById("holdsListTitle").textContent = label[activeStatus]||"Holds";
   document.getElementById("holdsListCount").textContent = `${filtered.length} hold${filtered.length!==1?"s":""}`;
   renderHolds(filtered);
@@ -566,48 +789,31 @@ function applyFilters() {
 function renderHolds(holds) {
   const area = document.getElementById("holdsArea");
   if (!holds.length) { area.innerHTML=`<div class="empty-state"><div class="icon">📭</div><p>No holds in this category.</p></div>`; return; }
-  area.innerHTML=`<div class="hold-cards">${holds.map(holdCard).join("")}</div>`;
+  area.innerHTML = `<div class="hold-cards">${holds.map(holdCard).join("")}</div>`;
 }
 
 function holdCard(h) {
   const cover    = h.book_cover ? `<img src="${h.book_cover}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='📚'">` : "📚";
   const initials = (h.student_name||"?").split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase();
   const ago      = timeAgo(h.placed_at);
-
-  // Show "NEW" badge if placed in the last 2 minutes
   const isNew    = h.placed_at && (Date.now()-new Date(h.placed_at))<120000;
 
-  const statusBadge = {
-    pending:  `<span class="status-badge sb-pending">⏳ Pending Prep</span>`,
-    waitlist: `<span class="status-badge sb-waitlist">📋 Waitlist</span>`,
-    ready:    `<span class="status-badge sb-ready">✅ Ready for Pickup</span>`,
-    expired:  `<span class="status-badge sb-expired">❌ Expired</span>`,
-    collected:`<span class="status-badge sb-collected">📦 Collected</span>`
-  }[h.status]||"";
+  const statusBadge = { pending:`<span class="status-badge sb-pending">⏳ Pending Prep</span>`, waitlist:`<span class="status-badge sb-waitlist">📋 Waitlist</span>`, ready:`<span class="status-badge sb-ready">✅ Ready for Pickup</span>`, expired:`<span class="status-badge sb-expired">❌ Expired</span>`, collected:`<span class="status-badge sb-collected">📦 Collected</span>` }[h.status]||"";
 
-  let pickupLine="";
+  let pickupLine = "";
   if (h.status==="ready" && h.pickup_by) {
-    const ms=new Date(h.pickup_by)-Date.now();
-    const cls=ms<3600000?"urgent":ms<7200000?"warn":"ok";
-    pickupLine=`<div class="pickup-deadline ${cls}">⏱ Pickup by: ${new Date(h.pickup_by).toLocaleString("en-JM",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})} — ${formatTimeLeft(h.pickup_by)} remaining</div>`;
+    const ms  = new Date(h.pickup_by) - Date.now();
+    const cls = ms<3600000 ? "urgent" : ms<7200000 ? "warn" : "ok";
+    pickupLine = `<div class="pickup-deadline ${cls}">⏱ Pickup by: ${new Date(h.pickup_by).toLocaleString("en-JM",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})} — ${formatTimeLeft(h.pickup_by)} remaining</div>`;
   }
 
-  const actions=(()=>{
+  const actions = (()=>{
     switch(h.status){
-      case "pending":
-        return `<button class="action-btn btn-ready"     onclick="openReadyModal('${h.id}')">✅ Mark Ready</button>
-                <button class="action-btn btn-cancel"    onclick="cancelHold('${h.id}')">✕ Cancel</button>`;
-      case "waitlist":
-        return `<button class="action-btn btn-ready"     onclick="openReadyModal('${h.id}')">✅ Book Available — Notify</button>
-                <button class="action-btn btn-cancel"    onclick="cancelHold('${h.id}')">✕ Cancel</button>`;
-      case "ready":
-        return `<button class="action-btn btn-collected" onclick="markCollected('${h.id}')">📦 Mark Collected</button>
-                <button class="action-btn btn-cancel"    onclick="cancelHold('${h.id}')">✕ Cancel</button>`;
-      case "expired":
-        return `<button class="action-btn btn-ghost-sm"  onclick="openReadyModal('${h.id}')">↻ Re-notify</button>
-                <button class="action-btn btn-cancel"    onclick="cancelHold('${h.id}')">🗑 Remove</button>`;
-      case "collected":
-        return `<button class="action-btn btn-ghost-sm" disabled style="opacity:.4;cursor:default;">✓ Done</button>`;
+      case "pending":   return `<button class="action-btn btn-ready"     onclick="openReadyModal('${h.id}')">✅ Mark Ready</button><button class="action-btn btn-cancel" onclick="cancelHold('${h.id}')">✕ Cancel</button>`;
+      case "waitlist":  return `<button class="action-btn btn-ready"     onclick="openReadyModal('${h.id}')">✅ Book Available — Notify</button><button class="action-btn btn-cancel" onclick="cancelHold('${h.id}')">✕ Cancel</button>`;
+      case "ready":     return `<button class="action-btn btn-collected" onclick="markCollected('${h.id}')">📦 Mark Collected</button><button class="action-btn btn-cancel" onclick="cancelHold('${h.id}')">✕ Cancel</button>`;
+      case "expired":   return `<button class="action-btn btn-ghost-sm"  onclick="openReadyModal('${h.id}')">↻ Re-notify</button><button class="action-btn btn-cancel" onclick="cancelHold('${h.id}')">🗑 Remove</button>`;
+      case "collected": return `<button class="action-btn btn-ghost-sm" disabled style="opacity:.4;cursor:default;">✓ Done</button>`;
       default: return "";
     }
   })();
@@ -618,13 +824,10 @@ function holdCard(h) {
       <div class="hc-title">${escHtml(h.book_title)}</div>
       <div class="hc-author">${escHtml(h.book_author||"")}</div>
       <div class="hc-meta">
-        <div class="hc-student">
-          <div class="hc-avatar">${initials}</div>
-          <span style="font-weight:600;font-size:0.82rem;">${escHtml(h.student_name)}</span>
-        </div>
+        <div class="hc-student"><div class="hc-avatar">${initials}</div><span style="font-weight:600;font-size:0.82rem;">${escHtml(h.student_name)}</span></div>
         ${statusBadge}
         ${isNew?`<span class="new-badge">🆕 New</span>`:""}
-        ${h.shelf_location?`<div class="hc-shelf">📍 ${h.shelf_location}</div>`:""}
+        ${h.shelf_location?`<div class="hc-shelf">📍 ${escHtml(h.shelf_location)}</div>`:""}
         <div class="hc-time">Placed ${ago}</div>
       </div>
       ${h.note?`<div class="hc-note">💬 "${escHtml(h.note)}"</div>`:""}
@@ -635,114 +838,318 @@ function holdCard(h) {
   </div>`;
 }
 
-// ── MARK READY ────────────────────────────────────────
+// ── MARK READY ────────────────────────────────────────────────────────────────
 function openReadyModal(holdId) {
-  _readyHold = allHolds.find(h=>String(h.id)===String(holdId));
+  _readyHold = allHolds.find(h => String(h.id) === String(holdId));
   if (!_readyHold) return;
   document.getElementById("readyBookTitle").textContent   = _readyHold.book_title;
   document.getElementById("readyStudentName").textContent = `Student: ${_readyHold.student_name}`;
-  document.getElementById("readyShelf").value  = _readyHold.shelf_location||"";
+  document.getElementById("readyShelf").value  = _readyHold.shelf_location || "";
   document.getElementById("readyNote").value   = "";
   document.getElementById("readyStatus").textContent = "";
-  const d=new Date(); d.setHours(d.getHours()+24);
+  const d = new Date(); d.setHours(d.getHours()+24);
   document.getElementById("pickupDeadline").value = d.toISOString().slice(0,16);
   document.getElementById("readyModal").classList.add("open");
 }
-function closeReadyModal() { document.getElementById("readyModal").classList.remove("open"); _readyHold=null; }
-document.getElementById("readyModal").addEventListener("click", e=>{ if(e.target===document.getElementById("readyModal")) closeReadyModal(); });
+function closeReadyModal() { document.getElementById("readyModal").classList.remove("open"); _readyHold = null; }
+document.getElementById("readyModal").addEventListener("click", e => { if(e.target===document.getElementById("readyModal")) closeReadyModal(); });
 
 async function confirmReady() {
   if (!_readyHold) return;
   const btn      = document.getElementById("readySubmitBtn");
   const statusEl = document.getElementById("readyStatus");
-  const pickup_by    = new Date(document.getElementById("pickupDeadline").value).toISOString();
-  const shelf        = document.getElementById("readyShelf").value.trim();
-  const libNote      = document.getElementById("readyNote").value.trim();
-
-  btn.disabled = true;
-  statusEl.style.color = "var(--muted)";
-  statusEl.textContent = "Updating…";
-
-  const update = {
+  const update   = {
     status:         "ready",
-    pickup_by,
-    shelf_location: shelf || _readyHold.shelf_location,
-    librarian_note: libNote || null,
+    pickup_by:      new Date(document.getElementById("pickupDeadline").value).toISOString(),
+    shelf_location: document.getElementById("readyShelf").value.trim() || _readyHold.shelf_location,
+    librarian_note: document.getElementById("readyNote").value.trim() || null,
     ready_at:       new Date().toISOString()
   };
-
+  btn.disabled = true;
+  statusEl.style.color = "var(--muted)"; statusEl.textContent = "Updating…";
   try {
-    // ── UPDATE SUPABASE — student's realtime listener will fire automatically ──
     const { error } = await sb.from("book_holds").update(update).eq("id", _readyHold.id);
     if (error) throw error;
-
-    // Update local state immediately
-    const idx = allHolds.findIndex(h=>String(h.id)===String(_readyHold.id));
-    if (idx!==-1) allHolds[idx]={...allHolds[idx],...update};
-
-    btn.disabled = false;
+    const idx = allHolds.findIndex(h => String(h.id)===String(_readyHold.id));
+    if (idx !== -1) allHolds[idx] = {...allHolds[idx], ...update};
     statusEl.style.color = "var(--green)";
-    statusEl.textContent = `✓ Student notified! "${_readyHold.student_name}" will see this update instantly.`;
-    showToast(`✅ ${_readyHold.student_name} notified — book ready for pickup!`);
-    updateStats();
-    applyFilters();
+    statusEl.textContent = `✓ ${_readyHold.student_name} notified — they'll see this update instantly.`;
+    showToast(`✅ ${_readyHold.student_name} notified!`);
+    updateStats(); applyFilters();
     setTimeout(closeReadyModal, 2000);
   } catch(e) {
-    btn.disabled = false;
-    statusEl.style.color = "var(--red)";
-    statusEl.textContent = "⚠ Update failed. Please check your connection.";
+    statusEl.style.color = "var(--red)"; statusEl.textContent = "⚠ Update failed.";
     console.error("confirmReady:", e);
-  }
+  } finally { btn.disabled = false; }
 }
 
-// ── MARK COLLECTED ────────────────────────────────────
+// ── MARK COLLECTED ────────────────────────────────────────────────────────────
 async function markCollected(holdId) {
   if (!confirm("Mark this hold as collected?")) return;
   const update = { status:"collected", collected_at:new Date().toISOString() };
   try {
-    const { error } = await sb.from("book_holds").update(update).eq("id",holdId);
+    const { error } = await sb.from("book_holds").update(update).eq("id", holdId);
     if (error) throw error;
-    const idx=allHolds.findIndex(h=>String(h.id)===String(holdId));
-    if (idx!==-1) allHolds[idx]={...allHolds[idx],...update};
+    const idx = allHolds.findIndex(h => String(h.id)===String(holdId));
+    if (idx !== -1) allHolds[idx] = {...allHolds[idx], ...update};
     showToast("📦 Hold marked as collected.", "info");
     updateStats(); applyFilters();
-  } catch(e) {
-    showToast("⚠ Update failed.", "warn");
-    console.error("markCollected:", e);
-  }
+  } catch(e) { showToast("⚠ Update failed.", "warn"); }
 }
 
-// ── CANCEL / DELETE ───────────────────────────────────
+// ── CANCEL HOLD ───────────────────────────────────────────────────────────────
 async function cancelHold(holdId) {
   if (!confirm("Remove this hold?")) return;
   try {
-    const { error } = await sb.from("book_holds").delete().eq("id",holdId);
+    const { error } = await sb.from("book_holds").delete().eq("id", holdId);
     if (error) throw error;
-    allHolds=allHolds.filter(h=>String(h.id)!==String(holdId));
+    allHolds = allHolds.filter(h => String(h.id) !== String(holdId));
     showToast("Hold removed.", "warn");
     updateStats(); applyFilters();
-  } catch(e) {
-    showToast("⚠ Delete failed.", "warn");
-    console.error("cancelHold:", e);
-  }
+  } catch(e) { showToast("⚠ Delete failed.", "warn"); }
 }
 
-// ── STATS ─────────────────────────────────────────────
+// ── HOLD STATS ────────────────────────────────────────────────────────────────
 function updateStats() {
-  const counts={all:0,pending:0,ready:0,expired:0,waitlist:0,collected:0};
-  allHolds.forEach(h=>{ counts.all++; counts[h.status]=(counts[h.status]||0)+1; });
+  const counts = {all:0,pending:0,ready:0,expired:0,waitlist:0,collected:0};
+  allHolds.forEach(h => { counts.all++; counts[h.status] = (counts[h.status]||0)+1; });
   document.getElementById("statTotal").textContent    = counts.all;
   document.getElementById("statPending").textContent  = counts.pending||0;
   document.getElementById("statReady").textContent    = counts.ready||0;
   document.getElementById("statExpired").textContent  = counts.expired||0;
   document.getElementById("statWaitlist").textContent = counts.waitlist||0;
-  Object.keys(counts).forEach(s=>{
-    const el=document.getElementById(`tc-${s}`);
-    if(el) el.textContent=counts[s]||0;
+  Object.keys(counts).forEach(s => {
+    const el = document.getElementById(`tc-${s}`);
+    if (el) el.textContent = counts[s]||0;
   });
 }
 
-// ── INVENTORY ─────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════════
+// FINES MANAGEMENT
+// ════════════════════════════════════════════════════════════════════
+let allLibFines = [];
+let finesLoaded = false;
+
+const FINE_TYPE_CONFIG = {
+  overdue: { label:"⏰ Overdue",  color:"fp-overdue", rate:"$200/day" },
+  damage:  { label:"💥 Damage",   color:"fp-damage",  rate:"$500"     },
+  lost:    { label:"❓ Lost Book", color:"fp-lost",    rate:"Consult"  }
+};
+
+async function loadAllFines() {
+  const tbody = document.getElementById("finesTableBody");
+  tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--muted);">Loading…</td></tr>`;
+  try {
+    const { data, error } = await sb.from("fines").select("*").order("issued_at", {ascending:false});
+    if (error) throw error;
+
+    // Auto-calc overdue amounts
+    allLibFines = (data || []).map(f => {
+      if (f.fine_type==="overdue" && f.fine_status==="unpaid" && f.due_date) {
+        const daysLate = Math.max(0, Math.floor((Date.now()-new Date(f.due_date))/86400000));
+        f.amount    = daysLate * 200;
+        f._daysLate = daysLate;
+        f._accruing = true;
+      }
+      return f;
+    });
+
+    renderFinesAlert();
+    filterFinesTable();
+  } catch(e) {
+    console.error("loadAllFines:", e);
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--muted);">Failed to load fines. Check Supabase connection.</td></tr>`;
+  }
+}
+
+function renderFinesAlert() {
+  const unpaid    = allLibFines.filter(f => f.fine_status==="unpaid");
+  const paid      = allLibFines.filter(f => f.fine_status==="paid");
+  const totalOwed = unpaid.reduce((s,f) => s+(f.amount||0), 0);
+
+  // Header badge
+  const navBdg   = document.getElementById("finesNavBadge");
+  const tableBdg = document.getElementById("finesTableBadge");
+  if (unpaid.length > 0) {
+    navBdg.style.display   = "inline-flex"; navBdg.textContent   = unpaid.length;
+    tableBdg.style.display = "inline-flex"; tableBdg.textContent = unpaid.length;
+  } else {
+    navBdg.style.display   = "none";
+    tableBdg.style.display = "none";
+  }
+
+  // Alert banner
+  const alert = document.getElementById("libFinesAlert");
+  alert.style.display = unpaid.length > 0 ? "flex" : "none";
+  document.getElementById("libFineStatUnpaid").textContent = unpaid.length;
+  document.getElementById("libFineStatTotal").textContent  = "$" + totalOwed.toLocaleString();
+  document.getElementById("libFineStatPaid").textContent   = paid.length;
+}
+
+function filterFinesTable() {
+  const filter = document.getElementById("finesFilter")?.value || "all";
+  let filtered = allLibFines;
+  if (filter !== "all") {
+    if (["overdue","damage","lost"].includes(filter)) {
+      filtered = allLibFines.filter(f => f.fine_type === filter);
+    } else {
+      filtered = allLibFines.filter(f => f.fine_status === filter);
+    }
+  }
+  renderFinesTable(filtered);
+}
+
+function renderFinesTable(fines) {
+  const tbody = document.getElementById("finesTableBody");
+  if (!fines.length) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--muted);">No fines found.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = fines.map(f => {
+    const tc = FINE_TYPE_CONFIG[f.fine_type] || FINE_TYPE_CONFIG.overdue;
+    const statusPill = f.fine_status==="paid"   ? `<span class="fp fp-paid">✅ Paid</span>`
+                     : f.fine_status==="waived" ? `<span class="fp fp-waived">🔓 Waived</span>`
+                     :                            `<span class="fp fp-unpaid">⚠️ Unpaid</span>`;
+    const amountDisplay = (f.fine_type==="lost" && !f.amount)
+      ? `<em style="color:var(--muted);font-size:.78rem;">TBD</em>`
+      : `<strong>$${(f.amount||0).toLocaleString()}</strong>`;
+    const accruing = f._accruing
+      ? `<br><span class="acc-tag">+$200/day · ${f._daysLate}d late</span>` : "";
+    const dueDateStr = f.due_date
+      ? new Date(f.due_date).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"}) : "—";
+    const issuedStr = f.issued_at
+      ? new Date(f.issued_at).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"}) : "—";
+    const noteDisplay = f.librarian_note
+      ? `<br><span style="font-size:0.7rem;color:var(--muted);">📝 ${escHtml(f.librarian_note)}</span>` : "";
+    const actions = f.fine_status==="unpaid"
+      ? `<button class="tbl-btn tbl-btn-waive"  onclick="waiveFine('${f.id}')">Waive</button>
+         <button class="tbl-btn tbl-btn-edit"   onclick="editFineAmount('${f.id}')">Edit $</button>
+         <button class="tbl-btn tbl-btn-delete" onclick="deleteFine('${f.id}')">Delete</button>`
+      : `<button class="tbl-btn tbl-btn-delete" onclick="deleteFine('${f.id}')">Delete</button>`;
+
+    return `<tr>
+      <td style="font-size:0.75rem;color:var(--muted);">${escHtml((f.user_id||"—").slice(0,14))}…</td>
+      <td><div class="ft-user">${escHtml(f.book_title)}</div><div class="ft-book">${escHtml(f.book_author||"")}${noteDisplay}</div></td>
+      <td><span class="fp ${tc.color}">${tc.label}</span>${accruing}</td>
+      <td style="font-size:0.78rem;">${dueDateStr}</td>
+      <td>${amountDisplay}</td>
+      <td>${statusPill}</td>
+      <td style="font-size:0.75rem;color:var(--muted);">${issuedStr}</td>
+      <td><div style="display:flex;gap:4px;flex-wrap:wrap;">${actions}</div></td>
+    </tr>`;
+  }).join("");
+}
+
+// ── ISSUE FINE ────────────────────────────────────────────────────────────────
+function onFineTypeChange() {
+  const type      = document.getElementById("fineType")?.value;
+  const amtGroup  = document.getElementById("fineAmountGroup");
+  const dateGroup = document.getElementById("fineDueDateGroup");
+  const amtInput  = document.getElementById("fineAmount");
+  if (!amtGroup || !dateGroup) return;
+
+  if (type === "overdue") {
+    amtGroup.style.display  = "none";
+    dateGroup.style.display = "flex";
+  } else if (type === "damage") {
+    amtGroup.style.display  = "flex";
+    dateGroup.style.display = "none";
+    amtInput.value    = "500";
+    amtInput.readOnly = true;
+  } else if (type === "lost") {
+    amtGroup.style.display  = "flex";
+    dateGroup.style.display = "none";
+    amtInput.value    = "";
+    amtInput.readOnly = false;
+    amtInput.placeholder = "Set amount (leave 0 for TBD)";
+  }
+}
+
+async function issueFine() {
+  const userId    = document.getElementById("fineUserId").value.trim();
+  const bookTitle = document.getElementById("fineBookTitle").value.trim();
+  const bookAuthor= document.getElementById("fineBookAuthor").value.trim();
+  const fineType  = document.getElementById("fineType").value;
+  const amount    = parseInt(document.getElementById("fineAmount")?.value) || 0;
+  const dueDate   = document.getElementById("fineDueDate").value;
+  const note      = document.getElementById("fineNote").value.trim();
+  const result    = document.getElementById("issueFineResult");
+  const btn       = document.getElementById("issueFineBtn");
+
+  if (!userId || !bookTitle) {
+    result.style.color = "var(--red)";
+    result.textContent = "Please fill in Student ID and Book Title.";
+    return;
+  }
+
+  btn.disabled = true; btn.textContent = "Issuing…"; result.textContent = "";
+
+  const payload = {
+    user_id:        userId,
+    book_title:     bookTitle,
+    book_author:    bookAuthor || null,
+    fine_type:      fineType,
+    amount:         fineType==="overdue" ? 0 : amount,
+    due_date:       fineType==="overdue" && dueDate ? new Date(dueDate).toISOString() : null,
+    librarian_note: note || null,
+    fine_status:    "unpaid"
+  };
+
+  try {
+    const { error } = await sb.from("fines").insert(payload);
+    if (error) throw error;
+    result.style.color = "var(--green)";
+    result.textContent = "✅ Fine issued successfully!";
+    // Clear form
+    ["fineUserId","fineBookTitle","fineBookAuthor","fineAmount","fineDueDate","fineNote"]
+      .forEach(id => { const el = document.getElementById(id); if(el) el.value=""; });
+    onFineTypeChange();
+    await loadAllFines();
+  } catch(e) {
+    result.style.color = "var(--red)";
+    result.textContent = "Failed: " + (e.message||"Unknown error");
+    console.error("issueFine:", e);
+  } finally {
+    btn.disabled = false; btn.textContent = "Issue Fine";
+  }
+}
+
+async function waiveFine(fineId) {
+  if (!confirm("Waive this fine? The student will no longer owe this amount.")) return;
+  try {
+    const { error } = await sb.from("fines").update({ fine_status:"waived" }).eq("id", fineId);
+    if (error) throw error;
+    showToast("Fine waived.", "success");
+    await loadAllFines();
+  } catch(e) { showToast("Failed to waive fine.", "warn"); }
+}
+
+async function editFineAmount(fineId) {
+  const fine = allLibFines.find(f => f.id===fineId);
+  if (!fine) return;
+  const newAmt = prompt(`Edit amount for "${fine.book_title}" (current: $${fine.amount||0}):`, fine.amount||0);
+  if (newAmt===null) return;
+  const parsed = parseInt(newAmt);
+  if (isNaN(parsed)||parsed<0) { alert("Invalid amount."); return; }
+  try {
+    const { error } = await sb.from("fines").update({ amount:parsed }).eq("id", fineId);
+    if (error) throw error;
+    showToast(`Fine updated to $${parsed}.`, "success");
+    await loadAllFines();
+  } catch(e) { showToast("Failed to update.", "warn"); }
+}
+
+async function deleteFine(fineId) {
+  if (!confirm("Permanently delete this fine record?")) return;
+  try {
+    const { error } = await sb.from("fines").delete().eq("id", fineId);
+    if (error) throw error;
+    showToast("Fine deleted.", "info");
+    await loadAllFines();
+  } catch(e) { showToast("Failed to delete.", "warn"); }
+}
+
+// ── INVENTORY ─────────────────────────────────────────────────────────────────
 const SHELF_SECTIONS = [
   {name:"General Reference", shelf:"Shelf A",total:24,available:18,color:"var(--blue)"},
   {name:"IT & Computing",    shelf:"Shelf B",total:32,available:14,color:"var(--primary)"},
@@ -753,8 +1160,8 @@ const SHELF_SECTIONS = [
 ];
 
 function renderInventory() {
-  document.getElementById("inventoryGrid").innerHTML = SHELF_SECTIONS.map(s=>{
-    const pct=Math.round((s.available/s.total)*100);
+  document.getElementById("inventoryGrid").innerHTML = SHELF_SECTIONS.map(s => {
+    const pct = Math.round((s.available/s.total)*100);
     return `<div class="inv-card">
       <div class="inv-card-top"><span class="inv-section">📍 ${s.name}</span><span class="inv-nums">${s.available}/${s.total} available</span></div>
       <div class="inv-bar"><div class="inv-bar-fill" style="width:${pct}%;background:${s.color};"></div></div>
@@ -767,21 +1174,120 @@ function renderInventory() {
 }
 
 function openInventoryModal(name="",shelf="",total=0,available=0) {
-  document.getElementById("invTitle").value=name;
-  document.getElementById("invShelf").value=shelf?`${name} / ${shelf}`:"";
-  document.getElementById("invCopies").value=total;
-  document.getElementById("invAvailable").value=available;
+  document.getElementById("invTitle").value     = name;
+  document.getElementById("invShelf").value     = shelf ? `${name} / ${shelf}` : "";
+  document.getElementById("invCopies").value    = total;
+  document.getElementById("invAvailable").value = available;
   document.getElementById("inventoryModal").classList.add("open");
 }
 function saveInventory() {
-  showToast("✓ Inventory updated.","success");
+  showToast("✓ Inventory updated.", "success");
   document.getElementById("inventoryModal").classList.remove("open");
 }
 
-// ── HELPERS ───────────────────────────────────────────
-function timeAgo(d){ if(!d) return""; const s=(Date.now()-new Date(d))/1000; if(s<60) return"just now"; if(s<3600) return`${Math.floor(s/60)}m ago`; if(s<86400) return`${Math.floor(s/3600)}h ago`; return`${Math.floor(s/86400)}d ago`; }
-function formatTimeLeft(dt){ const ms=new Date(dt)-Date.now(); if(ms<=0) return"Expired"; const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000); return h>0?`${h}h ${m}m`:`${m}m`; }
-function escHtml(s){ return(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function timeAgo(d) { if(!d) return""; const s=(Date.now()-new Date(d))/1000; if(s<60) return"just now"; if(s<3600) return`${Math.floor(s/60)}m ago`; if(s<86400) return`${Math.floor(s/3600)}h ago`; return`${Math.floor(s/86400)}d ago`; }
+function formatTimeLeft(dt) { const ms=new Date(dt)-Date.now(); if(ms<=0) return"Expired"; const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000); return h>0?`${h}h ${m}m`:`${m}m`; }
+function escHtml(s) { return(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+// ── STUDENT SEARCH ────────────────────────────────────────────────────────────
+let studentSearchTimer = null;
+let selectedStudent    = null;
+
+async function searchStudents(query) {
+  const dropdown = document.getElementById("studentDropdown");
+  const chip     = document.getElementById("selectedStudentChip");
+
+  // Hide chip while searching
+  chip.style.display = "none";
+  document.getElementById("fineUserId").value = "";
+  selectedStudent = null;
+
+  if (!query || query.trim().length < 1) {
+    dropdown.style.display = "none";
+    return;
+  }
+
+  dropdown.style.display = "block";
+  dropdown.innerHTML = `<div class="sr-loading">Searching…</div>`;
+
+  clearTimeout(studentSearchTimer);
+  studentSearchTimer = setTimeout(async () => {
+    try {
+      // Search your Express users table via the API
+      // Falls back to Supabase direct query if API not available
+      let students = [];
+
+      try {
+        const res = await fetch(`/api/users/search?q=${encodeURIComponent(query.trim())}`, {
+          headers: { "Authorization": "Bearer " + (getToken()||"") }
+        });
+        if (res.ok) students = await res.json();
+      } catch(e) {
+        // If no API search endpoint, query Supabase directly
+        // (works if your users table is in Supabase)
+        const { data } = await sb
+          .from("users")
+          .select("id, fullname, email, school_id")
+          .or(`fullname.ilike.%${query}%,school_id.ilike.%${query}%,email.ilike.%${query}%`)
+          .limit(8);
+        students = data || [];
+      }
+
+      if (!students.length) {
+        dropdown.innerHTML = `<div class="sr-empty">No students found for "${escHtml(query)}"</div>`;
+        return;
+      }
+
+      dropdown.innerHTML = students.map(s => {
+        const initials = (s.fullname||"?").split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase();
+        return `<div class="student-result" onclick="selectStudent(${JSON.stringify(s).replace(/"/g,'&quot;')})">
+          <div class="sr-avatar">${initials}</div>
+          <div>
+            <div class="sr-name">${escHtml(s.fullname)}</div>
+            <div class="sr-meta">ID: ${escHtml(String(s.school_id||s.id))} &middot; ${escHtml(s.email||"")}</div>
+          </div>
+        </div>`;
+      }).join("");
+
+    } catch(err) {
+      console.error("searchStudents:", err);
+      dropdown.innerHTML = `<div class="sr-empty">Search failed. Try again.</div>`;
+    }
+  }, 300);
+}
+
+function selectStudent(student) {
+  selectedStudent = student;
+
+  // Set the hidden user_id field to the student's id (integer from Express)
+  document.getElementById("fineUserId").value = String(student.id);
+
+  // Show chip
+  document.getElementById("selectedStudentName").textContent = student.fullname;
+  document.getElementById("selectedStudentMeta").textContent = `ID: ${student.school_id||student.id} · ${student.email||""}`;
+  const chip = document.getElementById("selectedStudentChip");
+  chip.style.display = "flex";
+
+  // Clear search input and close dropdown
+  document.getElementById("studentSearchInput").value = "";
+  document.getElementById("studentDropdown").style.display = "none";
+}
+
+function clearStudentSelection() {
+  selectedStudent = null;
+  document.getElementById("fineUserId").value = "";
+  document.getElementById("selectedStudentChip").style.display = "none";
+  document.getElementById("studentSearchInput").value = "";
+  document.getElementById("studentSearchInput").focus();
+}
+
+// Close dropdown when clicking outside
+document.addEventListener("click", e => {
+  const wrap = document.getElementById("studentSearchInput")?.closest(".iff-group");
+  if (wrap && !wrap.contains(e.target)) {
+    document.getElementById("studentDropdown").style.display = "none";
+  }
+});
+
 </script>
-</body>
-</html>

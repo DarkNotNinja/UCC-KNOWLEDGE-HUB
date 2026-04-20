@@ -283,7 +283,7 @@
     <nav class="main-nav">
       <a href="ucc_knowledge_hub.html">Home</a>
       <a href="Loaners.html">Library</a>
-      <a href="Forum.html">Forum</a>
+      <a href="forum.html">Forum</a>
       <a href="profile.html" class="active">Profile</a>
       <button class="nav-logout" id="logoutBtn">Log Out</button>
     </nav>
@@ -451,8 +451,8 @@
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────────────────
 const SUPABASE_URL  = "https://bqgtuxhfqfmxvryfljya.supabase.co";
-const SUPABASE_ANON = "sb_publishable_y71RZ0UCDxkcmFQQHGEf-Q_davD0hbm"; // ← replace with real eyJ... key
-const API_BASE      = "https://YOUR-RAILWAY-APP.up.railway.app"; // ← replace with Railway URL
+const SUPABASE_ANON = "sb_publishable_y71RZ0UCDxkcmFQQHGEf-Q_davD0hbm"; 
+
 const sb            = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
 document.getElementById("year").textContent = new Date().getFullYear();
@@ -509,8 +509,8 @@ function loadProfile() {
   document.getElementById("heroBadgeId").textContent = "ID: " + (displayId ? displayId.toString().slice(0,10).toUpperCase() : "—");
 
   // Optionally enrich from Railway API if configured
-  if (token && API_BASE && !API_BASE.includes("YOUR-RAILWAY")) {
-    fetch(`${API_BASE}/api/user`, { headers:{ "Authorization":"Bearer "+token } })
+  if (token) {
+    fetch("/api/user", { headers:{ "Authorization":"Bearer "+token } })
       .then(r => r.ok ? r.json() : null)
       .then(user => {
         if (!user) return;
@@ -852,10 +852,72 @@ function updateSelectionUI() {
 function subscribeToFines() {
   if (!userId) return;
   sb.channel(`profile_fines_${userId}`)
-    .on("postgres_changes",{ event:"*", schema:"public", table:"fines", filter:`user_id=eq.${userId}` },
-      () => { selectedFineIds.clear(); loadFines(); })
+    .on("postgres_changes", { event:"*", schema:"public", table:"fines", filter:`user_id=eq.${userId}` },
+      payload => handleFineRealtimeChange(payload))
     .subscribe();
 }
+
+function handleFineRealtimeChange(payload) {
+  const { eventType, new: newRow, old: oldRow } = payload;
+
+  if (eventType === "INSERT") {
+    const labels = { overdue:"Overdue Return ($200/day)", damage:"Book Damage ($500)", lost:"Lost Book" };
+    const amt    = newRow.fine_type === "lost" ? "consult librarian" : "$" + (newRow.amount||0).toLocaleString();
+    showToast("New fine: \"" + (newRow.book_title||"") + "\" — " + (labels[newRow.fine_type]||"Fine") + " " + amt, "warn");
+
+    const card = document.getElementById("finesCard");
+    if (card) {
+      card.style.borderColor = "var(--red)";
+      card.style.boxShadow   = "0 0 30px hsla(0,70%,60%,0.3)";
+      setTimeout(() => { card.style.borderColor = ""; card.style.boxShadow = ""; }, 4000);
+    }
+    showFineNotificationBanner(newRow);
+
+  } else if (eventType === "UPDATE") {
+    if (oldRow?.fine_status !== newRow?.fine_status) {
+      if (newRow.fine_status === "waived")
+        showToast("Fine waived: \"" + (newRow.book_title||"") + "\"", "success");
+      else if (newRow.fine_status === "paid")
+        showToast("Payment confirmed: \"" + (newRow.book_title||"") + "\"", "success");
+    } else if (newRow.amount !== oldRow?.amount) {
+      showToast("Fine updated: \"" + (newRow.book_title||"") + "\" now $" + (newRow.amount||0).toLocaleString(), "info");
+    }
+
+  } else if (eventType === "DELETE") {
+    showToast("A fine was removed from your account.", "info");
+  }
+
+  selectedFineIds.clear();
+  loadFines();
+}
+
+function showFineNotificationBanner(fine) {
+  document.getElementById("fineNotifBanner")?.remove();
+  const labels = { overdue:"Overdue Return ($200/day)", damage:"Book Damage ($500)", lost:"Lost Book" };
+  const amt    = fine.fine_type === "lost" ? "TBD — contact library" : "$" + (fine.amount||0).toLocaleString();
+  const note   = fine.librarian_note ? `<div style="font-size:0.75rem;color:var(--primary);margin-top:3px;">Note: "${escHtml(fine.librarian_note)}"</div>` : "";
+
+  const b = document.createElement("div");
+  b.id    = "fineNotifBanner";
+  b.innerHTML = `<div style="background:linear-gradient(135deg,hsla(0,70%,60%,0.14),hsla(30,90%,58%,0.08));border:1px solid hsla(0,70%,60%,0.5);border-radius:14px;padding:16px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:4px;">
+    <div style="font-size:1.8rem;">🚨</div>
+    <div style="flex:1;">
+      <strong style="font-family:var(--font-display);color:var(--red);">New Fine on Your Account</strong><br>
+      <span style="font-size:0.85rem;font-weight:600;">${escHtml(fine.book_title)}</span><br>
+      <span style="font-size:0.78rem;color:var(--muted);">${labels[fine.fine_type]||"Fine"} &middot; ${amt}</span>
+      ${note}
+    </div>
+    <button onclick="document.getElementById('finesCard').scrollIntoView({behavior:'smooth'});this.closest('#fineNotifBanner').remove();"
+      style="background:var(--red);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-family:var(--font-display);font-size:0.8rem;font-weight:700;cursor:pointer;">View Fine</button>
+    <button onclick="this.closest('#fineNotifBanner').remove();"
+      style="background:none;border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--muted);cursor:pointer;font-size:0.8rem;">Dismiss</button>
+  </div>`;
+
+  const finesCard = document.getElementById("finesCard");
+  if (finesCard) finesCard.parentNode.insertBefore(b, finesCard);
+  setTimeout(() => { try { b.remove(); } catch(e){} }, 30000);
+}
+
 
 function updateFineStats() {
   const unpaid      = allFines.filter(f => f.fine_status === "unpaid" && f.fine_type !== "lost");
@@ -1059,7 +1121,7 @@ document.getElementById("passwordForm").addEventListener("submit", async e => {
   result.textContent = "Updating…";
 
   try {
-    const res  = await fetch(`${API_BASE}/setpassword`, {
+    const res  = await fetch("/setpassword", {
       method: "POST",
       headers: { "Content-Type":"application/json", "Authorization":"Bearer "+token },
       body: JSON.stringify({ current, newPass })
