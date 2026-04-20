@@ -234,7 +234,9 @@ app.get('/api/user', authenticateToken, async (req, res) => {
 });
 
 // SEARCH STUDENTS (for librarian fine issuing)
-app.get('/api/users/search', async (req, res) => {
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
   const q = (req.query.q || "").trim();
   if (!q) return res.json([]);
   try {
