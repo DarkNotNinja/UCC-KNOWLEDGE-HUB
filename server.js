@@ -234,9 +234,7 @@ app.get('/api/user', authenticateToken, async (req, res) => {
 });
 
 // SEARCH STUDENTS (for librarian fine issuing)
-app.get('/api/users/search', async (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'login.html'));
-});
+app.get("/api/users/search", async (req, res) => {
   const q = (req.query.q || "").trim();
   if (!q) return res.json([]);
   try {
@@ -250,7 +248,8 @@ app.get('/api/users/search', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Search failed" });
-  };
+  }
+});
 
 // UPDATE PASSWORD
 app.post('/setpassword', authenticateToken, async (req, res) => {
