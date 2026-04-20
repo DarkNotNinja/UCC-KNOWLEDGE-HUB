@@ -23,7 +23,13 @@ const ALLOWED_ORIGINS = [
   "http://127.0.0.1:5500"
 ];
 
-app.use(cors());
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+    callback(new Error("Not allowed by CORS"));
+  },
+  credentials: true
+}));
 
 const io = new Server(server, {
   cors: {
@@ -36,7 +42,7 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'ucc_landing_page.html'));
+  res.json({ status: "UCC Knowledge Hub API is running ✅" });
 });
 
 // ── JWT MIDDLEWARE ────────────────────────────────────────────────────────────
@@ -224,6 +230,22 @@ app.get('/api/user', authenticateToken, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error loading user" });
+  }
+});
+
+// GET LOANS BY USER ID (for librarian fine issuing)
+app.get('/api/loans/by-user/:userId', async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT id, book_title, book_author, borrowed_at, due_date, status, format
+       FROM loans WHERE user_id = $1 AND status = 'active'
+       ORDER BY due_date ASC`,
+      [req.params.userId]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to load loans' });
   }
 });
 
@@ -471,6 +493,37 @@ app.post('/api/loans', authenticateToken, async (req, res) => {
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Failed to save loan' });
+  }
+});
+
+// MARK LOAN AS RETURNED
+app.post('/api/loans/:id/return', async (req, res) => {
+  const { returned_at, condition } = req.body;
+  try {
+    await pool.query(
+      `UPDATE loans SET status = $1, returned_at = $2 WHERE id = $3`,
+      [condition === 'normal' ? 'returned' : condition, returned_at || new Date().toISOString(), req.params.id]
+    );
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to mark as returned' });
+  }
+});
+
+// GET LOAN HISTORY (returned books) BY USER ID
+app.get('/api/loans/history/:userId', async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT id, book_title, book_author, format, status, borrowed_at, returned_at
+       FROM loans WHERE user_id = $1 AND status != 'active'
+       ORDER BY returned_at DESC LIMIT 20`,
+      [req.params.userId]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to load loan history' });
   }
 });
 

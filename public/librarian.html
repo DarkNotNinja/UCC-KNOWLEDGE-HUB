@@ -286,6 +286,71 @@
     .sr-meta  { font-size:0.75rem; color:var(--muted); }
     .sr-empty { padding:14px; text-align:center; color:var(--muted); font-size:0.82rem; }
     .sr-loading { padding:14px; text-align:center; color:var(--muted); font-size:0.82rem; }
+
+    /* ── LOAN PICKER CARDS ── */
+    .loan-pick-card { background:var(--secondary); border:1px solid var(--border); border-radius:10px; padding:12px 14px; cursor:pointer; transition:all .2s; display:flex; align-items:center; gap:12px; }
+    .loan-pick-card:hover { border-color:var(--primary); background:hsla(43,55%,54%,0.06); }
+    .loan-pick-card.overdue { border-left:3px solid var(--red); }
+    .loan-pick-card.due-soon { border-left:3px solid var(--orange); }
+    .loan-pick-card.ok { border-left:3px solid var(--green); }
+    .lpc-icon { font-size:1.4rem; flex-shrink:0; }
+    .lpc-body { flex:1; }
+    .lpc-title  { font-size:0.875rem; font-weight:600; }
+    .lpc-author { font-size:0.75rem; color:var(--muted); }
+    .lpc-due { font-size:0.72rem; font-weight:700; margin-top:3px; }
+    .lpc-due.overdue  { color:var(--red); }
+    .lpc-due.due-soon { color:var(--orange); }
+    .lpc-due.ok       { color:var(--green); }
+    .lpc-badge { font-size:0.65rem; font-weight:700; padding:2px 8px; border-radius:10px; font-family:var(--font-display); flex-shrink:0; }
+    .lpc-badge.overdue  { background:hsla(0,70%,60%,.15); color:var(--red); border:1px solid hsla(0,70%,60%,.3); }
+    .lpc-badge.due-soon { background:hsla(30,90%,58%,.15); color:var(--orange); border:1px solid hsla(30,90%,58%,.3); }
+    .lpc-badge.ok       { background:hsla(152,60%,52%,.12); color:var(--green); border:1px solid hsla(152,60%,52%,.3); }
+
+    /* ── RETURN LOAN CARDS ── */
+    .return-loan-card { background:var(--secondary); border:1px solid var(--border); border-radius:12px; padding:16px 18px; display:flex; align-items:center; gap:16px; flex-wrap:wrap; transition:border-color .2s; }
+    .return-loan-card.overdue { border-left:3px solid var(--red); }
+    .return-loan-card.due-soon { border-left:3px solid var(--orange); }
+    .return-loan-card.ok { border-left:3px solid var(--green); }
+    .rlc-body { flex:1; min-width:0; }
+    .rlc-title  { font-size:0.9rem; font-weight:700; margin-bottom:2px; }
+    .rlc-author { font-size:0.75rem; color:var(--muted); margin-bottom:6px; }
+    .rlc-meta   { display:flex; gap:12px; flex-wrap:wrap; font-size:0.72rem; color:var(--muted); }
+    .rlc-meta span { display:flex; align-items:center; gap:3px; }
+    .rlc-fine-preview { font-size:0.72rem; font-weight:700; padding:3px 10px; border-radius:20px; background:hsla(0,70%,60%,.12); color:var(--red); border:1px solid hsla(0,70%,60%,.3); font-family:var(--font-display); margin-top:6px; display:inline-block; }
+    .rlc-actions { display:flex; flex-direction:column; gap:6px; flex-shrink:0; }
+    .btn-return { background:var(--green); color:hsl(220,40%,7%); border:none; border-radius:8px; padding:9px 18px; font-family:var(--font-display); font-size:0.78rem; font-weight:700; cursor:pointer; transition:all .2s; }
+    .btn-return:hover { opacity:.9; }
+    .btn-return-damaged { background:hsla(30,90%,58%,.15); border:1px solid hsla(30,90%,58%,.3); color:var(--orange); border-radius:8px; padding:9px 18px; font-family:var(--font-display); font-size:0.78rem; font-weight:700; cursor:pointer; transition:all .2s; }
+    .btn-return-damaged:hover { background:hsla(30,90%,58%,.25); }
+    .btn-return-lost { background:hsla(210,80%,65%,.12); border:1px solid hsla(210,80%,65%,.25); color:var(--blue); border-radius:8px; padding:9px 18px; font-family:var(--font-display); font-size:0.78rem; font-weight:700; cursor:pointer; transition:all .2s; }
+    .btn-return-lost:hover { background:hsla(210,80%,65%,.2); }
+    .return-history-row { background:var(--secondary); border:1px solid var(--border); border-radius:10px; padding:12px 16px; display:flex; align-items:center; gap:12px; margin-bottom:8px; opacity:.7; }
+    .rhr-icon { font-size:1.2rem; flex-shrink:0; }
+    .rhr-body { flex:1; }
+    .rhr-title { font-size:0.85rem; font-weight:600; }
+    .rhr-meta  { font-size:0.72rem; color:var(--muted); }
+
+    /* ── HISTORY FEED ── */
+    .hist-item { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 18px; display:flex; align-items:flex-start; gap:14px; transition:border-color .2s; }
+    .hist-item:hover { border-color:hsla(43,55%,54%,0.25); }
+    .hist-item.type-loan   { border-left:3px solid var(--primary); }
+    .hist-item.type-return { border-left:3px solid var(--green); }
+    .hist-item.type-fine   { border-left:3px solid var(--red); }
+    .hist-item.type-hold   { border-left:3px solid var(--blue); }
+    .hist-icon { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; }
+    .hist-icon.loan   { background:hsla(43,55%,54%,0.12); }
+    .hist-icon.return { background:hsla(152,60%,52%,0.12); }
+    .hist-icon.fine   { background:hsla(0,70%,60%,0.12); }
+    .hist-icon.hold   { background:hsla(210,80%,65%,0.12); }
+    .hist-body { flex:1; min-width:0; }
+    .hist-title { font-size:0.875rem; font-weight:600; margin-bottom:2px; }
+    .hist-sub   { font-size:0.75rem; color:var(--muted); display:flex; gap:10px; flex-wrap:wrap; }
+    .hist-time  { font-size:0.7rem; color:var(--muted); white-space:nowrap; flex-shrink:0; margin-top:2px; }
+    .hist-badge { font-size:0.65rem; font-weight:700; padding:2px 8px; border-radius:10px; font-family:var(--font-display); }
+    .hist-badge.loan   { background:hsla(43,55%,54%,0.12); color:var(--primary); border:1px solid hsla(43,55%,54%,0.3); }
+    .hist-badge.return { background:hsla(152,60%,52%,0.12); color:var(--green);   border:1px solid hsla(152,60%,52%,0.3); }
+    .hist-badge.fine   { background:hsla(0,70%,60%,0.12);   color:var(--red);     border:1px solid hsla(0,70%,60%,0.3); }
+    .hist-badge.hold   { background:hsla(210,80%,65%,0.12); color:var(--blue);    border:1px solid hsla(210,80%,65%,0.3); }
   </style>
 </head>
 <body>
@@ -305,6 +370,13 @@
           <span class="fines-nav-badge" id="finesNavBadge" style="display:none;">0</span>
         </button>
         <button class="tab-nav-btn" onclick="switchTab('inventory')">📦 Inventory</button>
+        <button class="tab-nav-btn" onclick="switchTab('returns')" id="returnsTabBtn">
+          📥 Returns
+          <span class="fines-nav-badge" id="returnsNavBadge" style="display:none;">0</span>
+        </button>
+        <button class="tab-nav-btn" onclick="switchTab('history')" id="historyTabBtn">
+          📜 History
+        </button>
       </div>
       <div class="live-indicator connecting" id="liveIndicator">
         <span class="live-dot"></span>
@@ -444,13 +516,29 @@
           <!-- dropdown results -->
           <div id="studentDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:100;background:var(--card);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.4);margin-top:4px;max-height:240px;overflow-y:auto;"></div>
         </div>
-        <div class="iff-group full">
-          <label>Book Title</label>
-          <input type="text" id="fineBookTitle" placeholder="e.g. Introduction to Algorithms">
+        <!-- Loan picker — shown after student is selected -->
+        <div class="iff-group full" id="loanPickerGroup" style="display:none;">
+          <label>Select Borrowed Book</label>
+          <div id="loanPickerList" style="display:flex;flex-direction:column;gap:8px;margin-top:4px;"></div>
+          <p id="loanPickerEmpty" style="display:none;font-size:0.82rem;color:var(--muted);padding:10px 0;">
+            No active loans found for this student.
+          </p>
         </div>
-        <div class="iff-group">
-          <label>Book Author</label>
-          <input type="text" id="fineBookAuthor" placeholder="e.g. Cormen et al.">
+        <!-- Hidden fields auto-filled from selected loan -->
+        <input type="hidden" id="fineBookTitle">
+        <input type="hidden" id="fineBookAuthor">
+        <input type="hidden" id="fineLoanId">
+        <!-- Selected loan chip -->
+        <div id="selectedLoanChip" style="display:none;" class="iff-group full">
+          <label>Selected Book</label>
+          <div style="background:hsla(43,55%,54%,0.1);border:1px solid hsla(43,55%,54%,0.3);border-radius:8px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
+            <div>
+              <div id="selectedLoanTitle" style="font-weight:600;font-size:0.875rem;"></div>
+              <div id="selectedLoanMeta"  style="font-size:0.75rem;color:var(--muted);margin-top:2px;"></div>
+            </div>
+            <button type="button" onclick="clearLoanSelection()"
+              style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;">✕</button>
+          </div>
         </div>
         <div class="iff-group">
           <label>Fine Type</label>
@@ -541,6 +629,110 @@
 
   </div><!-- /tab-inventory -->
 
+
+  <!-- ════════════════════════════════════════════
+       TAB 4: RETURNS
+  ════════════════════════════════════════════ -->
+  <div class="tab-panel" id="tab-returns">
+
+    <div class="page-header">
+      <div>
+        <h2>📥 Book Returns</h2>
+        <p>Search a student to see their active loans and mark books as returned. Overdue returns will automatically generate a fine.</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-ghost" onclick="clearReturnSearch()">↻ Clear</button>
+      </div>
+    </div>
+
+    <!-- Student search -->
+    <div class="card">
+      <div class="card-header"><h2>🔍 Find Student</h2></div>
+      <div style="position:relative;">
+        <div class="iff-group" style="margin-bottom:0;">
+          <label>Search by name or school ID</label>
+          <input type="text" id="returnStudentSearch"
+            placeholder="Type student name or school ID…"
+            autocomplete="off"
+            oninput="searchReturnStudents(this.value)">
+        </div>
+        <div id="returnStudentDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:100;background:var(--card);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.4);margin-top:4px;max-height:240px;overflow-y:auto;"></div>
+      </div>
+
+      <!-- Selected student chip -->
+      <div id="returnStudentChip" style="display:none;margin-top:12px;background:hsla(43,55%,54%,0.1);border:1px solid hsla(43,55%,54%,0.3);border-radius:8px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
+        <div>
+          <span id="returnStudentName" style="font-weight:600;font-size:0.875rem;"></span>
+          <span id="returnStudentMeta" style="font-size:0.75rem;color:var(--muted);margin-left:8px;"></span>
+        </div>
+        <button onclick="clearReturnSearch()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;">✕</button>
+      </div>
+    </div>
+
+    <!-- Active loans list -->
+    <div class="card" id="returnLoansCard" style="display:none;">
+      <div class="card-header">
+        <h2>📚 Active Loans</h2>
+        <span id="returnLoansCount" style="font-size:0.82rem;color:var(--muted);"></span>
+      </div>
+      <div id="returnLoansList">
+        <p style="color:var(--muted);font-size:.875rem;">Loading…</p>
+      </div>
+    </div>
+
+    <!-- Return history -->
+    <div class="card" id="returnHistoryCard" style="display:none;">
+      <div class="card-header">
+        <h2>📋 Return History</h2>
+        <span id="returnHistoryCount" style="font-size:0.82rem;color:var(--muted);"></span>
+      </div>
+      <div id="returnHistoryList"></div>
+    </div>
+
+  </div><!-- /tab-returns -->
+
+
+  <!-- ════════════════════════════════════════════
+       TAB 5: HISTORY
+  ════════════════════════════════════════════ -->
+  <div class="tab-panel" id="tab-history">
+
+    <div class="page-header">
+      <div>
+        <h2>📜 Activity History</h2>
+        <p>Chronological feed of all loans, fines and holds across all students.</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-ghost" onclick="loadHistory()">↻ Refresh</button>
+      </div>
+    </div>
+
+    <!-- Filter bar -->
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+      <div class="search-input-wrap" style="flex:1;min-width:200px;">
+        <span style="color:var(--muted);">🔍</span>
+        <input type="search" id="historySearch" placeholder="Search by student, book or activity…" oninput="filterHistory()">
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;" id="historyTypeTabs">
+        <button class="stab active" onclick="setHistoryFilter('all',   this)">All</button>
+        <button class="stab"        onclick="setHistoryFilter('loan',  this)">📚 Loans</button>
+        <button class="stab"        onclick="setHistoryFilter('return',this)">📥 Returns</button>
+        <button class="stab"        onclick="setHistoryFilter('fine',  this)">💸 Fines</button>
+        <button class="stab"        onclick="setHistoryFilter('hold',  this)">🔖 Holds</button>
+      </div>
+    </div>
+
+    <div id="historyFeed" style="display:flex;flex-direction:column;gap:8px;">
+      <p style="color:var(--muted);font-size:.875rem;">Loading history…</p>
+    </div>
+
+    <div id="historyEmpty" style="display:none;text-align:center;padding:40px;color:var(--muted);">
+      <div style="font-size:2.5rem;margin-bottom:10px;">📭</div>
+      <div style="font-family:var(--font-display);font-weight:600;">No activity found</div>
+    </div>
+
+  </div><!-- /tab-history -->
+
 </main>
 
 <footer class="site-footer">
@@ -597,7 +789,7 @@
 
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────────────────
-
+// ✅ Replace with your real Supabase anon key (starts with eyJ...)
 const SUPABASE_URL  = "https://bqgtuxhfqfmxvryfljya.supabase.co";
 const SUPABASE_ANON = "sb_publishable_y71RZ0UCDxkcmFQQHGEf-Q_davD0hbm";
 const sb            = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
@@ -621,7 +813,8 @@ function switchTab(tab) {
     if (b.getAttribute("onclick")?.includes(`'${tab}'`)) b.classList.add("active");
   });
   // Load fines lazily on first visit
-  if (tab === "fines" && !finesLoaded) { loadAllFines(); finesLoaded = true; }
+  if (tab === "fines"   && !finesLoaded)   { loadAllFines(); finesLoaded = true; }
+  if (tab === "history" && !historyLoaded) { loadHistory(); historyLoaded = true; }
   if (tab === "inventory") renderInventory();
 }
 
@@ -1185,6 +1378,389 @@ function saveInventory() {
   document.getElementById("inventoryModal").classList.remove("open");
 }
 
+// ── BOOK RETURNS ─────────────────────────────────────────────────────────────
+let returnSelectedStudent = null;
+let returnSearchTimer     = null;
+
+async function searchReturnStudents(query) {
+  const dropdown = document.getElementById("returnStudentDropdown");
+  if (!query || query.trim().length < 1) { dropdown.style.display = "none"; return; }
+
+  dropdown.style.display = "block";
+  dropdown.innerHTML = `<div class="sr-loading">Searching…</div>`;
+
+  clearTimeout(returnSearchTimer);
+  returnSearchTimer = setTimeout(async () => {
+    try {
+      const res      = await fetch(`/api/users/search?q=${encodeURIComponent(query.trim())}`);
+      const students = await res.json();
+
+      if (!students.length) {
+        dropdown.innerHTML = `<div class="sr-empty">No students found.</div>`;
+        return;
+      }
+      dropdown.innerHTML = students.map(s => {
+        const initials = (s.fullname||"?").split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase();
+        return `<div class="student-result" onclick="selectReturnStudent(${JSON.stringify(s).replace(/"/g,'&quot;')})">
+          <div class="sr-avatar">${initials}</div>
+          <div>
+            <div class="sr-name">${escHtml(s.fullname)}</div>
+            <div class="sr-meta">ID: ${escHtml(String(s.school_id||s.id))} &middot; ${escHtml(s.email||"")}</div>
+          </div>
+        </div>`;
+      }).join("");
+    } catch(e) {
+      dropdown.innerHTML = `<div class="sr-empty">Search failed.</div>`;
+    }
+  }, 300);
+}
+
+async function selectReturnStudent(student) {
+  returnSelectedStudent = student;
+  document.getElementById("returnStudentSearch").value  = "";
+  document.getElementById("returnStudentDropdown").style.display = "none";
+  document.getElementById("returnStudentName").textContent = student.fullname;
+  document.getElementById("returnStudentMeta").textContent = `ID: ${student.school_id||student.id} · ${student.email||""}`;
+  document.getElementById("returnStudentChip").style.display = "flex";
+  document.getElementById("returnLoansCard").style.display   = "block";
+  await loadReturnLoans(student.id);
+}
+
+async function loadReturnLoans(userId) {
+  const list  = document.getElementById("returnLoansList");
+  const count = document.getElementById("returnLoansCount");
+  list.innerHTML = `<p style="color:var(--muted);font-size:.875rem;">Loading loans…</p>`;
+
+  try {
+    const { data: loansRaw, error: loansErr } = await sb
+      .from("loans").select("*")
+      .eq("user_id", String(userId)).eq("status","active")
+      .order("due_date",{ascending:true});
+    if (loansErr) throw loansErr;
+    const loans = loansRaw || [];
+    count.textContent = `${loans.length} active loan${loans.length!==1?"s":""}`;
+
+    // Badge on tab
+    const badge = document.getElementById("returnsNavBadge");
+    const overdue = loans.filter(l => l.due_date && new Date(l.due_date) < new Date()).length;
+    if (overdue > 0) { badge.style.display="inline-flex"; badge.textContent=overdue; }
+    else              badge.style.display = "none";
+
+    if (!loans.length) {
+      list.innerHTML = `<p style="color:var(--muted);font-size:.875rem;padding:12px 0;">No active loans for this student.</p>`;
+      loadReturnHistory(userId);
+      return;
+    }
+
+    const now = new Date();
+    list.innerHTML = loans.map(loan => {
+      const due      = loan.due_date ? new Date(loan.due_date) : null;
+      const daysLate = due ? Math.max(0, Math.floor((now - due) / 86400000)) : 0;
+      const isOverdue  = due && due < now;
+      const isDueSoon  = due && !isOverdue && (due - now) < 86400000 * 3;
+      const stateClass = isOverdue ? "overdue" : isDueSoon ? "due-soon" : "ok";
+
+      const borrowedStr = loan.borrowed_at
+        ? new Date(loan.borrowed_at).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"}) : "—";
+      const dueStr = due
+        ? due.toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"}) : "No due date";
+      const dueLabel = isOverdue
+        ? `⚠️ ${daysLate} day${daysLate!==1?"s":""} overdue`
+        : `Due ${dueStr}`;
+
+      const finePreview = isOverdue
+        ? `<div class="rlc-fine-preview">Auto-fine if returned now: $${(daysLate*200).toLocaleString()}</div>` : "";
+
+      return `<div class="return-loan-card ${stateClass}" style="margin-bottom:10px;">
+        <div style="font-size:1.8rem;flex-shrink:0;">📚</div>
+        <div class="rlc-body">
+          <div class="rlc-title">${escHtml(loan.book_title||"Unknown")}</div>
+          <div class="rlc-author">${escHtml(loan.book_author||"")}</div>
+          <div class="rlc-meta">
+            <span>📅 Borrowed ${borrowedStr}</span>
+            <span class="${isOverdue?"" : isDueSoon?"":""}">🗓 ${dueLabel}</span>
+            <span>📖 ${escHtml(loan.format||"Book")}</span>
+          </div>
+          ${finePreview}
+        </div>
+        <div class="rlc-actions">
+          <button class="btn-return"         onclick="markReturned('${loan.id}', 'normal',  ${JSON.stringify(loan).replace(/"/g,'&quot;')})">✅ Returned</button>
+          <button class="btn-return-damaged" onclick="markReturned('${loan.id}', 'damaged', ${JSON.stringify(loan).replace(/"/g,'&quot;')})">💥 Damaged</button>
+          <button class="btn-return-lost"    onclick="markReturned('${loan.id}', 'lost',    ${JSON.stringify(loan).replace(/"/g,'&quot;')})">❓ Lost</button>
+        </div>
+      </div>`;
+    }).join("");
+
+    loadReturnHistory(userId);
+  } catch(e) {
+    console.error("loadReturnLoans:", e);
+    list.innerHTML = `<p style="color:var(--muted);font-size:.875rem;">Failed to load loans.</p>`;
+  }
+}
+
+async function markReturned(loanId, condition, loan) {
+  const condLabels = { normal:"returned", damaged:"returned (damaged)", lost:"reported lost" };
+  if (!confirm(`Mark this book as ${condLabels[condition]}?`)) return;
+
+  const now      = new Date();
+  const due      = loan.due_date ? new Date(loan.due_date) : null;
+  const daysLate = due ? Math.max(0, Math.floor((now - due) / 86400000)) : 0;
+  const isOverdue = due && due < now;
+
+  try {
+    // 1. Mark loan as returned via Supabase
+    const { error: loanError } = await sb.from("loans")
+      .update({ status:"returned", returned_at: now.toISOString() })
+      .eq("id", loanId);
+    if (loanError) throw new Error("Failed to update loan: " + loanError.message);
+
+    // 2. Auto-issue fine if overdue or damaged/lost
+    let fineIssued = false;
+    if (isOverdue && condition === "normal") {
+      await sb.from("fines").insert({
+        user_id:        String(returnSelectedStudent.id),
+        book_title:     loan.book_title,
+        book_author:    loan.book_author || null,
+        fine_type:      "overdue",
+        amount:         daysLate * 200,
+        due_date:       loan.due_date,
+        fine_status:    "unpaid",
+        librarian_note: `Book returned ${daysLate} day${daysLate!==1?"s":""} late.`
+      });
+      fineIssued = true;
+      showToast(`📚 Returned + $${(daysLate*200).toLocaleString()} overdue fine issued automatically.`, "info");
+
+    } else if (condition === "damaged") {
+      await sb.from("fines").insert({
+        user_id:        String(returnSelectedStudent.id),
+        book_title:     loan.book_title,
+        book_author:    loan.book_author || null,
+        fine_type:      "damage",
+        amount:         500,
+        fine_status:    "unpaid",
+        librarian_note: "Book returned with damage."
+      });
+      fineIssued = true;
+      showToast("💥 Book marked damaged — $500 fine issued automatically.", "warn");
+
+    } else if (condition === "lost") {
+      await sb.from("fines").insert({
+        user_id:        String(returnSelectedStudent.id),
+        book_title:     loan.book_title,
+        book_author:    loan.book_author || null,
+        fine_type:      "lost",
+        amount:         0,
+        fine_status:    "unpaid",
+        librarian_note: "Book reported lost. Amount to be determined by librarian."
+      });
+      fineIssued = true;
+      showToast("❓ Book marked lost — fine issued, amount TBD.", "warn");
+
+    } else {
+      showToast("✅ Book marked as returned. No fine.", "success");
+    }
+
+    // 3. Reload loans for this student
+    await loadReturnLoans(returnSelectedStudent.id);
+
+  } catch(e) {
+    console.error("markReturned:", e);
+    showToast("Failed to mark as returned. Check connection.", "warn");
+  }
+}
+
+async function loadReturnHistory(userId) {
+  const card  = document.getElementById("returnHistoryCard");
+  const list  = document.getElementById("returnHistoryList");
+  const count = document.getElementById("returnHistoryCount");
+
+  try {
+    const { data: loans } = await sb.from("loans").select("*")
+      .eq("user_id", String(userId)).neq("status","active")
+      .order("returned_at",{ascending:false}).limit(20);
+    if (!loans || !loans.length) { card.style.display = "none"; return; }
+
+    card.style.display    = "block";
+    count.textContent     = `${loans.length} returned`;
+    list.innerHTML = loans.map(loan => {
+      const returnedStr = loan.returned_at
+        ? new Date(loan.returned_at).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"}) : "—";
+      return `<div class="return-history-row">
+        <div class="rhr-icon">✅</div>
+        <div class="rhr-body">
+          <div class="rhr-title">${escHtml(loan.book_title||"Unknown")}</div>
+          <div class="rhr-meta">Returned ${returnedStr} · ${escHtml(loan.format||"Book")}</div>
+        </div>
+      </div>`;
+    }).join("");
+  } catch(e) {
+    card.style.display = "none";
+  }
+}
+
+function clearReturnSearch() {
+  returnSelectedStudent = null;
+  document.getElementById("returnStudentSearch").value         = "";
+  document.getElementById("returnStudentChip").style.display   = "none";
+  document.getElementById("returnLoansCard").style.display     = "none";
+  document.getElementById("returnHistoryCard").style.display   = "none";
+  document.getElementById("returnsNavBadge").style.display     = "none";
+}
+
+// Close return dropdown when clicking outside
+document.addEventListener("click", e => {
+  const wrap = document.getElementById("returnStudentSearch")?.closest(".iff-group");
+  if (wrap && !wrap.contains(e.target)) {
+    const dd = document.getElementById("returnStudentDropdown");
+    if (dd) dd.style.display = "none";
+  }
+});
+
+// ── HISTORY ──────────────────────────────────────────────────────────────────
+let allHistoryItems = [];
+let historyFilter   = "all";
+let historyLoaded   = false;
+
+async function loadHistory() {
+  const feed = document.getElementById("historyFeed");
+  const empty = document.getElementById("historyEmpty");
+  feed.innerHTML = `<p style="color:var(--muted);font-size:.875rem;">Loading…</p>`;
+  empty.style.display = "none";
+
+  try {
+    // Fetch all three sources in parallel
+    const [finesRes, holdsRes, loansRes] = await Promise.all([
+      sb.from("fines").select("*").order("issued_at", { ascending: false }).limit(100),
+      sb.from("book_holds").select("*").order("placed_at", { ascending: false }).limit(100),
+      sb.from("loans").select("*").order("borrowed_at", { ascending: false }).limit(100)
+    ]);
+
+    const items = [];
+
+    // Fines
+    (finesRes.data || []).forEach(f => {
+      items.push({
+        type:    "fine",
+        icon:    "💸",
+        title:   `Fine issued: "${f.book_title||"Unknown"}"`,
+        sub1:    `Student ID: ${f.user_id}`,
+        sub2:    f.fine_type === "overdue" ? `Overdue · $${(f.amount||0).toLocaleString()}` : f.fine_type === "damage" ? "Book Damage · $500" : "Lost Book",
+        sub3:    `Status: ${f.fine_status||"unpaid"}`,
+        note:    f.librarian_note || "",
+        time:    f.issued_at,
+        badge:   f.fine_status === "paid" ? "✅ Paid" : f.fine_status === "waived" ? "🔓 Waived" : "⚠️ Unpaid",
+        search:  `${f.book_title} ${f.user_id} ${f.fine_type} ${f.fine_status}`
+      });
+    });
+
+    // Holds
+    (holdsRes.data || []).forEach(h => {
+      items.push({
+        type:   "hold",
+        icon:   "🔖",
+        title:  `Hold ${h.status}: "${h.book_title||"Unknown"}"`,
+        sub1:   `Student: ${h.student_name||h.user_id||"Unknown"}`,
+        sub2:   h.shelf_location ? `📍 ${h.shelf_location}` : "",
+        sub3:   "",
+        note:   h.librarian_note || h.note || "",
+        time:   h.placed_at,
+        badge:  { pending:"⏳ Pending", ready:"✅ Ready", collected:"📦 Collected", expired:"❌ Expired", waitlist:"📋 Waitlist" }[h.status] || h.status,
+        search: `${h.book_title} ${h.student_name} ${h.status}`
+      });
+    });
+
+    // Loans
+    (loansRes.data || []).forEach(l => {
+      const isReturned = l.status !== "active";
+      items.push({
+        type:   isReturned ? "return" : "loan",
+        icon:   isReturned ? "📥" : "📚",
+        title:  isReturned ? `Returned: "${l.book_title||"Unknown"}"` : `Borrowed: "${l.book_title||"Unknown"}"`,
+        sub1:   `Student ID: ${l.user_id}`,
+        sub2:   l.due_date ? `Due: ${new Date(l.due_date).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"})}` : "",
+        sub3:   isReturned && l.returned_at ? `Returned: ${new Date(l.returned_at).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"})}` : "",
+        note:   "",
+        time:   isReturned ? (l.returned_at || l.borrowed_at) : l.borrowed_at,
+        badge:  isReturned ? "📥 Returned" : "📚 Active",
+        search: `${l.book_title} ${l.user_id} ${l.status}`
+      });
+    });
+
+    // Sort newest first
+    allHistoryItems = items.sort((a, b) => new Date(b.time) - new Date(a.time));
+    filterHistory();
+
+  } catch(e) {
+    console.error("loadHistory:", e);
+    feed.innerHTML = `<p style="color:var(--muted);">Failed to load history.</p>`;
+  }
+}
+
+function setHistoryFilter(type, btn) {
+  historyFilter = type;
+  document.querySelectorAll("#historyTypeTabs .stab").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  filterHistory();
+}
+
+function filterHistory() {
+  const q = document.getElementById("historySearch").value.toLowerCase().trim();
+  let filtered = allHistoryItems;
+
+  if (historyFilter !== "all") {
+    filtered = filtered.filter(i => i.type === historyFilter);
+  }
+  if (q) {
+    filtered = filtered.filter(i => i.search.toLowerCase().includes(q));
+  }
+
+  renderHistory(filtered);
+}
+
+function renderHistory(items) {
+  const feed  = document.getElementById("historyFeed");
+  const empty = document.getElementById("historyEmpty");
+
+  if (!items.length) {
+    feed.innerHTML = "";
+    empty.style.display = "block";
+    return;
+  }
+  empty.style.display = "none";
+
+  // Group by date
+  const groups = {};
+  items.forEach(item => {
+    const d   = item.time ? new Date(item.time) : new Date();
+    const key = d.toLocaleDateString("en-JM", { weekday:"long", year:"numeric", month:"long", day:"numeric" });
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(item);
+  });
+
+  feed.innerHTML = Object.entries(groups).map(([date, dayItems]) => `
+    <div style="font-size:0.72rem;font-weight:700;color:var(--muted);font-family:var(--font-display);letter-spacing:.05em;text-transform:uppercase;padding:4px 0 8px;">
+      ${date}
+    </div>
+    ${dayItems.map(item => `
+      <div class="hist-item type-${item.type}">
+        <div class="hist-icon ${item.type}">${item.icon}</div>
+        <div class="hist-body">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:3px;">
+            <div class="hist-title">${escHtml(item.title)}</div>
+            <span class="hist-badge ${item.type}">${item.badge}</span>
+          </div>
+          <div class="hist-sub">
+            <span>${escHtml(item.sub1)}</span>
+            ${item.sub2 ? `<span>${escHtml(item.sub2)}</span>` : ""}
+            ${item.sub3 ? `<span>${escHtml(item.sub3)}</span>` : ""}
+            ${item.note ? `<span style="color:var(--primary);">📝 ${escHtml(item.note)}</span>` : ""}
+          </div>
+        </div>
+        <div class="hist-time">${item.time ? timeAgo(item.time) : ""}</div>
+      </div>`).join("")}
+  `).join("");
+}
+
 // ── HELPERS ───────────────────────────────────────────────────────────────────
 function timeAgo(d) { if(!d) return""; const s=(Date.now()-new Date(d))/1000; if(s<60) return"just now"; if(s<3600) return`${Math.floor(s/60)}m ago`; if(s<86400) return`${Math.floor(s/3600)}h ago`; return`${Math.floor(s/86400)}d ago`; }
 function formatTimeLeft(dt) { const ms=new Date(dt)-Date.now(); if(ms<=0) return"Expired"; const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000); return h>0?`${h}h ${m}m`:`${m}m`; }
@@ -1259,19 +1835,121 @@ async function searchStudents(query) {
 
 function selectStudent(student) {
   selectedStudent = student;
-
-  // Set the hidden user_id field to the student's id (integer from Express)
   document.getElementById("fineUserId").value = String(student.id);
 
-  // Show chip
+  // Show student chip
   document.getElementById("selectedStudentName").textContent = student.fullname;
   document.getElementById("selectedStudentMeta").textContent = `ID: ${student.school_id||student.id} · ${student.email||""}`;
-  const chip = document.getElementById("selectedStudentChip");
-  chip.style.display = "flex";
+  document.getElementById("selectedStudentChip").style.display = "flex";
 
-  // Clear search input and close dropdown
+  // Clear search
   document.getElementById("studentSearchInput").value = "";
   document.getElementById("studentDropdown").style.display = "none";
+
+  // Load student loans
+  loadStudentLoans(student.id);
+}
+
+async function loadStudentLoans(userId) {
+  const group   = document.getElementById("loanPickerGroup");
+  const list    = document.getElementById("loanPickerList");
+  const empty   = document.getElementById("loanPickerEmpty");
+
+  group.style.display = "flex";
+  list.innerHTML = `<div style="font-size:0.82rem;color:var(--muted);padding:8px 0;">Loading loans…</div>`;
+  empty.style.display = "none";
+  clearLoanSelection();
+
+  try {
+    const { data: loansData } = await sb.from("loans").select("*")
+      .eq("user_id", String(userId)).eq("status","active")
+      .order("due_date",{ascending:true});
+    const loans = loansData || [];
+
+    if (!loans.length) {
+      list.innerHTML = "";
+      empty.style.display = "block";
+      return;
+    }
+
+    const now = new Date();
+    list.innerHTML = loans.map(loan => {
+      const due      = loan.due_date ? new Date(loan.due_date) : null;
+      const daysLate = due ? Math.floor((now - due) / 86400000) : 0;
+      const isOverdue  = due && due < now;
+      const isDueSoon  = due && !isOverdue && (due - now) < 86400000 * 3;
+      const stateClass = isOverdue ? "overdue" : isDueSoon ? "due-soon" : "ok";
+
+      const dueStr = due
+        ? due.toLocaleDateString("en-JM", {month:"short", day:"numeric", year:"numeric"})
+        : "No due date";
+
+      const dueLabel = isOverdue
+        ? `${daysLate} day${daysLate!==1?"s":""} overdue`
+        : due
+          ? `Due ${dueStr}`
+          : "No due date set";
+
+      const badge = isOverdue
+        ? `<span class="lpc-badge overdue">Overdue</span>`
+        : isDueSoon
+          ? `<span class="lpc-badge due-soon">Due Soon</span>`
+          : `<span class="lpc-badge ok">On Time</span>`;
+
+      return `<div class="loan-pick-card ${stateClass}" onclick="selectLoan(${JSON.stringify(loan).replace(/"/g,'&quot;')}, '${stateClass}')">
+        <div class="lpc-icon">📚</div>
+        <div class="lpc-body">
+          <div class="lpc-title">${escHtml(loan.book_title||"Unknown")}</div>
+          <div class="lpc-author">${escHtml(loan.book_author||"")}</div>
+          <div class="lpc-due ${stateClass}">${dueLabel}${isOverdue ? ` · ~$${(daysLate*200).toLocaleString()} fine` : ""}</div>
+        </div>
+        ${badge}
+      </div>`;
+    }).join("");
+
+  } catch(e) {
+    console.error("loadStudentLoans:", e);
+    list.innerHTML = `<div style="font-size:0.82rem;color:var(--muted);">Failed to load loans.</div>`;
+  }
+}
+
+function selectLoan(loan, stateClass) {
+  // Auto-fill hidden fields
+  document.getElementById("fineBookTitle").value  = loan.book_title  || "";
+  document.getElementById("fineBookAuthor").value = loan.book_author || "";
+  document.getElementById("fineLoanId").value     = String(loan.id);
+
+  // Auto-fill due date for overdue calc
+  if (loan.due_date) {
+    const d = new Date(loan.due_date).toISOString().slice(0,16);
+    document.getElementById("fineDueDate").value = d;
+  }
+
+  // Auto-select fine type based on loan status
+  if (stateClass === "overdue") {
+    document.getElementById("fineType").value = "overdue";
+    onFineTypeChange();
+  }
+
+  // Show selected loan chip
+  const due = loan.due_date
+    ? new Date(loan.due_date).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"})
+    : "No due date";
+  document.getElementById("selectedLoanTitle").textContent = loan.book_title || "Unknown";
+  document.getElementById("selectedLoanMeta").textContent  = `${loan.book_author||""} · Due: ${due}`;
+  document.getElementById("selectedLoanChip").style.display = "flex";
+
+  // Hide the picker list
+  document.getElementById("loanPickerGroup").style.display = "none";
+}
+
+function clearLoanSelection() {
+  document.getElementById("fineBookTitle").value  = "";
+  document.getElementById("fineBookAuthor").value = "";
+  document.getElementById("fineLoanId").value     = "";
+  document.getElementById("fineDueDate").value    = "";
+  document.getElementById("selectedLoanChip").style.display = "none";
+  document.getElementById("loanPickerGroup").style.display  = selectedStudent ? "flex" : "none";
 }
 
 function clearStudentSelection() {
@@ -1280,6 +1958,13 @@ function clearStudentSelection() {
   document.getElementById("selectedStudentChip").style.display = "none";
   document.getElementById("studentSearchInput").value = "";
   document.getElementById("studentSearchInput").focus();
+  // Hide loan picker
+  document.getElementById("loanPickerGroup").style.display = "none";
+  document.getElementById("loanPickerList").innerHTML = "";
+  document.getElementById("selectedLoanChip").style.display = "none";
+  document.getElementById("fineBookTitle").value  = "";
+  document.getElementById("fineBookAuthor").value = "";
+  document.getElementById("fineLoanId").value     = "";
 }
 
 // Close dropdown when clicking outside

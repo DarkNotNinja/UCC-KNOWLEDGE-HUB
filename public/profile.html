@@ -270,6 +270,30 @@
       .card{padding:20px 16px} .main-nav a{display:none}
       .fines-alert-banner{flex-wrap:wrap} .fsb-actions{width:100%}
     }
+    /* ── ACTIVITY HISTORY ── */
+    .hist-item { background:var(--secondary); border:1px solid var(--border); border-radius:10px; padding:12px 16px; display:flex; align-items:flex-start; gap:12px; transition:border-color .2s; }
+    .hist-item:hover { border-color:hsla(43,55%,54%,0.25); }
+    .hist-item.type-loan   { border-left:3px solid var(--primary); }
+    .hist-item.type-return { border-left:3px solid var(--green); }
+    .hist-item.type-fine   { border-left:3px solid var(--red); }
+    .hist-item.type-hold   { border-left:3px solid var(--blue); }
+    .hist-icon { width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
+    .hist-icon.loan   { background:hsla(43,55%,54%,0.12); }
+    .hist-icon.return { background:hsla(152,60%,52%,0.12); }
+    .hist-icon.fine   { background:hsla(0,70%,60%,0.12); }
+    .hist-icon.hold   { background:hsla(210,80%,65%,0.12); }
+    .hist-body { flex:1; min-width:0; }
+    .hist-title { font-size:0.82rem; font-weight:600; margin-bottom:2px; }
+    .hist-sub   { font-size:0.72rem; color:var(--muted); display:flex; gap:8px; flex-wrap:wrap; }
+    .hist-time  { font-size:0.68rem; color:var(--muted); white-space:nowrap; flex-shrink:0; }
+    .hist-badge { font-size:0.62rem; font-weight:700; padding:2px 7px; border-radius:10px; font-family:var(--font-display); }
+    .hist-badge.loan   { background:hsla(43,55%,54%,0.12); color:var(--primary); border:1px solid hsla(43,55%,54%,0.3); }
+    .hist-badge.return { background:hsla(152,60%,52%,0.12); color:var(--green);   border:1px solid hsla(152,60%,52%,0.3); }
+    .hist-badge.fine   { background:hsla(0,70%,60%,0.12);   color:var(--red);     border:1px solid hsla(0,70%,60%,0.3); }
+    .hist-badge.hold   { background:hsla(210,80%,65%,0.12); color:var(--blue);    border:1px solid hsla(210,80%,65%,0.3); }
+    .stab { padding:7px 16px; border-radius:8px; border:1px solid var(--border); background:var(--secondary); color:var(--muted); font-size:0.8rem; font-weight:600; cursor:pointer; transition:all .2s; font-family:var(--font-display); }
+    .stab:hover { color:var(--fg); }
+    .stab.active { border-color:var(--primary); color:var(--primary); background:hsla(43,55%,54%,0.1); }
   </style>
 </head>
 <body>
@@ -283,7 +307,9 @@
     <nav class="main-nav">
       <a href="ucc_knowledge_hub.html">Home</a>
       <a href="Loaners.html">Library</a>
-      <a href="forum.html">Forum</a>
+      <a href="study_rooms.html">Study rooms</a>
+      <a href="Forum.html">Forum</a>
+      <a href="leaderboard.html">Leaderboard</a>
       <a href="profile.html" class="active">Profile</a>
       <button class="nav-logout" id="logoutBtn">Log Out</button>
     </nav>
@@ -392,6 +418,22 @@
     </div>
   </div>
 
+  <!-- ACTIVITY HISTORY -->
+  <div class="card" id="historyCard">
+    <div class="card-header">
+      <h2>📜 My Activity</h2>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;" id="profileHistoryTabs">
+        <button class="stab active" onclick="setProfileHistFilter('all',  this)" style="padding:5px 12px;font-size:0.72rem;">All</button>
+        <button class="stab"        onclick="setProfileHistFilter('loan', this)" style="padding:5px 12px;font-size:0.72rem;">📚 Loans</button>
+        <button class="stab"        onclick="setProfileHistFilter('fine', this)" style="padding:5px 12px;font-size:0.72rem;">💸 Fines</button>
+        <button class="stab"        onclick="setProfileHistFilter('hold', this)" style="padding:5px 12px;font-size:0.72rem;">🔖 Holds</button>
+      </div>
+    </div>
+    <div id="profileHistoryFeed" style="display:flex;flex-direction:column;gap:8px;">
+      <p style="color:var(--muted);font-size:.875rem;">Loading activity…</p>
+    </div>
+  </div>
+
   <!-- CHANGE PASSWORD -->
   <div class="card">
     <div class="card-header"><h2>🔒 Change Password</h2></div>
@@ -491,6 +533,7 @@ window.addEventListener("DOMContentLoaded", () => {
   loadHolds();
   loadFines();
   loadReadingList();
+  loadProfileHistory();
   subscribeToHolds();
   subscribeToFines();
 });
@@ -1150,6 +1193,119 @@ function fmtExpiry(el) {
 // ── HELPERS ───────────────────────────────────────────────────────────────────
 function escHtml(s) { return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 function fmtDate(d) { return new Date(d).toLocaleString("en-JM",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}); }
+// ── PROFILE ACTIVITY HISTORY ──────────────────────────────────────────────────
+let allProfileHistory  = [];
+let profileHistFilter  = "all";
+
+async function loadProfileHistory() {
+  const feed = document.getElementById("profileHistoryFeed");
+  if (!feed) return;
+
+  try {
+    // Fetch fines, holds and loans in parallel
+    const [finesRes, holdsRes, loansRes] = await Promise.all([
+      sb.from("fines").select("*").eq("user_id", String(userId)).order("issued_at", { ascending:false }).limit(50),
+      sb.from("book_holds").select("*").eq("user_id", String(userId)).order("placed_at", { ascending:false }).limit(50),
+      sb.from("loans").select("*").eq("user_id", String(userId)).order("borrowed_at", { ascending:false }).limit(50)
+    ]);
+
+    const items = [];
+
+    (finesRes.data || []).forEach(f => {
+      items.push({
+        type:   "fine",
+        icon:   "💸",
+        title:  `Fine: "${f.book_title||"Unknown"}"`,
+        sub1:   f.fine_type === "overdue" ? `Overdue · $${(f.amount||0).toLocaleString()}` : f.fine_type === "damage" ? "Book Damage · $500" : "Lost Book",
+        sub2:   f.librarian_note || "",
+        badge:  f.fine_status === "paid" ? "✅ Paid" : f.fine_status === "waived" ? "🔓 Waived" : "⚠️ Unpaid",
+        time:   f.issued_at
+      });
+    });
+
+    (holdsRes.data || []).forEach(h => {
+      items.push({
+        type:   "hold",
+        icon:   "🔖",
+        title:  `Hold: "${h.book_title||"Unknown"}"`,
+        sub1:   { pending:"⏳ Pending prep", ready:"✅ Ready for pickup", collected:"📦 Collected", expired:"❌ Expired", waitlist:"📋 Waitlist" }[h.status] || h.status,
+        sub2:   h.shelf_location ? `📍 ${h.shelf_location}` : "",
+        badge:  { pending:"Pending", ready:"Ready", collected:"Collected", expired:"Expired", waitlist:"Waitlist" }[h.status] || h.status,
+        time:   h.placed_at
+      });
+    });
+
+    (loansRes.data || []).forEach(l => {
+      const isReturned = l.status !== "active";
+      items.push({
+        type:   isReturned ? "return" : "loan",
+        icon:   isReturned ? "📥" : "📚",
+        title:  isReturned ? `Returned: "${l.book_title||"Unknown"}"` : `Borrowed: "${l.book_title||"Unknown"}"`,
+        sub1:   l.due_date ? `Due: ${new Date(l.due_date).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"})}` : "No due date",
+        sub2:   isReturned && l.returned_at ? `Returned: ${new Date(l.returned_at).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"})}` : "",
+        badge:  isReturned ? "Returned" : "Active",
+        time:   isReturned ? (l.returned_at || l.borrowed_at) : l.borrowed_at
+      });
+    });
+
+    allProfileHistory = items.sort((a, b) => new Date(b.time) - new Date(a.time));
+    renderProfileHistory();
+
+  } catch(e) {
+    console.error("loadProfileHistory:", e);
+    if (feed) feed.innerHTML = `<p style="color:var(--muted);font-size:.875rem;">Could not load activity.</p>`;
+  }
+}
+
+function setProfileHistFilter(type, btn) {
+  profileHistFilter = type;
+  document.querySelectorAll("#profileHistoryTabs .stab").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  renderProfileHistory();
+}
+
+function renderProfileHistory() {
+  const feed = document.getElementById("profileHistoryFeed");
+  if (!feed) return;
+
+  const items = profileHistFilter === "all"
+    ? allProfileHistory
+    : allProfileHistory.filter(i => i.type === profileHistFilter || (profileHistFilter === "loan" && i.type === "return"));
+
+  if (!items.length) {
+    feed.innerHTML = `<p style="color:var(--muted);font-size:.875rem;text-align:center;padding:20px 0;">No activity yet.</p>`;
+    return;
+  }
+
+  // Group by date
+  const groups = {};
+  items.forEach(item => {
+    const d   = item.time ? new Date(item.time) : new Date();
+    const key = d.toLocaleDateString("en-JM", { month:"long", day:"numeric", year:"numeric" });
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(item);
+  });
+
+  feed.innerHTML = Object.entries(groups).map(([date, dayItems]) => `
+    <div style="font-size:0.68rem;font-weight:700;color:var(--muted);font-family:var(--font-display);letter-spacing:.05em;text-transform:uppercase;padding:6px 0 4px;">${date}</div>
+    ${dayItems.map(item => `
+      <div class="hist-item type-${item.type}">
+        <div class="hist-icon ${item.type === "return" ? "return" : item.type}">${item.icon}</div>
+        <div class="hist-body">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:2px;">
+            <div class="hist-title">${escHtml(item.title)}</div>
+            <span class="hist-badge ${item.type === "return" ? "return" : item.type}">${item.badge}</span>
+          </div>
+          <div class="hist-sub">
+            <span>${escHtml(item.sub1)}</span>
+            ${item.sub2 ? `<span>${escHtml(item.sub2)}</span>` : ""}
+          </div>
+        </div>
+        <div class="hist-time">${item.time ? new Date(item.time).toLocaleTimeString("en-JM",{hour:"2-digit",minute:"2-digit"}) : ""}</div>
+      </div>`).join("")}
+  `).join("");
+}
+
 </script>
 </body>
 </html>
