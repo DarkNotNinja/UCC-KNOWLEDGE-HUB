@@ -42,7 +42,7 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'ucc_landing_page.html'));
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
 // ── JWT MIDDLEWARE ────────────────────────────────────────────────────────────
