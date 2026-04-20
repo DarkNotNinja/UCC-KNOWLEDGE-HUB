@@ -42,7 +42,7 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 
 app.get('/', (req, res) => {
-  res.json({ status: "UCC Knowledge Hub API is running ✅" });
+  res.sendFile(path.join(__dirname, 'public', 'ucc_landing_page.html'));
 });
 
 // ── JWT MIDDLEWARE ────────────────────────────────────────────────────────────
