@@ -22,20 +22,27 @@ const ALLOWED_ORIGINS = [
   "http://localhost:5500",
   "http://127.0.0.1:5500"
 ];
-app.use(cors());
 
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+    callback(new Error("Not allowed by CORS"));
+  },
+  credentials: true
+}));
+ 
 const io = new Server(server, {
   cors: {
     origin: ALLOWED_ORIGINS,
     methods: ["GET", "POST"]
   }
 });
-
+ 
 app.use(bodyParser.json());
 app.use(express.static('public'));
-
-app.use((req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'ucc_landing_page.html'));
+ 
+app.get('/', (req, res) => {
+  res.json({ status: "UCC Knowledge Hub API is running ✅" });
 });
 
 // ── JWT MIDDLEWARE ────────────────────────────────────────────────────────────
