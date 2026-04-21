@@ -22,14 +22,7 @@ const ALLOWED_ORIGINS = [
   "http://localhost:5500",
   "http://127.0.0.1:5500"
 ];
-
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
-    callback(new Error("Not allowed by CORS"));
-  },
-  credentials: true
-}));
+app.use(cors());
 
 const io = new Server(server, {
   cors: {
@@ -41,7 +34,7 @@ const io = new Server(server, {
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-app.get('*', (req, res) => {
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'ucc_landing_page.html'));
 });
 
