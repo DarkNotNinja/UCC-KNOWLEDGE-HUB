@@ -19,6 +19,7 @@
   --border:hsl(220,25%,18%);
   --secondary:hsl(220,30%,16%);
   --red:hsl(0,70%,60%);
+  --green:hsl(152,60%,52%);
   --glow:0 0 40px hsla(43,55%,54%,0.3);
   --font-display:'Space Grotesk',sans-serif;
   --font-body:'Inter',sans-serif;
@@ -33,7 +34,6 @@ body{
   flex-direction:column;
 }
 
-/* BACKGROUND */
 .bg{
   position:fixed;
   inset:0;
@@ -46,18 +46,16 @@ body{
   background:linear-gradient(to right,rgba(0,0,0,.85),rgba(0,0,0,.6));
 }
 
-/* HEADER */
-    .site-header { position:relative; z-index:10; background:hsla(220,35%,11%,0.6); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); }
-    .header-inner { max-width:1280px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:12px 24px; gap:16px; }
-    .logo-wrap { display:flex; align-items:center; gap:12px; }
-    .ucc-logo  { height:40px; width:40px; border-radius:50%; }
-    .title-wrap h1       { font-family:var(--font-display); font-size:1.125rem; font-weight:700; }
-    .title-wrap .subtitle { font-size:0.75rem; color:var(--muted); }
-    .main-nav { display:flex; gap:8px; }
-    .main-nav a { font-size:0.875rem; color:var(--muted); padding:7px 14px; border-radius:8px; text-decoration:none; transition:all .2s; }
-    .main-nav a:hover { color:var(--fg); background:var(--secondary); }
+.site-header { position:relative; z-index:10; background:hsla(220,35%,11%,0.6); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); }
+.header-inner { max-width:1280px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:12px 24px; gap:16px; }
+.logo-wrap { display:flex; align-items:center; gap:12px; }
+.ucc-logo  { height:40px; width:40px; border-radius:50%; }
+.title-wrap h1       { font-family:var(--font-display); font-size:1.125rem; font-weight:700; }
+.title-wrap .subtitle { font-size:0.75rem; color:var(--muted); }
+.main-nav { display:flex; gap:8px; }
+.main-nav a { font-size:0.875rem; color:var(--muted); padding:7px 14px; border-radius:8px; text-decoration:none; transition:all .2s; }
+.main-nav a:hover { color:var(--fg); background:var(--secondary); }
 
-/* CARD */
 .container{
   flex:1;
   display:flex;
@@ -65,6 +63,7 @@ body{
   align-items:center;
   position:relative;
   z-index:10;
+  padding:40px 24px;
 }
 .card{
   background:rgba(20,20,30,.8);
@@ -84,44 +83,58 @@ body{
 }
 .card h2 span{color:var(--primary);}
 
-/* INPUTS */
 .input{
   width:100%;
   padding:12px;
-  margin:10px 0;
+  margin:8px 0;
   border-radius:10px;
   border:1px solid var(--border);
   background:var(--secondary);
   color:var(--fg);
+  font-family:var(--font-body);
+  font-size:0.9rem;
+  transition:border-color .2s;
 }
 .input:focus{border-color:var(--primary);outline:none;}
+.input::placeholder{color:var(--muted);}
 
-/* BUTTON */
 button{
   width:100%;
-  padding:12px;
-  margin-top:10px;
+  padding:13px;
+  margin-top:12px;
   border:none;
   border-radius:10px;
   background:var(--primary);
+  color:hsl(220,40%,7%);
+  font-family:var(--font-display);
+  font-size:0.95rem;
   font-weight:700;
   cursor:pointer;
+  transition:all .2s;
 }
-button:hover{box-shadow:var(--glow);}
+button:hover{box-shadow:var(--glow); opacity:.9;}
+button:disabled{opacity:.5; cursor:not-allowed;}
 
-/* EXTRA */
+#result{
+  margin-top:12px;
+  font-size:0.85rem;
+  text-align:center;
+  min-height:18px;
+  font-family:var(--font-display);
+}
+
 .extra{
   text-align:center;
-  margin-top:15px;
+  margin-top:18px;
   color:var(--muted);
+  font-size:0.875rem;
 }
-.extra a{
-  color:var(--primary);
-  text-decoration:none;
-}
+.extra a{color:var(--primary); text-decoration:none; font-weight:600;}
+.extra a:hover{text-decoration:underline;}
 
-/* FOOTER */
 footer{
+  position:relative;
+  z-index:10;
   text-align:center;
   padding:15px;
   font-size:.8rem;
@@ -135,32 +148,31 @@ footer{
 <div class="bg"></div>
 <div class="overlay"></div>
 
- <header class="site-header">
-    <div class="header-inner">
-      <div class="logo-wrap">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEC31GlH03Kf6NAmmiIHqInFd0q1bQz2gmDg&s" alt="UCC logo" class="ucc-logo">
-        <div class="title-wrap">
-          <h1>UCC Knowledge Hub</h1>
-          <p class="subtitle">Empowering Digital Learning</p>
-        </div>
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo-wrap">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEC31GlH03Kf6NAmmiIHqInFd0q1bQz2gmDg&s" alt="UCC logo" class="ucc-logo">
+      <div class="title-wrap">
+        <h1>UCC Knowledge Hub</h1>
+        <p class="subtitle">Empowering Digital Learning</p>
       </div>
-      <nav class="main-nav">
-        <a href="ucc_landing_page.html">Home</a>
-      </nav>
     </div>
-  </header>
+    <nav class="main-nav">
+      <a href="ucc_landing_page.html">Home</a>
+    </nav>
+  </div>
+</header>
 
 <div class="container">
   <div class="card">
     <h2>Create <span>Account</span></h2>
 
     <form id="signupForm">
-      <input class="input" type="text" id="fullname" placeholder="Full Name" required>
-      <input class="input" type="email" id="email" placeholder="Email" required>
-      <input class="input" type="number" id="schoolId" placeholder="School ID" required>
+      <input class="input" type="text"   id="fullname" placeholder="Full Name"  required>
+      <input class="input" type="email"  id="email"    placeholder="Email"      required>
+      <input class="input" type="number" id="schoolId" placeholder="School ID"  required>
       <input class="input" type="password" id="password" placeholder="Password" required>
-
-      <button type="submit">Sign Up</button>
+      <button type="submit" id="signupBtn">Sign Up</button>
     </form>
 
     <p id="result"></p>
@@ -176,24 +188,65 @@ footer{
 </footer>
 
 <script>
-document.getElementById("year").textContent=new Date().getFullYear();
+document.getElementById("year").textContent = new Date().getFullYear();
 
-document.getElementById("signupForm").addEventListener("submit",async e=>{
+document.getElementById("signupForm").addEventListener("submit", async e => {
   e.preventDefault();
 
-  const fullname=document.getElementById("fullname").value;
-  const email=document.getElementById("email").value;
-  const schoolId=document.getElementById("schoolId").value;
-  const password=document.getElementById("password").value;
+  const fullname = document.getElementById("fullname").value.trim();
+  const email    = document.getElementById("email").value.trim();
+  const schoolId = document.getElementById("schoolId").value.trim();
+  const password = document.getElementById("password").value;
+  const resultEl = document.getElementById("result");
+  const btn      = document.getElementById("signupBtn");
 
-  const res=await fetch("/signup",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({fullname,email,schoolId,password})
-  });
+  btn.disabled    = true;
+  btn.textContent = "Creating account…";
+  resultEl.textContent = "";
 
-  const data=await res.json();
-  document.getElementById("result").textContent=data.message;
+  try {
+    // Step 1 — Create account
+    const res  = await fetch("/signup", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ fullname, email, schoolId, password })
+    });
+    const data = await res.json();
+
+    if (data.message !== "Account created successfully!") {
+      resultEl.style.color = "var(--red)";
+      resultEl.textContent = data.message || "Signup failed. Please try again.";
+      btn.disabled    = false;
+      btn.textContent = "Sign Up";
+      return;
+    }
+
+    resultEl.style.color = "var(--green)";
+    resultEl.textContent  = "✓ Account created! Signing you in…";
+
+    // Step 2 — Auto-login right away
+    const loginRes  = await fetch("/login", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ schoolId, password })
+    });
+    const loginData = await loginRes.json();
+
+    if (loginData.success && loginData.token) {
+      localStorage.setItem("token", loginData.token);
+      // Go straight to the hub — no need to visit login page
+      window.location.href = "ucc_knowledge_hub.html";
+    } else {
+      // Fallback — auto-login failed, send to login with a success message
+      window.location.href = "login.html?signup=success";
+    }
+
+  } catch (err) {
+    resultEl.style.color = "var(--red)";
+    resultEl.textContent  = "Could not reach server. Please try again.";
+    btn.disabled    = false;
+    btn.textContent = "Sign Up";
+  }
 });
 </script>
 
