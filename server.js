@@ -41,7 +41,7 @@ const io = new Server(server, {
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-app.use((req, res) => {
+app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'ucc_landing_page.html'));
 });
 
