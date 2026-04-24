@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CompTIA Course Platform — UCC Knowledge Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<script>
+  const SUPABASE_URL      = 'https://bqgtuxhfqfmxvryfljya.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_y71RZ0UCDxkcmFQQHGEf-Q_davD0hbm';
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+<style>
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  :root {
+    --bg: hsl(220,40%,7%); --fg: hsl(45,30%,92%); --primary: hsl(43,55%,54%);
+    --primary-fg: hsl(220,40%,7%); --card: hsl(220,35%,11%); --muted: hsl(220,15%,55%);
+    --border: hsl(220,25%,18%); --secondary: hsl(220,30%,16%);
+    --green: hsl(152,60%,52%); --red: hsl(0,70%,60%); --blue: hsl(210,80%,65%);
+    --orange: hsl(30,90%,58%); --glow-gold: 0 0 40px hsla(43,55%,54%,0.25);
+    --font-display: 'Space Grotesk', sans-serif; --font-body: 'Inter', sans-serif;
+    --header-bg: hsla(220,35%,11%,0.75);
+  }
+  body.light {
+    --bg: hsl(210,20%,96%); --fg: hsl(220,30%,15%); --primary: hsl(43,65%,42%);
+    --primary-fg: hsl(0,0%,100%); --card: hsl(0,0%,100%); --muted: hsl(220,10%,50%);
+    --border: hsl(220,15%,85%); --secondary: hsl(210,15%,92%);
+    --green: hsl(152,55%,38%); --red: hsl(0,65%,52%); --blue: hsl(210,75%,48%);
+    --orange: hsl(30,85%,45%); --glow-gold: 0 0 30px hsla(43,65%,42%,0.18);
+    --header-bg: hsla(0,0%,100%,0.85);
+  }
+  body { background:var(--bg); color:var(--fg); font-family:var(--font-body); line-height:1.6; min-height:100vh; display:flex; flex-direction:column; transition:background .3s, color .3s; }
+
+  /* ── AUTH GUARD OVERLAY ── */
+  #authGuard { position:fixed; inset:0; z-index:999; background:var(--bg); display:flex; align-items:center; justify-content:center; flex-direction:column; gap:12px; }
+  #authGuard .spinner { width:40px; height:40px; border:3px solid var(--border); border-top-color:var(--primary); border-radius:50%; animation:spin .8s linear infinite; }
+  #authGuard p { color:var(--muted); font-size:.9rem; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  /* ── DB STATUS PILL ── */
+  .db-status { display:inline-flex; align-items:center; gap:5px; font-size:0.72rem; font-weight:600; font-family:var(--font-display); padding:3px 10px; border-radius:20px; background:hsla(152,60%,52%,0.1); border:1px solid hsla(152,60%,52%,0.25); color:var(--green); }
+  .db-status.err { background:hsla(0,70%,60%,0.1); border-color:hsla(0,70%,60%,0.25); color:var(--red); }
+  .db-status .dot { width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+  .theme-toggle { width:38px; height:38px; border-radius:8px; border:1px solid var(--border); background:var(--secondary); color:var(--muted); font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; flex-shrink:0; }
+  .theme-toggle:hover { border-color:var(--primary); color:var(--primary); background:hsla(43,55%,54%,0.1); }
+  a { text-decoration:none; color:inherit; }
+  h1,h2,h3,h4,h5,h6 { font-family:var(--font-display); }
+
+  /* ── HEADER ── */
+  .site-header { position:sticky; top:0; z-index:50; background:var(--header-bg); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); transition:background .3s; }
+  .header-inner { max-width:1280px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:12px 24px; gap:16px; }
+  .logo-wrap { display:flex; align-items:center; gap:12px; }
+  .ucc-logo { height:40px; width:40px; border-radius:50%; }
+  .title-wrap h1 { font-size:1.125rem; font-weight:700; }
+  .title-wrap .subtitle { font-size:0.75rem; color:var(--muted); }
+  .main-nav { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .main-nav a { font-size:0.875rem; color:var(--muted); padding:7px 14px; border-radius:8px; transition:all .2s; }
+  .main-nav a:hover, .main-nav a.active { color:var(--fg); background:var(--secondary); }
+  .nav-user { font-size:0.78rem; color:var(--muted); padding:5px 12px; border-radius:8px; background:var(--secondary); border:1px solid var(--border); }
+  .nav-logout { font-size:0.875rem; color:hsl(0,70%,70%); padding:7px 14px; border-radius:8px; border:1px solid hsla(0,70%,60%,0.25); background:hsla(0,70%,60%,0.08); cursor:pointer; transition:all .2s; font-family:var(--font-body); }
+  .nav-logout:hover { background:hsla(0,70%,60%,0.18); color:#fff; }
+
+  main { flex:1; max-width:1280px; width:100%; margin:0 auto; padding:48px 24px 80px; display:flex; flex-direction:column; gap:32px; }
+
+  /* ── PROGRAMME SELECTOR ── */
+  .prog-selector { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:26px 28px; animation:fadeUp .4s .05s ease both; }
+  .prog-selector-title { font-size:1rem; font-weight:600; margin-bottom:6px; }
+
+  .prog-select-row { display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; }
+  .prog-select-group { display:flex; flex-direction:column; gap:6px; flex:1; min-width:220px; }
+  .prog-select-group label { font-size:0.72rem; color:var(--muted); font-family:var(--font-display); font-weight:600; text-transform:uppercase; letter-spacing:.05em; }
+  .prog-select-group select { background:var(--secondary); border:1px solid var(--border); border-radius:10px; color:var(--fg); font-family:var(--font-body); font-size:0.85rem; padding:10px 14px; outline:none; cursor:pointer; transition:border-color .2s; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 12px center; padding-right:32px; }
+  .prog-select-group select:focus { border-color:var(--primary); }
+  .prog-select-group select option { background:var(--card); }
+  .prog-confirm-btn { background:var(--primary); color:var(--primary-fg); border:none; border-radius:10px; padding:10px 22px; font-family:var(--font-display); font-size:0.82rem; font-weight:700; cursor:pointer; transition:all .2s; white-space:nowrap; height:42px; }
+  .prog-confirm-btn:hover:not(:disabled) { opacity:.9; box-shadow:var(--glow-gold); }
+  .prog-confirm-btn:disabled { opacity:.5; cursor:not-allowed; }
+
+  .prog-result { margin-top:20px; padding-top:20px; border-top:1px solid var(--border); display:none; animation:fadeUp .3s ease both; }
+  .prog-result.visible { display:block; }
+  .prog-result-label { font-size:0.75rem; color:var(--muted); font-family:var(--font-display); font-weight:600; text-transform:uppercase; letter-spacing:.05em; margin-bottom:12px; }
+  .prog-free-courses { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; }
+
+  /* ── COURSE CARD ── */
+  .prog-free-card {
+    background:var(--secondary);
+    border:1px solid hsla(152,60%,52%,0.3);
+    border-radius:14px;
+    padding:18px 20px;
+    display:flex;
+    gap:14px;
+    align-items:flex-start;
+    transition:all .25s;
+    cursor:pointer;
+    position:relative;
+    overflow:hidden;
+  }
+  .prog-free-card::after {
+    content:'↗';
+    position:absolute;
+    top:12px; right:14px;
+    font-size:1rem;
+    color:var(--muted);
+    transition:color .2s, transform .2s;
+  }
+  .prog-free-card:hover {
+    border-color:var(--green);
+    transform:translateY(-3px);
+    box-shadow:0 8px 28px rgba(0,0,0,0.28);
+  }
+  .prog-free-card:hover::after { color:var(--green); transform:translate(2px,-2px); }
+  .prog-free-icon {
+    width:48px; height:48px; border-radius:11px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-display); font-weight:700; font-size:0.82rem;
+    color:#fff; flex-shrink:0;
+    box-shadow:0 4px 12px rgba(0,0,0,0.3);
+  }
+  .prog-free-info { flex:1; min-width:0; padding-right:16px; }
+  .prog-free-title { font-size:0.9rem; font-weight:600; margin-bottom:3px; }
+  .prog-free-meta  { font-size:0.72rem; color:var(--muted); margin-bottom:6px; }
+  .prog-free-desc  { font-size:0.75rem; color:var(--muted); line-height:1.5; margin-bottom:8px; }
+  .prog-free-badges { display:flex; flex-wrap:wrap; gap:5px; }
+  .prog-free-badge {
+    font-size:0.65rem; padding:2px 8px; border-radius:10px;
+    background:hsla(152,60%,52%,0.12); color:var(--green);
+    border:1px solid hsla(152,60%,52%,0.25);
+    font-family:var(--font-display); font-weight:600;
+    display:inline-block;
+  }
+  .prog-free-badge.badge-level {
+    background:hsla(210,80%,65%,0.1); color:var(--blue);
+    border-color:hsla(210,80%,65%,0.25);
+  }
+  .prog-free-badge.badge-path {
+    background:hsla(43,55%,54%,0.1); color:var(--primary);
+    border-color:hsla(43,55%,54%,0.25);
+  }
+
+  /* ── PROGRAMME PATH BANNER ── */
+  .path-banner {
+    background:hsla(43,55%,54%,0.06);
+    border:1px solid hsla(43,55%,54%,0.2);
+    border-radius:12px;
+    padding:14px 18px;
+    margin-bottom:14px;
+    font-size:0.8rem;
+    color:var(--muted);
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .path-banner strong { color:var(--primary); font-family:var(--font-display); }
+  .path-banner .path-steps { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:4px; }
+  .path-step { background:var(--secondary); border:1px solid var(--border); border-radius:6px; padding:2px 10px; font-size:0.72rem; font-family:var(--font-display); font-weight:600; color:var(--fg); }
+  .path-arrow { color:var(--muted); font-size:0.8rem; }
+
+  .prog-change-btn { font-size:0.75rem; color:var(--muted); background:none; border:none; cursor:pointer; text-decoration:underline; margin-top:12px; font-family:var(--font-body); }
+  .prog-change-btn:hover { color:var(--primary); }
+
+  /* ── FOOTER ── */
+  .site-footer { border-top:1px solid var(--border); padding:32px 24px; margin-top:auto; }
+  .footer-inner { max-width:1280px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+  .site-footer p { font-family:var(--font-display); font-size:0.875rem; color:var(--muted); line-height:1.7; }
+  .site-footer strong { color:var(--fg); }
+  .site-footer a { color:var(--primary); }
+  .site-footer small { font-size:0.75rem; color:var(--muted); }
+
+  @keyframes fadeUp  { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes scaleIn { from{opacity:0;transform:scale(.94)} to{opacity:1;transform:scale(1)} }
+
+  @media (max-width:640px) {
+    main{padding:32px 16px 60px}
+    .title-wrap .subtitle{display:none}
+    .prog-free-courses { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div id="authGuard">
+  <div class="spinner"></div>
+  <p>Checking session…</p>
+</div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo-wrap">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEC31GlH03Kf6NAmmiIHqInFd0q1bQz2gmDg&s" alt="UCC logo" class="ucc-logo">
+      <div class="title-wrap"><h1>UCC Knowledge Hub</h1><p class="subtitle">Empowering Digital Learning</p></div>
+    </div>
+    <nav class="main-nav">
+      <a href="ucc_knowledge_hub.html">Home</a>
+      <a href="Loaners.html">Borrow &amp; Renew</a>
+      <a href="comptia.html"class="active">Comptia Courses</a>
+      <a href="study_rooms.html">Study Rooms</a>
+      <a href="Forum.html">Forum</a>
+      <a href="leaderboard.html">Leaderboard</a>
+      <a href="profile.html">Profile</a>
+      <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">🌙</button>
+      <button class="nav-logout" id="logoutBtn">Log Out</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- PROGRAMME SELECTOR -->
+  <div class="prog-selector" id="progSelector">
+    <div class="prog-selector-title">🎓 Select Your Programme of Study</div>
+    <div class="prog-select-row">
+      <div class="prog-select-group">
+        <label>School / Faculty</label>
+        <select id="schoolSelect">
+          <option value="">— Select your school —</option>
+          <option value="business">School of Business, Entrepreneurship &amp; Management</option>
+          <option value="behavioural">School of Behavioural Sciences, Humanities &amp; Law</option>
+          <option value="technology">School of Mathematics, Science &amp; Technology</option>
+          <option value="coas">College of Occupational &amp; Applied Studies</option>
+          <option value="graduate">College of Graduate Studies &amp; Research</option>
+        </select>
+      </div>
+      <div class="prog-select-group">
+        <label>Programme</label>
+        <select id="programmeSelect" disabled>
+          <option value="">— Select school first —</option>
+        </select>
+      </div>
+      <button class="prog-confirm-btn" id="progConfirmBtn" disabled>Show Free Courses →</button>
+    </div>
+
+    <div class="prog-result" id="progResult">
+      <div class="prog-result-label" id="progResultLabel">🟢 Your Free CompTIA Courses</div>
+      <div id="progPathBanner"></div>
+      <div class="prog-free-courses" id="progFreeCourses"></div>
+      <button class="prog-change-btn" id="progChangeBtn">Change programme</button>
+    </div>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p><strong>University of the Commonwealth Caribbean</strong><br>
+      17 Worthington Avenue, Kingston 5, Jamaica W.I. &nbsp;·&nbsp;
+      <a href="https://www.ucc.edu.jm">www.ucc.edu.jm</a></p>
+    <small>© <span id="year"></span> UCC — All Rights Reserved</small>
+  </div>
+</footer>
+
+<script>
+// ── SUPABASE INIT ─────────────────────────────────────
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+document.getElementById("year").textContent = new Date().getFullYear();
+
+// ── THEME TOGGLE ──────────────────────────────────────
+const themeBtn = document.getElementById('themeToggle');
+if (localStorage.getItem('ucc_theme') === 'light') { document.body.classList.add('light'); themeBtn.textContent = '☀️'; }
+themeBtn.addEventListener('click', () => {
+  const isLight = document.body.classList.toggle('light');
+  themeBtn.textContent = isLight ? '☀️' : '🌙';
+  localStorage.setItem('ucc_theme', isLight ? 'light' : 'dark');
+});
+
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── LOGOUT ────────────────────────────────────────────
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  await sb.auth.signOut();
+  window.location.href = 'index.html';
+});
+
+// ────────────────────────────────────────────────────────
+// COURSE DATA
+// ────────────────────────────────────────────────────────
+const CERT_BASE_URL = 'https://www.comptia.org/en-us/certifications/';
+
+const COURSES = [
+  {
+    id:'aplus',
+    title:'CompTIA A+',
+    code:'A+',
+    level:'Beginner',
+    color:'#b8853a',
+    modules:14, hours:42, rating:4.8,
+    desc:'Foundational IT skills covering hardware, OS, networking, and troubleshooting. Industry-standard entry-level certification.',
+    path:'Core Infrastructure',
+    certUrl: CERT_BASE_URL + 'a/'
+  },
+  {
+    id:'netplus',
+    title:'CompTIA Network+',
+    code:'N+',
+    level:'Intermediate',
+    color:'#3a8a5f',
+    modules:12, hours:38, rating:4.7,
+    desc:'Networking concepts, infrastructure, operations, security, and troubleshooting across wired and wireless environments.',
+    path:'Core Infrastructure',
+    certUrl: CERT_BASE_URL + 'network/'
+  },
+  {
+    id:'secplus',
+    title:'CompTIA Security+',
+    code:'S+',
+    level:'Intermediate',
+    color:'#a03535',
+    modules:15, hours:48, rating:4.9,
+    desc:'Core cybersecurity skills — threat management, cryptography, identity management, and risk mitigation.',
+    path:'Cybersecurity',
+    certUrl: CERT_BASE_URL + 'security/'
+  },
+  {
+    id:'linuxplus',
+    title:'CompTIA Linux+',
+    code:'L+',
+    level:'Intermediate',
+    color:'#2a6e9e',
+    modules:11, hours:36, rating:4.6,
+    desc:'Linux system administration, scripting, security, and kernel management for enterprise environments.',
+    path:'Systems & Cloud',
+    certUrl: CERT_BASE_URL + 'linux/'
+  },
+  {
+    id:'cloudplus',
+    title:'CompTIA Cloud+',
+    code:'C+',
+    level:'Advanced',
+    color:'#5a3eaa',
+    modules:13, hours:44, rating:4.7,
+    desc:'Cloud infrastructure, deployment models, security, and management across hybrid environments.',
+    path:'Systems & Cloud',
+    certUrl: CERT_BASE_URL + 'cloud/'
+  },
+  {
+    id:'cysa',
+    title:'CompTIA CySA+',
+    code:'CS+',
+    level:'Advanced',
+    color:'#9e5820',
+    modules:14, hours:50, rating:4.8,
+    desc:'Cybersecurity analyst skills — threat detection, vulnerability management, incident response and reporting.',
+    path:'Cybersecurity',
+    certUrl: CERT_BASE_URL + 'cybersecurity-analyst/'
+  },
+  {
+    id:'pentest',
+    title:'CompTIA PenTest+',
+    code:'PT+',
+    level:'Advanced',
+    color:'#8a2060',
+    modules:12, hours:46, rating:4.9,
+    desc:'Penetration testing and vulnerability assessment across networks, applications, and cloud environments.',
+    path:'Cybersecurity',
+    certUrl: CERT_BASE_URL + 'pentest/'
+  },
+  {
+    id:'projplus',
+    title:'CompTIA Project+',
+    code:'P+',
+    level:'Beginner',
+    color:'#2a7a6a',
+    modules:10, hours:30, rating:4.5,
+    desc:'Project management fundamentals — initiation, planning, execution, monitoring and closure of IT projects.',
+    path:'Business & Management',
+    certUrl: CERT_BASE_URL + 'project/'
+  },
+  {
+    id:'casp',
+    title:'CompTIA CASP+',
+    code:'CASP',
+    level:'Expert',
+    color:'#6b2d8a',
+    modules:16, hours:55, rating:4.9,
+    desc:'Advanced Security Practitioner — enterprise security, risk management, and advanced cryptographic techniques.',
+    path:'Cybersecurity',
+    certUrl: CERT_BASE_URL + 'casp/'
+  },
+];
+
+// ────────────────────────────────────────────────────────
+// PROGRAMME → FREE COURSE MAPPING
+// 
+// ────────────────────────────────────────────────────────
+const PROG_COURSE_MAP = [
+  // ── Technology school — specific mappings first (most specific → least) ──
+  { match: 'networking with cyber security', ids: ['netplus','secplus'],
+    pathLabel: 'Network+ → Security+ → CySA+ → PenTest+',
+    note: 'Aligned with UCC BSc Networking with Cyber Security programme structure' },
+
+  { match: 'networking',      ids: ['netplus','secplus'],  pathLabel: 'Network+ → Security+' },
+  { match: 'cyber security',  ids: ['secplus','cysa'],     pathLabel: 'Security+ → CySA+ → PenTest+' },
+  { match: 'data science',    ids: ['linuxplus','cloudplus'], pathLabel: 'Linux+ → Cloud+' },
+  { match: 'computer engineering', ids: ['aplus','linuxplus'], pathLabel: 'A+ → Linux+' },
+  { match: 'electronics engineering', ids: ['aplus','linuxplus'], pathLabel: 'A+ → Linux+' },
+  { match: 'information technology', ids: ['aplus','netplus'], pathLabel: 'A+ → Network+' },
+
+  // ── Business / Management ──
+  { match: 'project management',  ids: ['projplus','aplus'],    pathLabel: 'Project+ → A+' },
+  { match: 'information systems', ids: ['aplus','netplus'],     pathLabel: 'A+ → Network+' },
+  { match: 'logistics',           ids: ['projplus','aplus'],    pathLabel: 'Project+ → A+' },
+  { match: 'supply chain',        ids: ['projplus','aplus'],    pathLabel: 'Project+ → A+' },
+  { match: 'entrepreneurship',    ids: ['projplus','cloudplus'], pathLabel: 'Project+ → Cloud+' },
+  { match: 'innovation',          ids: ['projplus','cloudplus'], pathLabel: 'Project+ → Cloud+' },
+  { match: 'marketing',           ids: ['projplus','aplus'],    pathLabel: 'Project+ → A+' },
+  { match: 'accounting',          ids: ['projplus','aplus'],    pathLabel: 'Project+ → A+' },
+  { match: 'financial management',ids: ['projplus','aplus'],    pathLabel: 'Project+ → A+' },
+  { match: 'human resource',      ids: ['projplus','aplus'],    pathLabel: 'Project+ → A+' },
+  { match: 'internal auditing',   ids: ['projplus','aplus'],    pathLabel: 'Project+ → A+' },
+  { match: 'international relations', ids: ['projplus','aplus'], pathLabel: 'Project+ → A+' },
+  { match: 'journalism',          ids: ['projplus','aplus'],    pathLabel: 'Project+ → A+' },
+  { match: 'media',               ids: ['projplus','aplus'],    pathLabel: 'Project+ → A+' },
+  { match: 'production',          ids: ['projplus','aplus'],    pathLabel: 'Project+ → A+' },
+  { match: 'tourism',             ids: ['projplus','aplus'],    pathLabel: 'Project+ → A+' },
+  { match: 'business administration', ids: ['projplus','aplus'], pathLabel: 'Project+ → A+' },
+
+  // ── Behavioural / Law ──
+  { match: 'criminology',  ids: ['secplus','aplus'], pathLabel: 'Security+ → A+' },
+  { match: 'law',          ids: ['projplus','aplus'], pathLabel: 'Project+ → A+' },
+  { match: 'social work',  ids: ['projplus','aplus'], pathLabel: 'Project+ → A+' },
+  { match: 'psychology',   ids: ['projplus','aplus'], pathLabel: 'Project+ → A+' },
+  { match: 'paralegal',    ids: ['projplus','aplus'], pathLabel: 'Project+ → A+' },
+
+  // ── COAS ──
+  { match: 'allied health',   ids: ['aplus','projplus'], pathLabel: 'A+ → Project+' },
+  { match: 'bpo',             ids: ['aplus','netplus'],  pathLabel: 'A+ → Network+' },
+  { match: 'construction',    ids: ['projplus','aplus'], pathLabel: 'Project+ → A+' },
+  { match: 'renewable energy',ids: ['linuxplus','cloudplus'], pathLabel: 'Linux+ → Cloud+' },
+
+  // ── Graduate ──
+  { match: 'cyber security & data privacy', ids: ['secplus','cysa'], pathLabel: 'Security+ → CySA+ → CASP+' },
+  { match: 'executive mba',   ids: ['projplus','cloudplus'], pathLabel: 'Project+ → Cloud+' },
+  { match: 'mba',             ids: ['projplus','cloudplus'], pathLabel: 'Project+ → Cloud+' },
+  { match: 'dba',             ids: ['projplus','cloudplus'], pathLabel: 'Project+ → Cloud+' },
+  { match: 'public administration', ids: ['projplus','aplus'], pathLabel: 'Project+ → A+' },
+];
+
+function getCoursesForProgramme(progName) {
+  const lower = progName.toLowerCase();
+  for (const entry of PROG_COURSE_MAP) {
+    if (lower.includes(entry.match.toLowerCase())) {
+      return {
+        courses: entry.ids.map(id => COURSES.find(c => c.id === id)).filter(Boolean),
+        pathLabel: entry.pathLabel,
+        note: entry.note || null
+      };
+    }
+  }
+  // Fallback
+  return {
+    courses: [COURSES.find(c=>c.id==='aplus'), COURSES.find(c=>c.id==='projplus')],
+    pathLabel: 'A+ → Project+',
+    note: null
+  };
+}
+
+// ── PROGRAMMES LIST ───────────────────────────────────
+const PROGRAMMES = {
+  business:    ['Business Administration (BSc.)','Business Administration (ASc.)','Business Admin — Accounting & Financial Management','Business Admin — Accounting Major','Business Admin — Education Studies','Business Admin — Financial Management','Business Admin — Information Systems Management','Business Admin — Project Management','Human Resource Management','Innovation & Entrepreneurship','Internal Auditing','International Relations','Journalism (BA)','Logistics Operations & Management','Marketing (BSc.)','Marketing — Digital Marketing & Advertising','Media & Communications (BA)','Production & Operations Management (BSc.)','Production & Operations Management (ASc.)','Tourism & Hospitality Management (BSc.)','Tourism & Hospitality Management (ASc.)'],
+  behavioural: ['Applied Psychology','Applied Psychology — Children & Adolescents Counselling','Bachelor of Laws (LLB) — University of London','Certificate of Higher Education in Common Law','Criminology & Criminal Justice','Paralegal Studies (ASc.)','Social Work','Social Work — Gerontology Specialisation'],
+  technology:  ['Computer Engineering (BSc.)','Data Science (BSc.)','Electronics Engineering (BSc.)','Information Technology (BSc.)','Information Technology (ASc.)','Networking with Cyber Security (BSc.)'],
+  coas:        ['Allied Health Care — Geriatrics (OAD)','Business Process Outsourcing — BPO (OAD)','Construction Site Management (OAD)','Diploma in Business Administration','Logistics & Supply Chain Management (OAD)','Pre-Associate Programme','Renewable Energy Technology (OAD)'],
+  graduate:    ['Cyber Security & Data Privacy Protection (MSc.)','Executive MBA (CEMBA)','Executive Master of Public Administration (CEMPA)','MBA — General Management','MBA — Accounting','MBA — Disaster Management','MBA — Entrepreneurship','MBA — Finance','MBA — Healthcare Management','MBA — Human Resource Management','MBA — Marketing','MBA — Project Management','Doctor of Business Administration (DBA)','Doctor of Professional Practice (DPP)'],
+};
+
+// ── DB HELPERS ────────────────────────────────────────
+let currentUser = null;
+
+async function dbSaveProgramme(school, programme) {
+  if (!currentUser) return;
+  await sb.from('user_profiles').upsert({ id: currentUser.id, school, programme });
+}
+async function dbClearProgramme() {
+  if (!currentUser) return;
+  await sb.from('user_profiles').upsert({ id: currentUser.id, school: null, programme: null });
+}
+
+// ── AUTH ──────────────────────────────────────────────
+async function initAuth() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = 'index.html'; return; }
+  currentUser = session.user;
+  document.getElementById('authGuard').style.display = 'none';
+  document.getElementById('navUser').textContent = currentUser.email?.split('@')[0] || 'Student';
+  document.getElementById('dbStatus').innerHTML = '<span class="dot"></span> Connected';
+
+  const { data } = await sb.from('user_profiles').select('school,programme').eq('id', currentUser.id).single();
+  if (data?.school && data?.programme) applyProgramme(data.school, data.programme, false);
+}
+
+// ── PROGRAMME SELECTOR ────────────────────────────────
+const schoolSel  = document.getElementById('schoolSelect');
+const progSel    = document.getElementById('programmeSelect');
+const confirmBtn = document.getElementById('progConfirmBtn');
+const progResult = document.getElementById('progResult');
+
+schoolSel.addEventListener('change', () => {
+  const school = schoolSel.value;
+  progSel.innerHTML = '<option value="">— Select your programme —</option>';
+  if (school && PROGRAMMES[school]) {
+    PROGRAMMES[school].forEach(p => {
+      const o = document.createElement('option'); o.value = p; o.textContent = p; progSel.appendChild(o);
+    });
+    progSel.disabled = false;
+  } else {
+    progSel.disabled = true;
+    confirmBtn.disabled = true;
+  }
+});
+
+progSel.addEventListener('change', () => { confirmBtn.disabled = !progSel.value; });
+
+confirmBtn.addEventListener('click', async () => {
+  const school = schoolSel.value, prog = progSel.value;
+  if (!school || !prog) return;
+  await dbSaveProgramme(school, prog);
+  applyProgramme(school, prog, true);
+});
+
+document.getElementById('progChangeBtn').addEventListener('click', async () => {
+  progResult.classList.remove('visible');
+  schoolSel.value = '';
+  progSel.innerHTML = '<option value="">— Select school first —</option>';
+  progSel.disabled = true;
+  confirmBtn.disabled = true;
+  await dbClearProgramme();
+});
+
+function applyProgramme(school, prog, showMsg) {
+  schoolSel.value = school;
+  schoolSel.dispatchEvent(new Event('change'));
+  setTimeout(() => {
+    progSel.value = prog;
+    confirmBtn.disabled = false;
+
+    const { courses, pathLabel, note } = getCoursesForProgramme(prog);
+    const displayProg = prog.length > 50 ? prog.slice(0,50)+'…' : prog;
+    document.getElementById('progResultLabel').textContent = `🟢 Your 2 Free CompTIA Courses — ${displayProg}`;
+
+    // ── Path banner ──
+    const pathSteps = pathLabel.split('→').map(s => s.trim());
+    document.getElementById('progPathBanner').innerHTML = `
+      <div class="path-banner">
+        <div>
+          <div style="font-size:0.72rem;color:var(--muted);margin-bottom:6px;">
+            📋 Recommended CompTIA Certification Path for your programme${note ? ` <span style="color:var(--primary);">(${note})</span>` : ''}
+          </div>
+          <div class="path-steps">
+            ${pathSteps.map((s,i) => `
+              ${i > 0 ? '<span class="path-arrow">→</span>' : ''}
+              <span class="path-step">${esc(s)}</span>
+            `).join('')}
+          </div>
+          <div style="font-size:0.68rem;color:var(--muted);margin-top:6px;">
+            ✅ Your 2 free courses are highlighted below. Click any card to view the certification details on CompTIA's website.
+          </div>
+        </div>
+      </div>`;
+
+    // ── Course cards ──
+    document.getElementById('progFreeCourses').innerHTML = courses.map((c, idx) => `
+      <div class="prog-free-card"
+           onclick="window.open('${c.certUrl}','_blank','noopener')"
+           role="button"
+           tabindex="0"
+           aria-label="Open ${esc(c.title)} on CompTIA website"
+           onkeydown="if(event.key==='Enter')window.open('${c.certUrl}','_blank','noopener')">
+        <div class="prog-free-icon" style="background:${c.color}">${esc(c.code)}</div>
+        <div class="prog-free-info">
+          <div class="prog-free-title">${esc(c.title)}</div>
+          <div class="prog-free-meta">${c.modules} modules · ${c.hours}h · ⭐ ${c.rating}</div>
+          <div class="prog-free-desc">${esc(c.desc)}</div>
+          <div class="prog-free-badges">
+            <span class="prog-free-badge">🟢 FREE this semester</span>
+            <span class="prog-free-badge badge-level">${esc(c.level)}</span>
+            <span class="prog-free-badge badge-path">${esc(c.path)}</span>
+          </div>
+        </div>
+      </div>`).join('');
+
+    progResult.classList.add('visible');
+
+    if (showMsg) {
+      const pill = document.createElement('div');
+      pill.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:500;background:var(--card);border:1px solid hsla(152,60%,52%,0.4);border-radius:12px;padding:12px 20px;font-size:.875rem;font-family:var(--font-display);font-weight:600;color:var(--green);box-shadow:0 0 40px hsla(43,55%,54%,0.25);animation:fadeUp .3s ease;';
+      pill.textContent = `🎓 ${courses[0]?.title} & ${courses[1]?.title} unlocked!`;
+      document.body.appendChild(pill);
+      setTimeout(() => pill.remove(), 3500);
+    }
+  }, 50);
+}
+
+initAuth();
+</script>
+
+</body>
+</html>

@@ -132,7 +132,7 @@ function setTheme(theme) {
   }
   // Update all toggle buttons on the page
   document.querySelectorAll(".theme-toggle-btn").forEach(btn => {
-    btn.textContent   = theme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode";
+    btn.textContent   = theme === "dark" ? "☀️" : "🌙";
     btn.dataset.theme = theme;
     btn.title         = theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode";
   });
