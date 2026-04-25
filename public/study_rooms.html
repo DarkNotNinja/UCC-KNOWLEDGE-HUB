@@ -45,6 +45,11 @@
     .nav-logout { font-size:0.875rem; color:hsl(0,70%,70%); padding:7px 14px; border-radius:8px; border:1px solid hsla(0,70%,60%,0.25); background:hsla(0,70%,60%,0.08); cursor:pointer; transition:all .2s; font-family:var(--font-body); }
     .nav-logout:hover { background:hsla(0,70%,60%,0.18); color:#fff; }
 
+  .theme-toggle { width:38px; height:38px; border-radius:8px; border:1px solid var(--border); background:var(--secondary); color:var(--muted); font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; flex-shrink:0; }
+  .theme-toggle:hover { border-color:var(--primary); color:var(--primary); background:hsla(43,55%,54%,0.1); }
+  a { text-decoration:none; color:inherit; }
+  h1,h2,h3,h4,h5,h6 { font-family:var(--font-display); }
+
     /* LAYOUT — rooms list vs chat view */
     .page-wrap { max-width:1280px; width:100%; margin:0 auto; padding:40px 24px 80px; flex:1; }
 
@@ -199,7 +204,10 @@
         <a href="Forum.html">Forum</a>
         <a href="leaderboard.html">Leaderboard</a>
         <a href="profile.html">Profile</a>
+        <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">🌙</button>
         <button class="nav-logout" id="logoutBtn">Log Out</button>
+        
+      
       </nav>
     </div>
   </header>

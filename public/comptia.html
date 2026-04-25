@@ -33,26 +33,19 @@
     --orange: hsl(30,85%,45%); --glow-gold: 0 0 30px hsla(43,65%,42%,0.18);
     --header-bg: hsla(0,0%,100%,0.85);
   }
-  body { background:var(--bg); color:var(--fg); font-family:var(--font-body); line-height:1.6; min-height:100vh; display:flex; flex-direction:column; transition:background .3s, color .3s; }
+  body { background:var(--bg); color:var(--fg); font-family:var(--font-body); line-height:1.6; min-height:100vh; display:flex; flex-direction:column; transition:background .3s,color .3s; }
 
-  /* ── AUTH GUARD OVERLAY ── */
-  #authGuard { position:fixed; inset:0; z-index:999; background:var(--bg); display:flex; align-items:center; justify-content:center; flex-direction:column; gap:12px; }
-  #authGuard .spinner { width:40px; height:40px; border:3px solid var(--border); border-top-color:var(--primary); border-radius:50%; animation:spin .8s linear infinite; }
-  #authGuard p { color:var(--muted); font-size:.9rem; }
   @keyframes spin { to { transform:rotate(360deg); } }
 
-  /* ── DB STATUS PILL ── */
   .db-status { display:inline-flex; align-items:center; gap:5px; font-size:0.72rem; font-weight:600; font-family:var(--font-display); padding:3px 10px; border-radius:20px; background:hsla(152,60%,52%,0.1); border:1px solid hsla(152,60%,52%,0.25); color:var(--green); }
-  .db-status.err { background:hsla(0,70%,60%,0.1); border-color:hsla(0,70%,60%,0.25); color:var(--red); }
   .db-status .dot { width:6px; height:6px; border-radius:50%; background:currentColor; }
-
   .theme-toggle { width:38px; height:38px; border-radius:8px; border:1px solid var(--border); background:var(--secondary); color:var(--muted); font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; flex-shrink:0; }
-  .theme-toggle:hover { border-color:var(--primary); color:var(--primary); background:hsla(43,55%,54%,0.1); }
+  .theme-toggle:hover { border-color:var(--primary); color:var(--primary); }
   a { text-decoration:none; color:inherit; }
   h1,h2,h3,h4,h5,h6 { font-family:var(--font-display); }
 
-  /* ── HEADER ── */
-  .site-header { position:sticky; top:0; z-index:50; background:var(--header-bg); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); transition:background .3s; }
+  /* HEADER */
+  .site-header { position:sticky; top:0; z-index:50; background:var(--header-bg); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); }
   .header-inner { max-width:1280px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:12px 24px; gap:16px; }
   .logo-wrap { display:flex; align-items:center; gap:12px; }
   .ucc-logo { height:40px; width:40px; border-radius:50%; }
@@ -60,110 +53,100 @@
   .title-wrap .subtitle { font-size:0.75rem; color:var(--muted); }
   .main-nav { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
   .main-nav a { font-size:0.875rem; color:var(--muted); padding:7px 14px; border-radius:8px; transition:all .2s; }
-  .main-nav a:hover, .main-nav a.active { color:var(--fg); background:var(--secondary); }
+  .main-nav a:hover,.main-nav a.active { color:var(--fg); background:var(--secondary); }
   .nav-user { font-size:0.78rem; color:var(--muted); padding:5px 12px; border-radius:8px; background:var(--secondary); border:1px solid var(--border); }
   .nav-logout { font-size:0.875rem; color:hsl(0,70%,70%); padding:7px 14px; border-radius:8px; border:1px solid hsla(0,70%,60%,0.25); background:hsla(0,70%,60%,0.08); cursor:pointer; transition:all .2s; font-family:var(--font-body); }
   .nav-logout:hover { background:hsla(0,70%,60%,0.18); color:#fff; }
 
   main { flex:1; max-width:1280px; width:100%; margin:0 auto; padding:48px 24px 80px; display:flex; flex-direction:column; gap:32px; }
 
-  /* ── PROGRAMME SELECTOR ── */
+  /* PROGRAMME SELECTOR */
   .prog-selector { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:26px 28px; animation:fadeUp .4s .05s ease both; }
   .prog-selector-title { font-size:1rem; font-weight:600; margin-bottom:6px; }
+  .prog-selector-sub { font-size:0.82rem; color:var(--muted); margin-bottom:20px; }
+
+  /* Step dividers */
+  .step-divider { display:flex; align-items:center; gap:10px; margin:18px 0 14px; }
+  .step-divider span { font-size:0.68rem; color:var(--muted); font-family:var(--font-display); font-weight:600; text-transform:uppercase; letter-spacing:.07em; white-space:nowrap; }
+  .step-divider::before,.step-divider::after { content:''; flex:1; height:1px; background:var(--border); }
 
   .prog-select-row { display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; }
-  .prog-select-group { display:flex; flex-direction:column; gap:6px; flex:1; min-width:220px; }
+  .prog-select-group { display:flex; flex-direction:column; gap:6px; flex:1; min-width:200px; }
   .prog-select-group label { font-size:0.72rem; color:var(--muted); font-family:var(--font-display); font-weight:600; text-transform:uppercase; letter-spacing:.05em; }
-  .prog-select-group select { background:var(--secondary); border:1px solid var(--border); border-radius:10px; color:var(--fg); font-family:var(--font-body); font-size:0.85rem; padding:10px 14px; outline:none; cursor:pointer; transition:border-color .2s; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 12px center; padding-right:32px; }
+  .prog-select-group select {
+    background:var(--secondary); border:1px solid var(--border); border-radius:10px;
+    color:var(--fg); font-family:var(--font-body); font-size:0.85rem; padding:10px 14px;
+    outline:none; cursor:pointer; transition:border-color .2s; appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 12px center; padding-right:32px;
+  }
   .prog-select-group select:focus { border-color:var(--primary); }
   .prog-select-group select option { background:var(--card); }
-  .prog-confirm-btn { background:var(--primary); color:var(--primary-fg); border:none; border-radius:10px; padding:10px 22px; font-family:var(--font-display); font-size:0.82rem; font-weight:700; cursor:pointer; transition:all .2s; white-space:nowrap; height:42px; }
+  .prog-select-group select:disabled { opacity:.45; cursor:not-allowed; }
+
+  /* Step 2 — year/semester row */
+  .sem-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+
+  /* Course list preview */
+  .course-list-preview { background:var(--secondary); border:1px solid var(--border); border-radius:10px; padding:12px 16px; display:flex; flex-direction:column; gap:6px; }
+  .course-list-item { display:flex; align-items:center; gap:10px; font-size:0.82rem; padding:4px 0; border-bottom:1px solid var(--border); }
+  .course-list-item:last-child { border-bottom:none; }
+  .course-list-item .course-code { font-family:var(--font-display); font-weight:700; font-size:0.7rem; color:var(--primary); background:hsla(43,55%,54%,0.1); border:1px solid hsla(43,55%,54%,0.2); border-radius:5px; padding:1px 7px; white-space:nowrap; }
+  .course-list-item .course-name { color:var(--fg); flex:1; }
+  .course-list-count { font-size:0.72rem; color:var(--muted); font-family:var(--font-display); margin-bottom:8px; }
+
+  .prog-confirm-btn { background:var(--primary); color:var(--primary-fg); border:none; border-radius:10px; padding:10px 22px; font-family:var(--font-display); font-size:0.82rem; font-weight:700; cursor:pointer; transition:all .2s; white-space:nowrap; height:42px; align-self:flex-end; }
   .prog-confirm-btn:hover:not(:disabled) { opacity:.9; box-shadow:var(--glow-gold); }
   .prog-confirm-btn:disabled { opacity:.5; cursor:not-allowed; }
 
+  /* RESULTS */
   .prog-result { margin-top:20px; padding-top:20px; border-top:1px solid var(--border); display:none; animation:fadeUp .3s ease both; }
   .prog-result.visible { display:block; }
   .prog-result-label { font-size:0.75rem; color:var(--muted); font-family:var(--font-display); font-weight:600; text-transform:uppercase; letter-spacing:.05em; margin-bottom:12px; }
   .prog-free-courses { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; }
 
-  /* ── COURSE CARD ── */
-  .prog-free-card {
-    background:var(--secondary);
-    border:1px solid hsla(152,60%,52%,0.3);
-    border-radius:14px;
-    padding:18px 20px;
-    display:flex;
-    gap:14px;
-    align-items:flex-start;
-    transition:all .25s;
-    cursor:pointer;
-    position:relative;
-    overflow:hidden;
-  }
-  .prog-free-card::after {
-    content:'↗';
-    position:absolute;
-    top:12px; right:14px;
-    font-size:1rem;
-    color:var(--muted);
-    transition:color .2s, transform .2s;
-  }
-  .prog-free-card:hover {
-    border-color:var(--green);
-    transform:translateY(-3px);
-    box-shadow:0 8px 28px rgba(0,0,0,0.28);
-  }
+  /* COURSE CARD */
+  .prog-free-card { background:var(--secondary); border:1px solid hsla(152,60%,52%,0.3); border-radius:14px; padding:18px 20px; display:flex; gap:14px; align-items:flex-start; transition:all .25s; cursor:pointer; position:relative; overflow:hidden; }
+  .prog-free-card::after { content:'↗'; position:absolute; top:12px; right:14px; font-size:1rem; color:var(--muted); transition:color .2s,transform .2s; }
+  .prog-free-card:hover { border-color:var(--green); transform:translateY(-3px); box-shadow:0 8px 28px rgba(0,0,0,0.28); }
   .prog-free-card:hover::after { color:var(--green); transform:translate(2px,-2px); }
-  .prog-free-icon {
-    width:48px; height:48px; border-radius:11px;
-    display:flex; align-items:center; justify-content:center;
-    font-family:var(--font-display); font-weight:700; font-size:0.82rem;
-    color:#fff; flex-shrink:0;
-    box-shadow:0 4px 12px rgba(0,0,0,0.3);
-  }
+  .prog-free-icon { width:48px; height:48px; border-radius:11px; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700; font-size:0.82rem; color:#fff; flex-shrink:0; box-shadow:0 4px 12px rgba(0,0,0,0.3); }
   .prog-free-info { flex:1; min-width:0; padding-right:16px; }
   .prog-free-title { font-size:0.9rem; font-weight:600; margin-bottom:3px; }
   .prog-free-meta  { font-size:0.72rem; color:var(--muted); margin-bottom:6px; }
   .prog-free-desc  { font-size:0.75rem; color:var(--muted); line-height:1.5; margin-bottom:8px; }
   .prog-free-badges { display:flex; flex-wrap:wrap; gap:5px; }
-  .prog-free-badge {
-    font-size:0.65rem; padding:2px 8px; border-radius:10px;
-    background:hsla(152,60%,52%,0.12); color:var(--green);
-    border:1px solid hsla(152,60%,52%,0.25);
-    font-family:var(--font-display); font-weight:600;
-    display:inline-block;
-  }
-  .prog-free-badge.badge-level {
-    background:hsla(210,80%,65%,0.1); color:var(--blue);
-    border-color:hsla(210,80%,65%,0.25);
-  }
-  .prog-free-badge.badge-path {
-    background:hsla(43,55%,54%,0.1); color:var(--primary);
-    border-color:hsla(43,55%,54%,0.25);
-  }
+  .prog-free-badge { font-size:0.65rem; padding:2px 8px; border-radius:10px; background:hsla(152,60%,52%,0.12); color:var(--green); border:1px solid hsla(152,60%,52%,0.25); font-family:var(--font-display); font-weight:600; display:inline-block; }
+  .prog-free-badge.badge-level { background:hsla(210,80%,65%,0.1); color:var(--blue); border-color:hsla(210,80%,65%,0.25); }
+  .prog-free-badge.badge-path  { background:hsla(43,55%,54%,0.1); color:var(--primary); border-color:hsla(43,55%,54%,0.25); }
+  .prog-free-badge.badge-sem   { background:hsla(30,90%,58%,0.1); color:var(--orange); border-color:hsla(30,90%,58%,0.25); }
 
-  /* ── PROGRAMME PATH BANNER ── */
-  .path-banner {
-    background:hsla(43,55%,54%,0.06);
-    border:1px solid hsla(43,55%,54%,0.2);
-    border-radius:12px;
-    padding:14px 18px;
-    margin-bottom:14px;
-    font-size:0.8rem;
-    color:var(--muted);
-    display:flex;
-    align-items:center;
-    gap:10px;
-  }
-  .path-banner strong { color:var(--primary); font-family:var(--font-display); }
-  .path-banner .path-steps { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:4px; }
+  /* PATH BANNER */
+  .path-banner { background:hsla(43,55%,54%,0.06); border:1px solid hsla(43,55%,54%,0.2); border-radius:12px; padding:14px 18px; margin-bottom:14px; font-size:0.8rem; color:var(--muted); }
+  .path-steps { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:4px; }
   .path-step { background:var(--secondary); border:1px solid var(--border); border-radius:6px; padding:2px 10px; font-size:0.72rem; font-family:var(--font-display); font-weight:600; color:var(--fg); }
+  .path-step.active-step { border-color:var(--primary); color:var(--primary); background:hsla(43,55%,54%,0.1); }
   .path-arrow { color:var(--muted); font-size:0.8rem; }
 
-  .prog-change-btn { font-size:0.75rem; color:var(--muted); background:none; border:none; cursor:pointer; text-decoration:underline; margin-top:12px; font-family:var(--font-body); }
+  /* SEMESTER CONTEXT PILL */
+  .sem-context { display:inline-flex; align-items:center; gap:8px; background:hsla(30,90%,58%,0.08); border:1px solid hsla(30,90%,58%,0.25); border-radius:20px; padding:5px 14px; margin-bottom:14px; font-size:0.78rem; font-weight:600; color:var(--orange); font-family:var(--font-display); }
+  .sem-context .dot { width:6px; height:6px; border-radius:50%; background:var(--orange); }
+
+  .prog-change-btn { font-size:0.75rem; color:var(--muted); background:none; border:none; cursor:pointer; text-decoration:underline; margin-top:12px; font-family:var(--font-body); display:block; }
   .prog-change-btn:hover { color:var(--primary); }
 
-  /* ── FOOTER ── */
+  /* EMPTY STATE */
+  .empty-state { text-align:center; padding:40px 20px; color:var(--muted); }
+  .empty-state .icon { font-size:2.5rem; margin-bottom:10px; }
+  .empty-state p { font-size:0.85rem; }
+
+  /* TOAST */
+  .toast { position:fixed; bottom:24px; right:24px; z-index:500; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 20px; font-size:0.875rem; font-family:var(--font-display); font-weight:600; box-shadow:var(--glow-gold); transform:translateY(80px); opacity:0; transition:all .3s; pointer-events:none; max-width:320px; }
+  .toast.show { transform:translateY(0); opacity:1; }
+  .toast.success { border-color:hsla(152,60%,52%,0.4); color:var(--green); }
+  .toast.info    { border-color:hsla(43,55%,54%,0.4); color:var(--primary); }
+  .toast.warn    { border-color:hsla(0,70%,60%,0.4); color:var(--red); }
+
   .site-footer { border-top:1px solid var(--border); padding:32px 24px; margin-top:auto; }
   .footer-inner { max-width:1280px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
   .site-footer p { font-family:var(--font-display); font-size:0.875rem; color:var(--muted); line-height:1.7; }
@@ -171,22 +154,17 @@
   .site-footer a { color:var(--primary); }
   .site-footer small { font-size:0.75rem; color:var(--muted); }
 
-  @keyframes fadeUp  { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
-  @keyframes scaleIn { from{opacity:0;transform:scale(.94)} to{opacity:1;transform:scale(1)} }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
 
   @media (max-width:640px) {
-    main{padding:32px 16px 60px}
-    .title-wrap .subtitle{display:none}
+    main { padding:32px 16px 60px; }
+    .title-wrap .subtitle { display:none; }
     .prog-free-courses { grid-template-columns:1fr; }
+    .sem-row { grid-template-columns:1fr; }
   }
 </style>
 </head>
 <body>
-
-<div id="authGuard">
-  <div class="spinner"></div>
-  <p>Checking session…</p>
-</div>
 
 <header class="site-header">
   <div class="header-inner">
@@ -197,12 +175,14 @@
     <nav class="main-nav">
       <a href="ucc_knowledge_hub.html">Home</a>
       <a href="Loaners.html">Borrow &amp; Renew</a>
-      <a href="comptia.html"class="active">Comptia Courses</a>
+      <a href="comptia.html" class="active">CompTIA Courses</a>
       <a href="study_rooms.html">Study Rooms</a>
       <a href="Forum.html">Forum</a>
       <a href="leaderboard.html">Leaderboard</a>
       <a href="profile.html">Profile</a>
-      <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">🌙</button>
+      <span class="db-status" id="dbStatus"><span class="dot"></span> DB</span>
+      <span class="nav-user" id="navUser">—</span>
+      <button class="theme-toggle" id="themeToggle" title="Toggle theme">🌙</button>
       <button class="nav-logout" id="logoutBtn">Log Out</button>
     </nav>
   </div>
@@ -210,9 +190,12 @@
 
 <main>
 
-  <!-- PROGRAMME SELECTOR -->
   <div class="prog-selector" id="progSelector">
-    <div class="prog-selector-title">🎓 Select Your Programme of Study</div>
+    <div class="prog-selector-title">🎓 Find Your Free CompTIA Courses</div>
+    <div class="prog-selector-sub">Select your programme, year of study, and current semester to see exactly which certifications are free for you this term.</div>
+
+    <!-- STEP 1: School + Programme -->
+    <div class="step-divider"><span>Step 1 — Programme</span></div>
     <div class="prog-select-row">
       <div class="prog-select-group">
         <label>School / Faculty</label>
@@ -231,14 +214,60 @@
           <option value="">— Select school first —</option>
         </select>
       </div>
-      <button class="prog-confirm-btn" id="progConfirmBtn" disabled>Show Free Courses →</button>
     </div>
 
+    <!-- STEP 2: Year + Semester -->
+    <div class="step-divider"><span>Step 2 — Year &amp; Semester</span></div>
+    <div class="sem-row">
+      <div class="prog-select-group">
+        <label>Year of Study</label>
+        <select id="yearSelect" disabled>
+          <option value="">— Select —</option>
+          <option value="1">Year 1</option>
+          <option value="2">Year 2</option>
+          <option value="3">Year 3</option>
+          <option value="4">Year 4</option>
+        </select>
+      </div>
+      <div class="prog-select-group">
+        <label>Current Semester</label>
+        <select id="semesterSelect" disabled>
+          <option value="">— Select —</option>
+          <option value="1">Semester 1</option>
+          <option value="2">Semester 2</option>
+          <option value="3">Semester 3 (Summer)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- STEP 3: Course -->
+    <div class="step-divider"><span>Step 3 — Your Courses This Semester</span></div>
+    <div class="prog-select-group">
+      <label>Courses enrolled this semester</label>
+      <select id="courseSelect" disabled>
+        <option value="">— Complete Steps 1 &amp; 2 first —</option>
+      </select>
+    </div>
+    <div id="courseListPreview" style="display:none;margin-top:10px;"></div>
+
+    <!-- CONFIRM -->
+    <div style="margin-top:16px;">
+      <button class="prog-confirm-btn" id="progConfirmBtn" disabled>Show My Free Courses →</button>
+    </div>
+
+    <!-- RESULTS -->
     <div class="prog-result" id="progResult">
+
+      <div id="semContextPill"></div>
       <div class="prog-result-label" id="progResultLabel">🟢 Your Free CompTIA Courses</div>
       <div id="progPathBanner"></div>
       <div class="prog-free-courses" id="progFreeCourses"></div>
-      <button class="prog-change-btn" id="progChangeBtn">Change programme</button>
+      <div id="progEmpty" class="empty-state" style="display:none;">
+        <div class="icon">📋</div>
+        <p>No specific CompTIA courses are mapped to this semester yet.<br>Your full programme path is shown above — start with <strong>Year 1 Semester 1</strong>.</p>
+      </div>
+
+      <button class="prog-change-btn" id="progChangeBtn">↩ Change programme / semester</button>
     </div>
   </div>
 
@@ -253,12 +282,15 @@
   </div>
 </footer>
 
-<script>
-// ── SUPABASE INIT ─────────────────────────────────────
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-document.getElementById("year").textContent = new Date().getFullYear();
+<div class="toast" id="toast"></div>
 
-// ── THEME TOGGLE ──────────────────────────────────────
+<script>
+// ══════════════════════════════════════════════════════
+// SUPABASE + BOOT
+// ══════════════════════════════════════════════════════
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+document.getElementById('year').textContent = new Date().getFullYear();
+
 const themeBtn = document.getElementById('themeToggle');
 if (localStorage.getItem('ucc_theme') === 'light') { document.body.classList.add('light'); themeBtn.textContent = '☀️'; }
 themeBtn.addEventListener('click', () => {
@@ -268,197 +300,184 @@ themeBtn.addEventListener('click', () => {
 });
 
 function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-// ── LOGOUT ────────────────────────────────────────────
-document.getElementById('logoutBtn').addEventListener('click', async () => {
-  await sb.auth.signOut();
-  window.location.href = 'index.html';
-});
-
-// ────────────────────────────────────────────────────────
-// COURSE DATA
-// ────────────────────────────────────────────────────────
-const CERT_BASE_URL = 'https://www.comptia.org/en-us/certifications/';
-
-const COURSES = [
-  {
-    id:'aplus',
-    title:'CompTIA A+',
-    code:'A+',
-    level:'Beginner',
-    color:'#b8853a',
-    modules:14, hours:42, rating:4.8,
-    desc:'Foundational IT skills covering hardware, OS, networking, and troubleshooting. Industry-standard entry-level certification.',
-    path:'Core Infrastructure',
-    certUrl: CERT_BASE_URL + 'a/'
-  },
-  {
-    id:'netplus',
-    title:'CompTIA Network+',
-    code:'N+',
-    level:'Intermediate',
-    color:'#3a8a5f',
-    modules:12, hours:38, rating:4.7,
-    desc:'Networking concepts, infrastructure, operations, security, and troubleshooting across wired and wireless environments.',
-    path:'Core Infrastructure',
-    certUrl: CERT_BASE_URL + 'network/'
-  },
-  {
-    id:'secplus',
-    title:'CompTIA Security+',
-    code:'S+',
-    level:'Intermediate',
-    color:'#a03535',
-    modules:15, hours:48, rating:4.9,
-    desc:'Core cybersecurity skills — threat management, cryptography, identity management, and risk mitigation.',
-    path:'Cybersecurity',
-    certUrl: CERT_BASE_URL + 'security/'
-  },
-  {
-    id:'linuxplus',
-    title:'CompTIA Linux+',
-    code:'L+',
-    level:'Intermediate',
-    color:'#2a6e9e',
-    modules:11, hours:36, rating:4.6,
-    desc:'Linux system administration, scripting, security, and kernel management for enterprise environments.',
-    path:'Systems & Cloud',
-    certUrl: CERT_BASE_URL + 'linux/'
-  },
-  {
-    id:'cloudplus',
-    title:'CompTIA Cloud+',
-    code:'C+',
-    level:'Advanced',
-    color:'#5a3eaa',
-    modules:13, hours:44, rating:4.7,
-    desc:'Cloud infrastructure, deployment models, security, and management across hybrid environments.',
-    path:'Systems & Cloud',
-    certUrl: CERT_BASE_URL + 'cloud/'
-  },
-  {
-    id:'cysa',
-    title:'CompTIA CySA+',
-    code:'CS+',
-    level:'Advanced',
-    color:'#9e5820',
-    modules:14, hours:50, rating:4.8,
-    desc:'Cybersecurity analyst skills — threat detection, vulnerability management, incident response and reporting.',
-    path:'Cybersecurity',
-    certUrl: CERT_BASE_URL + 'cybersecurity-analyst/'
-  },
-  {
-    id:'pentest',
-    title:'CompTIA PenTest+',
-    code:'PT+',
-    level:'Advanced',
-    color:'#8a2060',
-    modules:12, hours:46, rating:4.9,
-    desc:'Penetration testing and vulnerability assessment across networks, applications, and cloud environments.',
-    path:'Cybersecurity',
-    certUrl: CERT_BASE_URL + 'pentest/'
-  },
-  {
-    id:'projplus',
-    title:'CompTIA Project+',
-    code:'P+',
-    level:'Beginner',
-    color:'#2a7a6a',
-    modules:10, hours:30, rating:4.5,
-    desc:'Project management fundamentals — initiation, planning, execution, monitoring and closure of IT projects.',
-    path:'Business & Management',
-    certUrl: CERT_BASE_URL + 'project/'
-  },
-  {
-    id:'casp',
-    title:'CompTIA CASP+',
-    code:'CASP',
-    level:'Expert',
-    color:'#6b2d8a',
-    modules:16, hours:55, rating:4.9,
-    desc:'Advanced Security Practitioner — enterprise security, risk management, and advanced cryptographic techniques.',
-    path:'Cybersecurity',
-    certUrl: CERT_BASE_URL + 'casp/'
-  },
-];
-
-// ────────────────────────────────────────────────────────
-// PROGRAMME → FREE COURSE MAPPING
-// 
-// ────────────────────────────────────────────────────────
-const PROG_COURSE_MAP = [
-  // ── Technology school — specific mappings first (most specific → least) ──
-  { match: 'networking with cyber security', ids: ['netplus','secplus'],
-    pathLabel: 'Network+ → Security+ → CySA+ → PenTest+',
-    note: 'Aligned with UCC BSc Networking with Cyber Security programme structure' },
-
-  { match: 'networking',      ids: ['netplus','secplus'],  pathLabel: 'Network+ → Security+' },
-  { match: 'cyber security',  ids: ['secplus','cysa'],     pathLabel: 'Security+ → CySA+ → PenTest+' },
-  { match: 'data science',    ids: ['linuxplus','cloudplus'], pathLabel: 'Linux+ → Cloud+' },
-  { match: 'computer engineering', ids: ['aplus','linuxplus'], pathLabel: 'A+ → Linux+' },
-  { match: 'electronics engineering', ids: ['aplus','linuxplus'], pathLabel: 'A+ → Linux+' },
-  { match: 'information technology', ids: ['aplus','netplus'], pathLabel: 'A+ → Network+' },
-
-  // ── Business / Management ──
-  { match: 'project management',  ids: ['projplus','aplus'],    pathLabel: 'Project+ → A+' },
-  { match: 'information systems', ids: ['aplus','netplus'],     pathLabel: 'A+ → Network+' },
-  { match: 'logistics',           ids: ['projplus','aplus'],    pathLabel: 'Project+ → A+' },
-  { match: 'supply chain',        ids: ['projplus','aplus'],    pathLabel: 'Project+ → A+' },
-  { match: 'entrepreneurship',    ids: ['projplus','cloudplus'], pathLabel: 'Project+ → Cloud+' },
-  { match: 'innovation',          ids: ['projplus','cloudplus'], pathLabel: 'Project+ → Cloud+' },
-  { match: 'marketing',           ids: ['projplus','aplus'],    pathLabel: 'Project+ → A+' },
-  { match: 'accounting',          ids: ['projplus','aplus'],    pathLabel: 'Project+ → A+' },
-  { match: 'financial management',ids: ['projplus','aplus'],    pathLabel: 'Project+ → A+' },
-  { match: 'human resource',      ids: ['projplus','aplus'],    pathLabel: 'Project+ → A+' },
-  { match: 'internal auditing',   ids: ['projplus','aplus'],    pathLabel: 'Project+ → A+' },
-  { match: 'international relations', ids: ['projplus','aplus'], pathLabel: 'Project+ → A+' },
-  { match: 'journalism',          ids: ['projplus','aplus'],    pathLabel: 'Project+ → A+' },
-  { match: 'media',               ids: ['projplus','aplus'],    pathLabel: 'Project+ → A+' },
-  { match: 'production',          ids: ['projplus','aplus'],    pathLabel: 'Project+ → A+' },
-  { match: 'tourism',             ids: ['projplus','aplus'],    pathLabel: 'Project+ → A+' },
-  { match: 'business administration', ids: ['projplus','aplus'], pathLabel: 'Project+ → A+' },
-
-  // ── Behavioural / Law ──
-  { match: 'criminology',  ids: ['secplus','aplus'], pathLabel: 'Security+ → A+' },
-  { match: 'law',          ids: ['projplus','aplus'], pathLabel: 'Project+ → A+' },
-  { match: 'social work',  ids: ['projplus','aplus'], pathLabel: 'Project+ → A+' },
-  { match: 'psychology',   ids: ['projplus','aplus'], pathLabel: 'Project+ → A+' },
-  { match: 'paralegal',    ids: ['projplus','aplus'], pathLabel: 'Project+ → A+' },
-
-  // ── COAS ──
-  { match: 'allied health',   ids: ['aplus','projplus'], pathLabel: 'A+ → Project+' },
-  { match: 'bpo',             ids: ['aplus','netplus'],  pathLabel: 'A+ → Network+' },
-  { match: 'construction',    ids: ['projplus','aplus'], pathLabel: 'Project+ → A+' },
-  { match: 'renewable energy',ids: ['linuxplus','cloudplus'], pathLabel: 'Linux+ → Cloud+' },
-
-  // ── Graduate ──
-  { match: 'cyber security & data privacy', ids: ['secplus','cysa'], pathLabel: 'Security+ → CySA+ → CASP+' },
-  { match: 'executive mba',   ids: ['projplus','cloudplus'], pathLabel: 'Project+ → Cloud+' },
-  { match: 'mba',             ids: ['projplus','cloudplus'], pathLabel: 'Project+ → Cloud+' },
-  { match: 'dba',             ids: ['projplus','cloudplus'], pathLabel: 'Project+ → Cloud+' },
-  { match: 'public administration', ids: ['projplus','aplus'], pathLabel: 'Project+ → A+' },
-];
-
-function getCoursesForProgramme(progName) {
-  const lower = progName.toLowerCase();
-  for (const entry of PROG_COURSE_MAP) {
-    if (lower.includes(entry.match.toLowerCase())) {
-      return {
-        courses: entry.ids.map(id => COURSES.find(c => c.id === id)).filter(Boolean),
-        pathLabel: entry.pathLabel,
-        note: entry.note || null
-      };
-    }
-  }
-  // Fallback
-  return {
-    courses: [COURSES.find(c=>c.id==='aplus'), COURSES.find(c=>c.id==='projplus')],
-    pathLabel: 'A+ → Project+',
-    note: null
-  };
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3500);
 }
 
-// ── PROGRAMMES LIST ───────────────────────────────────
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  await sb.auth.signOut(); window.location.href = 'index.html';
+});
+
+// ══════════════════════════════════════════════════════
+// COURSE DATA
+// ══════════════════════════════════════════════════════
+const CERT_BASE = 'https://www.comptia.org/en-us/certifications/';
+const COURSES = {
+  aplus:    { title:'CompTIA A+',        code:'A+',   level:'Beginner',     color:'#b8853a', modules:14, hours:42, rating:4.8, path:'Core Infrastructure', desc:'Foundational IT skills covering hardware, OS, networking, and troubleshooting.', url: CERT_BASE+'a/' },
+  netplus:  { title:'CompTIA Network+',  code:'N+',   level:'Intermediate', color:'#3a8a5f', modules:12, hours:38, rating:4.7, path:'Core Infrastructure', desc:'Networking concepts, infrastructure, operations, security and troubleshooting.', url: CERT_BASE+'network/' },
+  secplus:  { title:'CompTIA Security+', code:'S+',   level:'Intermediate', color:'#a03535', modules:15, hours:48, rating:4.9, path:'Cybersecurity',        desc:'Core cybersecurity skills — threat management, cryptography, risk mitigation.', url: CERT_BASE+'security/' },
+  linuxplus:{ title:'CompTIA Linux+',    code:'L+',   level:'Intermediate', color:'#2a6e9e', modules:11, hours:36, rating:4.6, path:'Systems & Cloud',      desc:'Linux system administration, scripting, security and kernel management.', url: CERT_BASE+'linux/' },
+  cloudplus:{ title:'CompTIA Cloud+',    code:'C+',   level:'Advanced',     color:'#5a3eaa', modules:13, hours:44, rating:4.7, path:'Systems & Cloud',      desc:'Cloud infrastructure, deployment models, security and hybrid management.', url: CERT_BASE+'cloud/' },
+  cysa:     { title:'CompTIA CySA+',     code:'CS+',  level:'Advanced',     color:'#9e5820', modules:14, hours:50, rating:4.8, path:'Cybersecurity',        desc:'Cybersecurity analyst — threat detection, vulnerability management, incident response.', url: CERT_BASE+'cybersecurity-analyst/' },
+  pentest:  { title:'CompTIA PenTest+',  code:'PT+',  level:'Advanced',     color:'#8a2060', modules:12, hours:46, rating:4.9, path:'Cybersecurity',        desc:'Penetration testing and vulnerability assessment for networks, apps and cloud.', url: CERT_BASE+'pentest/' },
+  projplus: { title:'CompTIA Project+',  code:'P+',   level:'Beginner',     color:'#2a7a6a', modules:10, hours:30, rating:4.5, path:'Business & Management',desc:'Project management fundamentals for IT — initiation through closure.', url: CERT_BASE+'project/' },
+  casp:     { title:'CompTIA CASP+',     code:'CASP', level:'Expert',       color:'#6b2d8a', modules:16, hours:55, rating:4.9, path:'Cybersecurity',        desc:'Advanced Security Practitioner — enterprise security, risk and cryptography.', url: CERT_BASE+'casp/' },
+};
+
+// ══════════════════════════════════════════════════════
+// PROGRAMME → CERT PATH + SEMESTER BREAKDOWN
+// Each entry maps a programme keyword to:
+//   pathLabel  — the full recommended cert progression
+//   pathIds    — all cert IDs in order (for the path banner)
+//   semesters  — { "yr-sem": [certIds] } — which certs are FREE each semester
+// If a semester key is missing, it means no specific cert is assigned that term.
+// ══════════════════════════════════════════════════════
+const PROG_MAP = [
+  {
+    match: 'networking with cyber security',
+    pathLabel: 'A+ → Network+ → Security+ → CySA+ → PenTest+',
+    pathIds: ['aplus','netplus','secplus','cysa','pentest'],
+    note: 'Aligned with UCC BSc Networking with Cyber Security programme structure',
+    semesters: {
+      '1-1': ['aplus'],
+      '1-2': ['aplus'],
+      '2-1': ['netplus'],
+      '2-2': ['netplus'],
+      '3-1': ['secplus'],
+      '3-2': ['secplus'],
+      '4-1': ['cysa'],
+      '4-2': ['pentest'],
+    }
+  },
+  {
+    match: 'information technology',
+    pathLabel: 'A+ → Network+ → Security+',
+    pathIds: ['aplus','netplus','secplus'],
+    semesters: {
+      '1-1': ['aplus'], '1-2': ['aplus'],
+      '2-1': ['netplus'], '2-2': ['netplus'],
+      '3-1': ['secplus'], '3-2': ['secplus'],
+    }
+  },
+  {
+    match: 'computer engineering',
+    pathLabel: 'A+ → Linux+ → Cloud+',
+    pathIds: ['aplus','linuxplus','cloudplus'],
+    semesters: {
+      '1-1': ['aplus'], '1-2': ['aplus'],
+      '2-1': ['linuxplus'], '2-2': ['linuxplus'],
+      '3-1': ['cloudplus'], '3-2': ['cloudplus'],
+    }
+  },
+  {
+    match: 'electronics engineering',
+    pathLabel: 'A+ → Linux+',
+    pathIds: ['aplus','linuxplus'],
+    semesters: {
+      '1-1': ['aplus'], '1-2': ['aplus'],
+      '2-1': ['linuxplus'], '2-2': ['linuxplus'],
+    }
+  },
+  {
+    match: 'data science',
+    pathLabel: 'Linux+ → Cloud+',
+    pathIds: ['linuxplus','cloudplus'],
+    semesters: {
+      '1-1': ['linuxplus'], '1-2': ['linuxplus'],
+      '2-1': ['cloudplus'], '2-2': ['cloudplus'],
+    }
+  },
+  {
+    match: 'cyber security & data privacy',
+    pathLabel: 'Security+ → CySA+ → CASP+',
+    pathIds: ['secplus','cysa','casp'],
+    semesters: {
+      '1-1': ['secplus'], '1-2': ['cysa'],
+      '2-1': ['casp'],
+    }
+  },
+  {
+    match: 'project management',
+    pathLabel: 'Project+ → A+',
+    pathIds: ['projplus','aplus'],
+    semesters: {
+      '1-1': ['projplus'], '1-2': ['projplus'],
+      '2-1': ['aplus'], '2-2': ['aplus'],
+    }
+  },
+  {
+    match: 'information systems',
+    pathLabel: 'A+ → Network+',
+    pathIds: ['aplus','netplus'],
+    semesters: {
+      '1-1': ['aplus'], '1-2': ['aplus'],
+      '2-1': ['netplus'], '2-2': ['netplus'],
+    }
+  },
+  {
+    match: 'renewable energy',
+    pathLabel: 'Linux+ → Cloud+',
+    pathIds: ['linuxplus','cloudplus'],
+    semesters: {
+      '1-1': ['linuxplus'], '2-1': ['cloudplus'],
+    }
+  },
+  {
+    match: 'bpo',
+    pathLabel: 'A+ → Network+',
+    pathIds: ['aplus','netplus'],
+    semesters: { '1-1': ['aplus'], '1-2': ['netplus'] }
+  },
+  {
+    match: 'criminology',
+    pathLabel: 'Security+ → A+',
+    pathIds: ['secplus','aplus'],
+    semesters: { '1-1': ['aplus'], '2-1': ['secplus'] }
+  },
+  {
+    match: 'entrepreneurship',
+    pathLabel: 'Project+ → Cloud+',
+    pathIds: ['projplus','cloudplus'],
+    semesters: { '1-1': ['projplus'], '2-1': ['cloudplus'] }
+  },
+  {
+    match: 'innovation',
+    pathLabel: 'Project+ → Cloud+',
+    pathIds: ['projplus','cloudplus'],
+    semesters: { '1-1': ['projplus'], '2-1': ['cloudplus'] }
+  },
+  {
+    match: 'mba',
+    pathLabel: 'Project+ → Cloud+',
+    pathIds: ['projplus','cloudplus'],
+    semesters: { '1-1': ['projplus'], '1-2': ['cloudplus'] }
+  },
+  // ── Default fallback for all other programmes ──
+  {
+    match: '__default__',
+    pathLabel: 'Project+ → A+',
+    pathIds: ['projplus','aplus'],
+    semesters: {
+      '1-1': ['projplus'], '1-2': ['projplus'],
+      '2-1': ['aplus'],    '2-2': ['aplus'],
+    }
+  },
+];
+
+function getProgEntry(progName) {
+  const lower = progName.toLowerCase();
+  for (const entry of PROG_MAP) {
+    if (entry.match === '__default__') continue;
+    if (lower.includes(entry.match)) return entry;
+  }
+  return PROG_MAP.find(e => e.match === '__default__');
+}
+
+// ══════════════════════════════════════════════════════
+// PROGRAMMES LIST
+// ══════════════════════════════════════════════════════
 const PROGRAMMES = {
   business:    ['Business Administration (BSc.)','Business Administration (ASc.)','Business Admin — Accounting & Financial Management','Business Admin — Accounting Major','Business Admin — Education Studies','Business Admin — Financial Management','Business Admin — Information Systems Management','Business Admin — Project Management','Human Resource Management','Innovation & Entrepreneurship','Internal Auditing','International Relations','Journalism (BA)','Logistics Operations & Management','Marketing (BSc.)','Marketing — Digital Marketing & Advertising','Media & Communications (BA)','Production & Operations Management (BSc.)','Production & Operations Management (ASc.)','Tourism & Hospitality Management (BSc.)','Tourism & Hospitality Management (ASc.)'],
   behavioural: ['Applied Psychology','Applied Psychology — Children & Adolescents Counselling','Bachelor of Laws (LLB) — University of London','Certificate of Higher Education in Common Law','Criminology & Criminal Justice','Paralegal Studies (ASc.)','Social Work','Social Work — Gerontology Specialisation'],
@@ -467,58 +486,284 @@ const PROGRAMMES = {
   graduate:    ['Cyber Security & Data Privacy Protection (MSc.)','Executive MBA (CEMBA)','Executive Master of Public Administration (CEMPA)','MBA — General Management','MBA — Accounting','MBA — Disaster Management','MBA — Entrepreneurship','MBA — Finance','MBA — Healthcare Management','MBA — Human Resource Management','MBA — Marketing','MBA — Project Management','Doctor of Business Administration (DBA)','Doctor of Professional Practice (DPP)'],
 };
 
-// ── DB HELPERS ────────────────────────────────────────
+// ══════════════════════════════════════════════════════
+// PROGRAMME COURSE STRUCTURE  [Year][Semester] → courses
+// ══════════════════════════════════════════════════════
+const PROGRAMME_COURSES = {
+  'Networking with Cyber Security (BSc.)': {
+    1:{1:['UCC101 Orientation to University Life','ENG109 Academic Writing I','ITT101 Computer Information Systems','SOC100 Introduction to Sociology','MTH002 Core Mathematics'],
+       2:['ENG110 Academic Writing II','MTH101 College Algebra','ITT103 Computer Hardware & Networking Fundamentals','ITT104 Operating Systems','PSY100 Introduction to Psychology']},
+    2:{1:['ITT201 Networking Technologies I','ITT202 Systems Administration I','ITT203 Database Management Systems','MTH201 Discrete Mathematics','ENG111 Public Speaking'],
+       2:['ITT204 Networking Technologies II','ITT205 Systems Administration II','ITT206 Web Technologies','SEC201 Introduction to Cybersecurity','SPA101 Introduction to Spanish']},
+    3:{1:['ITT301 Network Security','ITT302 Ethical Hacking & Penetration Testing','ITT303 Digital Forensics','ITT304 Wireless & Mobile Networking','ETH201 Ethics'],
+       2:['ITT305 Cloud Computing & Virtualisation','ITT306 Firewall & Intrusion Detection Systems','ITT307 Cryptography & PKI','RSH405 Introduction to Research','ENG104 Business Communication']},
+    4:{1:['ITT401 Advanced Network Security','ITT402 Incident Response & Recovery','ITT403 Security Governance & Compliance','ITT404 IoT Security','MGT403 Project Management'],
+       2:['ITT405 Capstone Project — Cybersecurity','RSH406 Applied Research','ITT406 Emerging Threats & Technologies','ETH401 Corporate Governance']},
+  },
+  'Information Technology (BSc.)': {
+    1:{1:['UCC101 Orientation to University Life','ENG109 Academic Writing I','ITT101 Computer Information Systems','SOC100 Introduction to Sociology','MTH002 Core Mathematics'],
+       2:['ENG110 Academic Writing II','MTH101 College Algebra','ITT103 Computer Hardware & Networking Fundamentals','ITT104 Operating Systems','PSY100 Introduction to Psychology']},
+    2:{1:['ITT201 Networking Technologies I','ITT202 Systems Administration I','ITT203 Database Management Systems','MTH201 Discrete Mathematics','ENG111 Public Speaking'],
+       2:['ITT204 Networking Technologies II','ITT205 Programming Fundamentals (Python)','ITT206 Web Technologies','ITT207 Software Development I','SPA101 Introduction to Spanish']},
+    3:{1:['ITT301 Systems Analysis & Design','ITT302 Software Development II','ITT303 Data Communications','ITT304 Mobile Application Development','ETH201 Ethics'],
+       2:['ITT305 Cloud Computing','ITT306 Database Administration','ITT307 IT Project Management','RSH405 Introduction to Research','ENG104 Business Communication']},
+    4:{1:['ITT401 Enterprise Systems','ITT402 IT Security Management','ITT403 Machine Learning & AI Fundamentals','MGT400 Strategic Management'],
+       2:['ITT404 Capstone Project','RSH406 Applied Research','ETH401 Corporate Governance']},
+  },
+  'Information Technology (ASc.)': {
+    1:{1:['UCC101 Orientation to University Life','ENG109 Academic Writing I','ITT101 Computer Information Systems','SOC100 Introduction to Sociology','MTH002 Core Mathematics'],
+       2:['ENG110 Academic Writing II','MTH101 College Algebra','ITT103 Computer Hardware & Networking Fundamentals','ITT104 Operating Systems','PSY100 Introduction to Psychology']},
+    2:{1:['ITT201 Networking Technologies I','ITT202 Systems Administration I','ITT203 Database Management Systems','MTH201 Discrete Mathematics','ENG111 Public Speaking'],
+       2:['ITT204 Networking Technologies II','ITT205 Programming Fundamentals (Python)','ITT206 Web Technologies','ITT207 Introduction to IT Security']},
+  },
+  'Computer Engineering (BSc.)': {
+    1:{1:['UCC101 Orientation to University Life','PHY101 Physics I','MTH101 College Algebra','ENG109 Academic Writing I'],
+       2:['PHY102 Physics II','MTH102 Calculus I','ENG101 Technical Writing','ELE101 Introduction to Electrical Circuits','ITT104 Operating Systems']},
+    2:{1:['ELE201 Digital Electronics','ELE202 Circuit Analysis','MTH202 Calculus II','ITT201 Computer Organisation & Architecture','ENG111 Public Speaking'],
+       2:['ELE203 Microprocessors & Microcontrollers','ELE204 Signals & Systems','ITT203 Database Management Systems','ITT205 Programming Fundamentals']},
+    3:{1:['ELE301 Embedded Systems Design','ELE302 Communication Systems','ITT301 Networking Technologies','ELE303 Control Systems','ETH201 Ethics'],
+       2:['ELE304 VLSI Design','ELE305 Power Electronics','ITT305 Cloud Computing','RSH405 Introduction to Research']},
+    4:{1:['ELE401 Robotics & Automation','ELE402 IoT Systems Engineering','ELE403 Advanced Communication Systems','MGT400 Strategic Management'],
+       2:['ELE404 Capstone Project','RSH406 Applied Research']},
+  },
+  'Data Science (BSc.)': {
+    1:{1:['UCC101 Orientation to University Life','MTH101 College Algebra','ITT101 Computer Information Systems','ENG109 Academic Writing I'],
+       2:['MTH102 Calculus I','MTH103 Probability & Statistics I','ITT104 Operating Systems','ITT205 Programming Fundamentals (Python)','ENG110 Academic Writing II']},
+    2:{1:['MTH201 Linear Algebra','MTH202 Probability & Statistics II','ITT203 Database Management Systems','DAT201 Data Structures & Algorithms','ENG111 Public Speaking'],
+       2:['DAT202 Data Wrangling & Visualisation','DAT203 Machine Learning I','ITT206 Web Technologies','MTH203 Discrete Mathematics']},
+    3:{1:['DAT301 Machine Learning II','DAT302 Big Data Technologies','DAT303 Natural Language Processing','DAT304 Data Mining','ETH201 Ethics'],
+       2:['DAT305 Deep Learning & Neural Networks','DAT306 Cloud Data Platforms','DAT307 Business Intelligence & Analytics','RSH405 Introduction to Research']},
+    4:{1:['DAT401 AI Ethics & Governance','DAT402 Advanced Statistical Modelling','DAT403 Capstone Project I','MGT400 Strategic Management'],
+       2:['DAT404 Capstone Project II','RSH406 Applied Research']},
+  },
+  'Electronics Engineering (BSc.)': {
+    1:{1:['UCC101 Orientation to University Life','PHY101 Physics I','MTH101 College Algebra','ENG109 Academic Writing I'],
+       2:['PHY102 Physics II','MTH102 Calculus I','ELE101 Introduction to Electrical Circuits','ENG110 Academic Writing II']},
+    2:{1:['ELE201 Digital Electronics','ELE202 Circuit Analysis','MTH202 Calculus II','ENG111 Public Speaking'],
+       2:['ELE203 Microprocessors & Microcontrollers','ELE204 Signals & Systems','ITT205 Programming Fundamentals']},
+    3:{1:['ELE301 Embedded Systems Design','ELE302 Communication Systems','ELE303 Control Systems','ETH201 Ethics'],
+       2:['ELE304 Power Electronics','ELE305 Instrumentation & Measurement','RSH405 Introduction to Research']},
+    4:{1:['ELE401 Advanced Communication Systems','ELE402 Renewable Energy Systems','MGT400 Strategic Management'],
+       2:['ELE403 Capstone Project','RSH406 Applied Research']},
+  },
+  'Business Administration (BSc.)': {
+    1:{1:['UCC101 Orientation to University Life','ACT001 Fundamentals of Accounting','ENG109 Academic Writing I','SOC100 Introduction to Sociology','MTH002 Core Mathematics'],
+       2:['PSY100 Introduction to Psychology','ITT101 Computer Information Systems','BUS102 Introduction to Business Administration','ACT100 Financial Accounting','MTH101 College Algebra']},
+    2:{1:['ENG110 Academic Writing II','ACT208 Cost Accounting','LAW101 Legal Concepts for Commerce','MTH201 Business Statistics','ENG111 Public Speaking'],
+       2:['ECN200 Principles of Micro Economics','MKT201 Principles of Marketing','SPA101 Introduction to Spanish','ENG104 Business Communication']},
+    3:{1:['ECN201 Principles of Macro Economics','OTB302 Organisational Theory & Behaviour','ACT207 Management Accounting','FIN300 Financial Management','ETH201 Ethics'],
+       2:['ITT308 Management Information Systems','ECN300 International Economics','MGT402 International Business Management','LAW400 Company Law']},
+    4:{1:['MTH400 Quantitative Methods','POM310 Production & Operations Management','MGT403 Project Management','ETH401 Corporate Governance','RSH405 Introduction to Research'],
+       2:['MGT400 Strategic Management','MKT300 Marketing Management','BUS403 Entrepreneurship','RSH406 Applied Research']},
+  },
+  'Business Admin — Accounting & Financial Management': {
+    1:{1:['UCC101 Orientation to University Life','ACT001 Fundamentals of Accounting','ENG109 Academic Writing I','SOC100 Introduction to Sociology','MTH101 College Algebra'],
+       2:['PSY100 Introduction to Psychology','ITT101 Computer Information Systems','BUS102 Introduction to Business Administration','ACT100 Financial Accounting','MTH201 Business Statistics']},
+    2:{1:['ENG110 Academic Writing II','ACT208 Cost Accounting','ACT207 Management Accounting','LAW101 Legal Concepts for Commerce','ENG111 Public Speaking'],
+       2:['FIN300 Financial Management','ECN200 Principles of Micro Economics','MKT201 Principles of Marketing','SPA101 Introduction to Spanish']},
+    3:{1:['ECN201 Principles of Macro Economics','ACT301 Advanced Financial Accounting','ACT302 Auditing & Assurance','FIN301 Corporate Finance','ETH201 Ethics'],
+       2:['ACT303 Taxation','ACT304 Public Sector Accounting','ITT308 Management Information Systems','LAW400 Company Law','RSH405 Introduction to Research']},
+    4:{1:['ACT401 Advanced Auditing','ACT402 Forensic Accounting','MTH400 Quantitative Methods','MGT400 Strategic Management','ETH401 Corporate Governance'],
+       2:['ACT403 Financial Reporting & Analysis','RSH406 Applied Research','BUS403 Entrepreneurship']},
+  },
+  'Marketing (BSc.)': {
+    1:{1:['UCC101 Orientation to University Life','ACT001 Fundamentals of Accounting','ENG109 Academic Writing I','SOC100 Introduction to Sociology','BUS102 Introduction to Business Administration'],
+       2:['PSY100 Introduction to Psychology','ITT101 Computer Information Systems','ACT100 Financial Accounting','MTH101 College Algebra','MKT201 Principles of Marketing']},
+    2:{1:['ENG110 Academic Writing II','MKT202 Consumer Behaviour','MKT203 Marketing Research','ECN200 Principles of Micro Economics','ENG111 Public Speaking'],
+       2:['MKT204 Advertising & Promotion','MKT205 Digital Marketing Fundamentals','LAW101 Legal Concepts for Commerce','SPA101 Introduction to Spanish']},
+    3:{1:['MKT301 Brand Management','MKT302 Social Media Marketing','MKT303 Sales Management','OTB302 Organisational Behaviour','ETH201 Ethics'],
+       2:['MKT304 E-Commerce & Digital Strategy','MKT305 International Marketing','ITT308 Management Information Systems','RSH405 Introduction to Research']},
+    4:{1:['MKT400 Marketing Management','MKT401 Marketing Analytics','MGT400 Strategic Management','ETH401 Corporate Governance'],
+       2:['MKT402 Marketing Capstone Project','RSH406 Applied Research','BUS403 Entrepreneurship']},
+  },
+  'Human Resource Management': {
+    1:{1:['UCC101 Orientation to University Life','ENG109 Academic Writing I','SOC100 Introduction to Sociology','BUS102 Introduction to Business Administration','ACT001 Fundamentals of Accounting'],
+       2:['PSY100 Introduction to Psychology','ITT101 Computer Information Systems','ACT100 Financial Accounting','MTH101 College Algebra','ENG110 Academic Writing II']},
+    2:{1:['HRM201 Introduction to Human Resource Management','HRM202 Organisational Behaviour','LAW101 Legal Concepts for Commerce','MKT201 Principles of Marketing','ENG111 Public Speaking'],
+       2:['HRM203 Recruitment & Selection','HRM204 Training & Development','ECN200 Principles of Micro Economics','SPA101 Introduction to Spanish']},
+    3:{1:['HRM301 Performance Management','HRM302 Compensation & Benefits','HRM303 Labour Relations & Employment Law','OTB302 Organisational Theory & Behaviour','ETH201 Ethics'],
+       2:['HRM304 HR Information Systems','HRM305 Diversity & Inclusion','ITT308 Management Information Systems','RSH405 Introduction to Research']},
+    4:{1:['HRM401 Strategic HRM','HRM402 Organisational Design & Development','MGT400 Strategic Management','ETH401 Corporate Governance'],
+       2:['HRM403 HR Capstone Project','RSH406 Applied Research','BUS403 Entrepreneurship']},
+  },
+  'Applied Psychology': {
+    1:{1:['UCC101 Orientation to University Life','ENG109 Academic Writing I','SOC100 Introduction to Sociology','PSY100 Introduction to Psychology','BIO101 Introduction to Biology'],
+       2:['PSY101 Biological Bases of Behaviour','PSY102 Developmental Psychology','ENG110 Academic Writing II','SOC101 Social Issues & Research','MTH101 College Algebra']},
+    2:{1:['PSY201 Social Psychology','PSY202 Abnormal Psychology','PSY203 Research Methods in Psychology','ENG111 Public Speaking','SOC200 Applied Sociology'],
+       2:['PSY204 Cognitive Psychology','PSY205 Personality Theories','PSY206 Counselling Theories I','SPA101 Introduction to Spanish']},
+    3:{1:['PSY301 Counselling Theories II','PSY302 Child & Adolescent Psychology','PSY303 Community Psychology','PSY304 Health Psychology','ETH201 Ethics'],
+       2:['PSY305 Psychopathology','PSY306 Assessment & Testing','RSH405 Introduction to Research','LAW301 Introduction to Law']},
+    4:{1:['PSY401 Organisational Psychology','PSY402 Crisis Intervention','PSY403 Practicum I','ETH401 Professional Ethics'],
+       2:['PSY404 Practicum II','PSY405 Research Thesis','RSH406 Applied Research']},
+  },
+  'Criminology & Criminal Justice': {
+    1:{1:['UCC101 Orientation to University Life','ENG109 Academic Writing I','SOC100 Introduction to Sociology','PSY100 Introduction to Psychology','POL100 Introduction to Politics'],
+       2:['CRJ101 Introduction to Criminology','LAW101 Legal Concepts for Commerce','ENG110 Academic Writing II','SOC101 Social Issues & Research','MTH101 College Algebra']},
+    2:{1:['CRJ201 Criminal Law','CRJ202 Policing & Law Enforcement','CRJ203 Research Methods in Criminology','PSY201 Social Psychology','ENG111 Public Speaking'],
+       2:['CRJ204 Corrections & Rehabilitation','CRJ205 Juvenile Justice','CRJ206 Victimology','SPA101 Introduction to Spanish']},
+    3:{1:['CRJ301 White-Collar Crime','CRJ302 Cybercrime & Digital Forensics','CRJ303 Drug Policy & Substance Abuse','CRJ304 Criminal Justice Administration','ETH201 Ethics'],
+       2:['CRJ305 Organised Crime','CRJ306 Crime Prevention & Community Safety','RSH405 Introduction to Research','LAW301 Criminal Procedure']},
+    4:{1:['CRJ401 Caribbean Criminology','CRJ402 Terrorism & National Security','CRJ403 Internship / Field Placement','ETH401 Professional Ethics'],
+       2:['CRJ404 Research Thesis','RSH406 Applied Research']},
+  },
+  'Cyber Security & Data Privacy Protection (MSc.)': {
+    1:{1:['CSC501 Foundations of Cybersecurity','CSC502 Network Security Architecture','CSC503 Data Privacy Law & Compliance','CSC504 Cryptography & Security Protocols','RSH501 Research Methods'],
+       2:['CSC505 Cloud Security','CSC506 Digital Forensics & Incident Response','CSC507 Ethical Hacking & Penetration Testing','CSC508 Risk Management & Governance']},
+    2:{1:['CSC601 Advanced Threat Intelligence','CSC602 IoT & Embedded Systems Security','CSC603 SOC Management','CSC604 Data Protection Technologies'],
+       2:['CSC605 Dissertation','CSC606 Capstone Seminar']},
+  },
+  'MBA — General Management': {
+    1:{1:['MBA501 Managerial Economics','MBA502 Financial Management for Managers','MBA503 Organisational Behaviour & Leadership','MBA504 Marketing Management','MBA505 Research Methods'],
+       2:['MBA506 Operations Management','MBA507 Human Resource Management','MBA508 Business Law & Ethics','MBA509 Entrepreneurship & Innovation']},
+    2:{1:['MBA601 Strategic Management','MBA602 International Business','MBA603 Corporate Governance','MBA604 Elective I'],
+       2:['MBA605 Management Consulting Project','MBA606 Elective II']},
+  },
+  'MBA — Project Management': {
+    1:{1:['MBA501 Managerial Economics','MBA502 Financial Management for Managers','MBA503 Organisational Behaviour & Leadership','MBA504 Marketing Management','MBA505 Research Methods'],
+       2:['PMG506 Project Planning & Scheduling','PMG507 Risk Management in Projects','MBA508 Business Law & Ethics','PMG509 Contract & Procurement Management']},
+    2:{1:['PMG601 Advanced Project Management','PMG602 Agile & Scrum Methodologies','MBA601 Strategic Management','PMG603 Project Finance'],
+       2:['PMG604 Capstone Project','PMG605 Portfolio & Programme Management']},
+  },
+  '_default_': {
+    1:{1:['ENG002 English for Academic Purposes','UCC101 Orientation to University Life','General Education Module I','Core Module I','Elective I'],
+       2:['ENG109 Academic Writing I','MTH101 College Algebra','Core Module II','Core Module III','General Education Module II']},
+    2:{1:['ENG110 Academic Writing II','Core Module IV','Core Module V','Specialised Module I','ENG111 Public Speaking'],
+       2:['Core Module VI','Specialised Module II','Specialised Module III','Elective II','SPA101 Introduction to Spanish']},
+    3:{1:['Specialised Module IV','Specialised Module V','ETH201 Ethics','ENG104 Business Communication'],
+       2:['Specialised Module VI','Specialised Module VII','RSH405 Introduction to Research','Elective III']},
+    4:{1:['MGT400 Strategic Management','RSH406 Applied Research','Capstone Module I','ETH401 Corporate Governance'],
+       2:['Capstone Project','Final Elective']},
+  },
+};
+
+function getSemesterCourses(progName, year, sem) {
+  // Try exact match first, then partial
+  let data = PROGRAMME_COURSES[progName];
+  if (!data) {
+    const lower = progName.toLowerCase();
+    const key = Object.keys(PROGRAMME_COURSES).find(k => k !== '_default_' && lower.includes(k.toLowerCase().split(' ')[0]));
+    data = key ? PROGRAMME_COURSES[key] : null;
+  }
+  data = data || PROGRAMME_COURSES['_default_'];
+  return data[parseInt(year)]?.[parseInt(sem)] || [];
+}
+
+// ══════════════════════════════════════════════════════
+// DB HELPERS
+// ══════════════════════════════════════════════════════
 let currentUser = null;
 
-async function dbSaveProgramme(school, programme) {
+async function dbSave(school, programme, year, semester) {
   if (!currentUser) return;
-  await sb.from('user_profiles').upsert({ id: currentUser.id, school, programme });
+  await sb.from('user_profiles').upsert({
+    id: currentUser.id, school, programme,
+    study_year: parseInt(year),
+    study_semester: parseInt(semester)
+  });
 }
-async function dbClearProgramme() {
+async function dbClear() {
   if (!currentUser) return;
-  await sb.from('user_profiles').upsert({ id: currentUser.id, school: null, programme: null });
+  await sb.from('user_profiles').upsert({
+    id: currentUser.id, school: null, programme: null,
+    study_year: null, study_semester: null
+  });
 }
 
-// ── AUTH ──────────────────────────────────────────────
-async function initAuth() {
-  const { data: { session } } = await sb.auth.getSession();
-  if (!session) { window.location.href = 'index.html'; return; }
-  currentUser = session.user;
-  document.getElementById('authGuard').style.display = 'none';
-  document.getElementById('navUser').textContent = currentUser.email?.split('@')[0] || 'Student';
-  document.getElementById('dbStatus').innerHTML = '<span class="dot"></span> Connected';
-
-  const { data } = await sb.from('user_profiles').select('school,programme').eq('id', currentUser.id).single();
-  if (data?.school && data?.programme) applyProgramme(data.school, data.programme, false);
-}
-
-// ── PROGRAMME SELECTOR ────────────────────────────────
-const schoolSel  = document.getElementById('schoolSelect');
-const progSel    = document.getElementById('programmeSelect');
-const confirmBtn = document.getElementById('progConfirmBtn');
-const progResult = document.getElementById('progResult');
+// ══════════════════════════════════════════════════════
+// SELECTOR WIRING
+// ══════════════════════════════════════════════════════
+const schoolSel   = document.getElementById('schoolSelect');
+const progSel     = document.getElementById('programmeSelect');
+const yearSel     = document.getElementById('yearSelect');
+const semSel      = document.getElementById('semesterSelect');
+const courseSel   = document.getElementById('courseSelect');
+const confirmBtn  = document.getElementById('progConfirmBtn');
+const progResult  = document.getElementById('progResult');
 
 schoolSel.addEventListener('change', () => {
-  const school = schoolSel.value;
+  const s = schoolSel.value;
   progSel.innerHTML = '<option value="">— Select your programme —</option>';
-  if (school && PROGRAMMES[school]) {
-    PROGRAMMES[school].forEach(p => {
+  if (s && PROGRAMMES[s]) {
+    PROGRAMMES[s].forEach(p => {
       const o = document.createElement('option'); o.value = p; o.textContent = p; progSel.appendChild(o);
     });
     progSel.disabled = false;
   } else {
     progSel.disabled = true;
-    confirmBtn.disabled = true;
   }
+  resetCourseDropdown();
+  checkReady();
 });
 
-progSel.addEventListener('change', () => { confirmBtn.disabled = !progSel.value; });
+progSel.addEventListener('change', () => {
+  yearSel.disabled = !progSel.value;
+  semSel.disabled  = !progSel.value;
+  resetCourseDropdown();
+  checkReady();
+});
+
+yearSel.addEventListener('change', () => { loadCourseDropdown(); checkReady(); });
+semSel.addEventListener('change',  () => { loadCourseDropdown(); checkReady(); });
+courseSel.addEventListener('change', checkReady);
+
+function resetCourseDropdown() {
+  courseSel.innerHTML = '<option value="">— Complete Steps 1 &amp; 2 first —</option>';
+  courseSel.disabled = true;
+  document.getElementById('courseListPreview').style.display = 'none';
+}
+
+function loadCourseDropdown() {
+  const prog = progSel.value;
+  const year = yearSel.value;
+  const sem  = semSel.value;
+  if (!prog || !year || !sem) { resetCourseDropdown(); return; }
+
+  const courses = getSemesterCourses(prog, year, sem);
+  if (!courses.length) {
+    courseSel.innerHTML = '<option value="">No courses found for this semester</option>';
+    courseSel.disabled = true;
+    document.getElementById('courseListPreview').style.display = 'none';
+    return;
+  }
+
+  courseSel.innerHTML = `<option value="">— ${courses.length} courses this semester —</option>`;
+  courses.forEach(c => {
+    const parts = c.split(' ');
+    const code  = parts[0];
+    const name  = parts.slice(1).join(' ');
+    const o = document.createElement('option');
+    o.value = c; o.textContent = `${code} — ${name}`; courseSel.appendChild(o);
+  });
+  courseSel.disabled = false;
+
+  // Show inline list preview below dropdown
+  const preview = document.getElementById('courseListPreview');
+  preview.style.display = 'block';
+  preview.innerHTML = `
+    <div class="course-list-preview">
+      <div class="course-list-count">${courses.length} courses enrolled — Year ${year}, Semester ${sem}</div>
+      ${courses.map(c => {
+        const parts = c.split(' ');
+        const code  = parts[0];
+        const name  = parts.slice(1).join(' ');
+        return `<div class="course-list-item">
+          <span class="course-code">${esc(code)}</span>
+          <span class="course-name">${esc(name)}</span>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function checkReady() {
+  confirmBtn.disabled = !(progSel.value && yearSel.value && semSel.value);
+}
 
 confirmBtn.addEventListener('click', async () => {
   const school = schoolSel.value, prog = progSel.value;
-  if (!school || !prog) return;
-  await dbSaveProgramme(school, prog);
-  applyProgramme(school, prog, true);
+  const year = yearSel.value, sem = semSel.value;
+  if (!school || !prog || !year || !sem) return;
+  await dbSave(school, prog, year, sem);
+  applyProgramme(school, prog, year, sem, true);
 });
 
 document.getElementById('progChangeBtn').addEventListener('click', async () => {
@@ -526,72 +771,128 @@ document.getElementById('progChangeBtn').addEventListener('click', async () => {
   schoolSel.value = '';
   progSel.innerHTML = '<option value="">— Select school first —</option>';
   progSel.disabled = true;
+  yearSel.value = ''; yearSel.disabled = true;
+  semSel.value = '';  semSel.disabled = true;
   confirmBtn.disabled = true;
-  await dbClearProgramme();
+  await dbClear();
 });
 
-function applyProgramme(school, prog, showMsg) {
+// ══════════════════════════════════════════════════════
+// APPLY PROGRAMME — renders everything
+// ══════════════════════════════════════════════════════
+function applyProgramme(school, prog, year, sem, showMsg) {
   schoolSel.value = school;
   schoolSel.dispatchEvent(new Event('change'));
+
   setTimeout(() => {
     progSel.value = prog;
+    yearSel.value = year;
+    semSel.value  = sem;
+    yearSel.disabled = false;
+    semSel.disabled  = false;
     confirmBtn.disabled = false;
 
-    const { courses, pathLabel, note } = getCoursesForProgramme(prog);
-    const displayProg = prog.length > 50 ? prog.slice(0,50)+'…' : prog;
-    document.getElementById('progResultLabel').textContent = `🟢 Your 2 Free CompTIA Courses — ${displayProg}`;
+    const entry = getProgEntry(prog);
+    const semKey = `${year}-${sem}`;
+    const certIds = entry.semesters[semKey] || [];
+    const semLabel = `Year ${year} · Semester ${sem}`;
+    const semNames = ['','Semester 1','Semester 2','Semester 3 (Summer)'];
+    const yearNames = ['','Year 1','Year 2','Year 3','Year 4'];
 
-    // ── Path banner ──
-    const pathSteps = pathLabel.split('→').map(s => s.trim());
+    // Semester context pill
+    document.getElementById('semContextPill').innerHTML = `
+      <div class="sem-context">
+        <span class="dot"></span>
+        ${esc(yearNames[year])} &nbsp;·&nbsp; ${esc(semNames[sem])} &nbsp;·&nbsp; ${esc(prog.length > 40 ? prog.slice(0,40)+'…' : prog)}
+      </div>`;
+
+    // Result label
+    document.getElementById('progResultLabel').textContent =
+      certIds.length
+        ? `🟢 Your Free CompTIA Course${certIds.length > 1 ? 's' : ''} — ${semLabel}`
+        : `📋 Certification Path — ${semLabel}`;
+
+    // Path banner — highlight active step
+    const pathSteps = entry.pathLabel.split('→').map(s => s.trim());
+    const activeCodes = certIds.map(id => COURSES[id]?.code);
     document.getElementById('progPathBanner').innerHTML = `
       <div class="path-banner">
         <div>
           <div style="font-size:0.72rem;color:var(--muted);margin-bottom:6px;">
-            📋 Recommended CompTIA Certification Path for your programme${note ? ` <span style="color:var(--primary);">(${note})</span>` : ''}
+            📋 Recommended CompTIA Certification Path
+            ${entry.note ? `· <span style="color:var(--primary);">${esc(entry.note)}</span>` : ''}
           </div>
           <div class="path-steps">
             ${pathSteps.map((s,i) => `
               ${i > 0 ? '<span class="path-arrow">→</span>' : ''}
-              <span class="path-step">${esc(s)}</span>
+              <span class="path-step ${activeCodes.includes(s) ? 'active-step' : ''}">${esc(s)}</span>
             `).join('')}
           </div>
           <div style="font-size:0.68rem;color:var(--muted);margin-top:6px;">
-            ✅ Your 2 free courses are highlighted below. Click any card to view the certification details on CompTIA's website.
+            ${activeCodes.length
+              ? `✅ <strong style="color:var(--primary);">${activeCodes.join(' & ')}</strong> is highlighted — this is your free cert for ${semLabel}.`
+              : `ℹ️ No specific cert is scheduled for ${semLabel}. Your full path is shown above.`}
           </div>
         </div>
       </div>`;
 
-    // ── Course cards ──
-    document.getElementById('progFreeCourses').innerHTML = courses.map((c, idx) => `
-      <div class="prog-free-card"
-           onclick="window.open('${c.certUrl}','_blank','noopener')"
-           role="button"
-           tabindex="0"
-           aria-label="Open ${esc(c.title)} on CompTIA website"
-           onkeydown="if(event.key==='Enter')window.open('${c.certUrl}','_blank','noopener')">
-        <div class="prog-free-icon" style="background:${c.color}">${esc(c.code)}</div>
-        <div class="prog-free-info">
-          <div class="prog-free-title">${esc(c.title)}</div>
-          <div class="prog-free-meta">${c.modules} modules · ${c.hours}h · ⭐ ${c.rating}</div>
-          <div class="prog-free-desc">${esc(c.desc)}</div>
-          <div class="prog-free-badges">
-            <span class="prog-free-badge">🟢 FREE this semester</span>
-            <span class="prog-free-badge badge-level">${esc(c.level)}</span>
-            <span class="prog-free-badge badge-path">${esc(c.path)}</span>
-          </div>
-        </div>
-      </div>`).join('');
+    // Course cards
+    const grid   = document.getElementById('progFreeCourses');
+    const empty  = document.getElementById('progEmpty');
+
+    if (!certIds.length) {
+      grid.innerHTML = '';
+      empty.style.display = 'block';
+    } else {
+      empty.style.display = 'none';
+      grid.innerHTML = certIds.map(id => {
+        const c = COURSES[id];
+        if (!c) return '';
+        return `
+          <div class="prog-free-card"
+               onclick="window.open('${c.url}','_blank','noopener')"
+               role="button" tabindex="0"
+               onkeydown="if(event.key==='Enter')window.open('${c.url}','_blank','noopener')">
+            <div class="prog-free-icon" style="background:${c.color}">${esc(c.code)}</div>
+            <div class="prog-free-info">
+              <div class="prog-free-title">${esc(c.title)}</div>
+              <div class="prog-free-meta">${c.modules} modules · ${c.hours}h · ⭐ ${c.rating}</div>
+              <div class="prog-free-desc">${esc(c.desc)}</div>
+              <div class="prog-free-badges">
+                <span class="prog-free-badge">🟢 FREE — ${esc(semLabel)}</span>
+                <span class="prog-free-badge badge-level">${esc(c.level)}</span>
+                <span class="prog-free-badge badge-path">${esc(c.path)}</span>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+    }
 
     progResult.classList.add('visible');
 
-    if (showMsg) {
-      const pill = document.createElement('div');
-      pill.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:500;background:var(--card);border:1px solid hsla(152,60%,52%,0.4);border-radius:12px;padding:12px 20px;font-size:.875rem;font-family:var(--font-display);font-weight:600;color:var(--green);box-shadow:0 0 40px hsla(43,55%,54%,0.25);animation:fadeUp .3s ease;';
-      pill.textContent = `🎓 ${courses[0]?.title} & ${courses[1]?.title} unlocked!`;
-      document.body.appendChild(pill);
-      setTimeout(() => pill.remove(), 3500);
-    }
+    if (showMsg) showToast(
+      certIds.length
+        ? `🎓 ${certIds.map(id=>COURSES[id]?.code).join(' & ')} unlocked for ${semLabel}!`
+        : `📋 Path loaded for ${semLabel}`,
+      'success'
+    );
   }, 50);
+}
+
+async function initAuth() {
+  const { data:{ session } } = await sb.auth.getSession();
+  if (session) {
+    currentUser = session.user;
+    document.getElementById('navUser').textContent = currentUser.email?.split('@')[0] || 'Student';
+    document.getElementById('dbStatus').innerHTML = '<span class="dot"></span> Connected';
+    const { data } = await sb.from('user_profiles')
+      .select('school,programme,study_year,study_semester')
+      .eq('id', currentUser.id).single();
+    if (data?.school && data?.programme && data?.study_year && data?.study_semester) {
+      applyProgramme(data.school, data.programme, data.study_year, data.study_semester, false);
+    }
+  }
+  // No session = page is still fully functional, selections just won't be saved/restored
 }
 
 initAuth();
