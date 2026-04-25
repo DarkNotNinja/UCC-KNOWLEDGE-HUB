@@ -1407,34 +1407,74 @@ async function selectReturnStudent(student) {
   document.getElementById("returnStudentMeta").textContent = `ID: ${student.school_id||student.id} · ${student.email||""}`;
   document.getElementById("returnStudentChip").style.display = "flex";
   document.getElementById("returnLoansCard").style.display   = "block";
-  await loadReturnLoans(student.id);
+  await loadReturnLoans(student.id, student.fullname);
 }
 
-async function loadReturnLoans(userId) {
+async function loadReturnLoans(userId, studentName) {
   const list  = document.getElementById("returnLoansList");
   const count = document.getElementById("returnLoansCount");
   list.innerHTML = `<p style="color:var(--muted);font-size:.875rem;">Loading loans…</p>`;
 
   try {
-    const { data: loansRaw, error: loansErr } = await sb
-      .from("loans").select("*")
-      .eq("user_id", String(userId)).eq("status","active")
-      .order("due_date",{ascending:true});
-    if (loansErr) throw loansErr;
-    const loans = loansRaw || [];
-    count.textContent = `${loans.length} active loan${loans.length!==1?"s":""}`;
+    // ── 1. Active loans (existing) ────────────────────
+   
+
+const { data: loansRaw, error: loansErr } = await sb
+  .from("loans").select("*")
+  .eq("user_id", String(userId)).eq("status", "active")
+  .order("due_date", { ascending: true });
+
+    // ── 2. Active holds (NEW) ─────────────────────────
+ 
+const { data: holdsRaw, error: holdsErr } = await sb
+  .from("book_holds").select("*")
+  .in("status", ["pending", "ready", "waitlist", "collected"])
+  .order("placed_at", { ascending: true });
+
+// Filter by name in JavaScript
+const filteredHolds = (holdsRaw || []).filter(h => 
+  h.student_name?.toLowerCase() === studentName.toLowerCase()
+);
+
+
+
+const { data: testData } = await sb.from("book_holds").select("*");
+
+
+    // ── 3. Normalise holds to look like loans ─────────
+    const holdsAsLoans = (filteredHolds || []).map(h => ({
+      ...h,
+      book_title:  h.book_title,
+      book_author: h.book_author,
+      due_date:    h.loan_due_date,
+      status:      "hold",          
+      _isHold:     true             
+    }));
+
+    const loans = [...(loansRaw || []), ...holdsAsLoans];
+    console.log("DEBUG loans:", loans, "userId:", userId);
+    count.textContent = `${loans.length} active loan${loans.length !== 1 ? "s" : ""}`;
+
 
     // Badge on tab
+    
     const badge = document.getElementById("returnsNavBadge");
-    const overdue = loans.filter(l => l.due_date && new Date(l.due_date) < new Date()).length;
-    if (overdue > 0) { badge.style.display="inline-flex"; badge.textContent=overdue; }
-    else              badge.style.display = "none";
 
-    if (!loans.length) {
-      list.innerHTML = `<p style="color:var(--muted);font-size:.875rem;padding:12px 0;">No active loans for this student.</p>`;
-      loadReturnHistory(userId);
-      return;
-    }
+// Count overdue loans + holds past their due date
+const overdue = loans.filter(l => l.due_date && new Date(l.due_date) < new Date()).length;
+
+// Also count pending holds for the badge (NEW)
+const pendingHolds = loans.filter(l => l._isHold).length;
+const badgeCount = overdue + pendingHolds;
+
+if (badgeCount > 0) { badge.style.display = "inline-flex"; badge.textContent = badgeCount; }
+else                  badge.style.display = "none";
+
+if (!loans.length) {
+  list.innerHTML = `<p style="color:var(--muted);font-size:.875rem;padding:12px 0;">No active loans or holds for this student.</p>`;
+  loadReturnHistory(userId);
+  return;
+}
 
     const now = new Date();
     list.innerHTML = loans.map(loan => {
@@ -1455,25 +1495,34 @@ async function loadReturnLoans(userId) {
       const finePreview = isOverdue
         ? `<div class="rlc-fine-preview">Auto-fine if returned now: $${(daysLate*200).toLocaleString()}</div>` : "";
 
-      return `<div class="return-loan-card ${stateClass}" style="margin-bottom:10px;">
-        <div style="font-size:1.8rem;flex-shrink:0;">📚</div>
-        <div class="rlc-body">
-          <div class="rlc-title">${escHtml(loan.book_title||"Unknown")}</div>
-          <div class="rlc-author">${escHtml(loan.book_author||"")}</div>
-          <div class="rlc-meta">
-            <span>📅 Borrowed ${borrowedStr}</span>
-            <span class="${isOverdue?"" : isDueSoon?"":""}">🗓 ${dueLabel}</span>
-            <span>📖 ${escHtml(loan.format||"Book")}</span>
-          </div>
-          ${finePreview}
-        </div>
-        <div class="rlc-actions">
-          <button class="btn-return"         onclick="markReturned('${loan.id}', 'normal',  ${JSON.stringify(loan).replace(/"/g,'&quot;')})">✅ Returned</button>
-          <button class="btn-return-damaged" onclick="markReturned('${loan.id}', 'damaged', ${JSON.stringify(loan).replace(/"/g,'&quot;')})">💥 Damaged</button>
-          <button class="btn-return-lost"    onclick="markReturned('${loan.id}', 'lost',    ${JSON.stringify(loan).replace(/"/g,'&quot;')})">❓ Lost</button>
-        </div>
-      </div>`;
-    }).join("");
+     const isCollected = loan._isHold && loan.status === "collected";
+
+return `<div class="return-loan-card ${isCollected ? "ok" : stateClass}" style="margin-bottom:10px;${isCollected ? "opacity:0.75;" : ""}">
+  <div style="font-size:1.8rem;flex-shrink:0;">${isCollected ? "📦" : "📚"}</div>
+  <div class="rlc-body">
+    <div class="rlc-title">${escHtml(loan.book_title||"Unknown")}
+      ${isCollected ? `<span style="font-size:0.7rem;background:hsla(220,25%,18%,0.8);border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:2px 8px;margin-left:8px;">📦 Collected</span>` : ""}
+    </div>
+    <div class="rlc-author">${escHtml(loan.book_author||"")}</div>
+    <div class="rlc-meta">
+      <span>📅 Borrowed ${borrowedStr}</span>
+      <span>🗓 ${dueLabel}</span>
+      <span>📖 ${escHtml(loan.format||"Book")}</span>
+    </div>
+    ${finePreview}
+  </div>
+  <div class="rlc-actions">
+    ${isCollected ? `
+      <button class="btn-return-damaged" onclick="markReturned('${loan.id}', 'damaged', ${JSON.stringify(loan).replace(/"/g,'&quot;')})">💥 Damaged</button>
+      <button class="btn-return-lost"    onclick="markReturned('${loan.id}', 'lost',    ${JSON.stringify(loan).replace(/"/g,'&quot;')})">❓ Lost</button>
+    ` : `
+      <button class="btn-return"         onclick="markReturned('${loan.id}', 'normal',  ${JSON.stringify(loan).replace(/"/g,'&quot;')})">✅ Returned</button>
+      <button class="btn-return-damaged" onclick="markReturned('${loan.id}', 'damaged', ${JSON.stringify(loan).replace(/"/g,'&quot;')})">💥 Damaged</button>
+      <button class="btn-return-lost"    onclick="markReturned('${loan.id}', 'lost',    ${JSON.stringify(loan).replace(/"/g,'&quot;')})">❓ Lost</button>
+    `}
+  </div>
+</div>`;
+}).join("");
 
     loadReturnHistory(userId);
   } catch(e) {
@@ -1483,6 +1532,10 @@ async function loadReturnLoans(userId) {
 }
 
 async function markReturned(loanId, condition, loan) {
+
+  console.log("markReturned called:", loanId, condition, loan);
+  console.log("is hold:", loan._isHold);
+
   const condLabels = { normal:"returned", damaged:"returned (damaged)", lost:"reported lost" };
   if (!confirm(`Mark this book as ${condLabels[condition]}?`)) return;
 
@@ -1492,11 +1545,30 @@ async function markReturned(loanId, condition, loan) {
   const isOverdue = due && due < now;
 
   try {
-    // 1. Mark loan as returned via Supabase
-    const { error: loanError } = await sb.from("loans")
-      .update({ status:"returned", returned_at: now.toISOString() })
-      .eq("id", loanId);
-    if (loanError) throw new Error("Failed to update loan: " + loanError.message);
+    
+    // 1. Mark as returned — check both loans and book_holds
+if (loan._isHold) {
+  const { error: holdError } = await sb.from("book_holds")
+    .update({ status:"collected" })
+    .eq("id", loanId);
+
+if (loan._isHold) {
+  const newStatus = condition === "normal" ? "returned" : condition === "damaged" ? "damaged" : "lost";
+  const { data, error: holdError } = await sb.from("book_holds")
+  .update({ status: newStatus })
+  .eq("id", loanId)
+  .select();
+
+  if (holdError) throw new Error("Failed to update hold: " + holdError.message);
+}
+    
+  if (holdError) throw new Error("Failed to update hold: " + holdError.message);
+} else {
+  const { error: loanError } = await sb.from("loans")
+    .update({ status:"returned", returned_at: now.toISOString() })
+    .eq("id", loanId);
+  if (loanError) throw new Error("Failed to update loan: " + loanError.message);
+}
 
     // 2. Auto-issue fine if overdue or damaged/lost
     let fineIssued = false;
@@ -1513,6 +1585,8 @@ async function markReturned(loanId, condition, loan) {
       });
       fineIssued = true;
       showToast(`📚 Returned + $${(daysLate*200).toLocaleString()} overdue fine issued automatically.`, "info");
+      finesLoaded = false; 
+      await loadAllFines();  
 
     } else if (condition === "damaged") {
       await sb.from("fines").insert({
@@ -1526,6 +1600,9 @@ async function markReturned(loanId, condition, loan) {
       });
       fineIssued = true;
       showToast("💥 Book marked damaged — $500 fine issued automatically.", "warn");
+      finesLoaded = false; 
+      await loadAllFines();
+      
 
     } else if (condition === "lost") {
       await sb.from("fines").insert({
@@ -1539,13 +1616,16 @@ async function markReturned(loanId, condition, loan) {
       });
       fineIssued = true;
       showToast("❓ Book marked lost — fine issued, amount TBD.", "warn");
+      finesLoaded = false; 
+      await loadAllFines();
 
     } else {
       showToast("✅ Book marked as returned. No fine.", "success");
     }
 
     // 3. Reload loans for this student
-    await loadReturnLoans(returnSelectedStudent.id);
+   console.log("returnSelectedStudent:", returnSelectedStudent);
+await loadReturnLoans(returnSelectedStudent.id, returnSelectedStudent.fullname);
 
   } catch(e) {
     console.error("markReturned:", e);
@@ -1840,63 +1920,96 @@ async function loadStudentLoans(userId) {
   const empty   = document.getElementById("loanPickerEmpty");
 
   group.style.display = "flex";
-  list.innerHTML = `<div style="font-size:0.82rem;color:var(--muted);padding:8px 0;">Loading loans…</div>`;
-  empty.style.display = "none";
-  clearLoanSelection();
+list.innerHTML = `<div style="font-size:0.82rem;color:var(--muted);padding:8px 0;">Loading loans…</div>`;
+empty.style.display = "none";
+clearLoanSelection();
 
-  try {
-    const { data: loansData } = await sb.from("loans").select("*")
-      .eq("user_id", String(userId)).eq("status","active")
-      .order("due_date",{ascending:true});
-    const loans = loansData || [];
+try {
+  // ── Active loans ──────────────────────────────────
+ const { data: loansData } = await sb.from("loans").select("*")
+  .eq("user_id", String(userId))
+  .in("status", ["active", "returned"])
+  .order("due_date", { ascending: true });
 
-    if (!loans.length) {
-      list.innerHTML = "";
-      empty.style.display = "block";
-      return;
-    }
+  // ── Active holds (NEW) ────────────────────────────
+  const { data: holdsData } = await sb.from("book_holds").select("*")
+    .eq("user_id", String(userId))
+    .in("status", ["returned", "damaged", "lost"])
+    .order("placed_at", { ascending: true });
+
+  // ── Normalise holds to match loan shape ───────────
+const filteredHoldsData = (holdsData || []).filter(h =>
+  h.student_name?.toLowerCase() === (selectedStudent?.fullname || "").toLowerCase()
+);
+const holdsAsLoans = (filteredHoldsData || []).map(h => ({
+    ...h,
+    book_title:  h.book_title,
+    book_author: h.book_author,
+    due_date:    h.loan_due_date,
+    status:      "active",
+    _isHold:     true
+  }));
+
+  const loans = [...(loansData || []), ...holdsAsLoans].filter(loan => {
+  if (loan._isHold) return true; // show all holds (collected/damaged/lost)
+  const due = loan.due_date ? new Date(loan.due_date) : null;
+  const isOverdue = due && due < new Date();
+  return isOverdue; // only show overdue loans
+});
 
     const now = new Date();
-    list.innerHTML = loans.map(loan => {
-      const due      = loan.due_date ? new Date(loan.due_date) : null;
-      const daysLate = due ? Math.floor((now - due) / 86400000) : 0;
-      const isOverdue  = due && due < now;
-      const isDueSoon  = due && !isOverdue && (due - now) < 86400000 * 3;
-      const stateClass = isOverdue ? "overdue" : isDueSoon ? "due-soon" : "ok";
+list.innerHTML = loans.map(loan => {
+  const due      = loan.due_date ? new Date(loan.due_date) : null;
+  const daysLate = due ? Math.floor((now - due) / 86400000) : 0;
+  const isOverdue  = due && due < now;
+  const isDueSoon  = due && !isOverdue && (due - now) < 86400000 * 3;
+  const stateClass = loan._isHold ? "ok" : isOverdue ? "overdue" : isDueSoon ? "due-soon" : "ok";
 
+  // Hold badge (NEW)
+  const holdBadge = loan._isHold
+    ? `<span style="font-size:0.7rem;background:hsla(43,55%,54%,0.15);border:1px solid hsla(43,55%,54%,0.4);color:var(--primary);border-radius:6px;padding:2px 7px;margin-left:6px;">⏳ Hold</span>`
+    : "";
+
+  // Overdue label — only for real loans, not holds
+  const overdueLabel = !loan._isHold && isOverdue
+    ? `<span style="font-size:0.7rem;color:var(--red);margin-left:6px;">⚠ ${daysLate}d overdue</span>`
+    : "";
       const dueStr = due
-        ? due.toLocaleDateString("en-JM", {month:"short", day:"numeric", year:"numeric"})
-        : "No due date";
+  ? due.toLocaleDateString("en-JM", {month:"short", day:"numeric", year:"numeric"})
+  : "No due date";
 
-      const dueLabel = isOverdue
-        ? `${daysLate} day${daysLate!==1?"s":""} overdue`
-        : due
-          ? `Due ${dueStr}`
-          : "No due date set";
+const dueLabel = loan._isHold
+  ? `Hold placed · ${due ? "Due " + dueStr : "No due date set"}`
+  : isOverdue
+    ? `${daysLate} day${daysLate!==1?"s":""} overdue`
+    : due
+      ? `Due ${dueStr}`
+      : "No due date set";
 
-      const badge = isOverdue
-        ? `<span class="lpc-badge overdue">Overdue</span>`
-        : isDueSoon
-          ? `<span class="lpc-badge due-soon">Due Soon</span>`
-          : `<span class="lpc-badge ok">On Time</span>`;
+const badge = loan._isHold
+  ? `<span class="lpc-badge ok">⏳ Hold</span>`
+  : isOverdue
+    ? `<span class="lpc-badge overdue">Overdue</span>`
+    : isDueSoon
+      ? `<span class="lpc-badge due-soon">Due Soon</span>`
+      : `<span class="lpc-badge ok">On Time</span>`;
 
-      return `<div class="loan-pick-card ${stateClass}" onclick="selectLoan(${JSON.stringify(loan).replace(/"/g,'&quot;')}, '${stateClass}')">
-        <div class="lpc-icon">📚</div>
-        <div class="lpc-body">
-          <div class="lpc-title">${escHtml(loan.book_title||"Unknown")}</div>
-          <div class="lpc-author">${escHtml(loan.book_author||"")}</div>
-          <div class="lpc-due ${stateClass}">${dueLabel}${isOverdue ? ` · ~$${(daysLate*200).toLocaleString()} fine` : ""}</div>
-        </div>
-        ${badge}
-      </div>`;
-    }).join("");
+return `<div class="loan-pick-card ${stateClass}" onclick="selectLoan(${JSON.stringify(loan).replace(/"/g,'&quot;')}, '${stateClass}')">
+  <div class="lpc-icon">${loan._isHold ? "⏳" : "📚"}</div>
+  <div class="lpc-body">
+    <div class="lpc-title">${escHtml(loan.book_title||"Unknown")}</div>
+    <div class="lpc-author">${escHtml(loan.book_author||"")}</div>
+    <div class="lpc-due ${stateClass}">${dueLabel}${!loan._isHold && isOverdue ? ` · ~$${(daysLate*200).toLocaleString()} fine` : ""}</div>
+  </div>
+  ${badge}
+</div>`;
+}).join("");
 
-  } catch(e) {
-    console.error("loadStudentLoans:", e);
-    list.innerHTML = `<div style="font-size:0.82rem;color:var(--muted);">Failed to load loans.</div>`;
-  }
+} catch(e) {
+  console.error("loadStudentLoans:", e);
+  list.innerHTML = `<div style="font-size:0.82rem;color:var(--muted);">Failed to load loans.</div>`;
+}  
 }
-
 function selectLoan(loan, stateClass) {
   // Auto-fill hidden fields
   document.getElementById("fineBookTitle").value  = loan.book_title  || "";
@@ -1958,5 +2071,4 @@ document.addEventListener("click", e => {
     document.getElementById("studentDropdown").style.display = "none";
   }
 });
-
 </script>
