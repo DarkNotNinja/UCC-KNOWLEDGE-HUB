@@ -369,9 +369,8 @@
           💸 Fines
           <span class="fines-nav-badge" id="finesNavBadge" style="display:none;">0</span>
         </button>
-        <button class="tab-nav-btn" onclick="switchTab('inventory')">📦 Inventory</button>
-        <button class="tab-nav-btn" onclick="switchTab('returns')" id="returnsTabBtn">
-          📥 Returns
+        <!--<button class="tab-nav-btn" onclick="switchTab('inventory')">📦 Inventory</button>-->
+        <button class="tab-nav-btn" onclick="switchTab('returns')" id="returnsTabBtn">📥 Returns
           <span class="fines-nav-badge" id="returnsNavBadge" style="display:none;">0</span>
         </button>
         <button class="tab-nav-btn" onclick="switchTab('history')" id="historyTabBtn">
@@ -607,7 +606,7 @@
   <!-- ════════════════════════════════════════════
        TAB 3: INVENTORY
   ════════════════════════════════════════════ -->
-  <div class="tab-panel" id="tab-inventory">
+  <!--<div class="tab-panel" id="tab-inventory">
 
     <div class="page-header">
       <div>
@@ -624,7 +623,7 @@
       <p style="color:var(--muted);font-size:.85rem;">Loading inventory…</p>
     </div>
 
-  </div><!-- /tab-inventory -->
+  </div>-->
 
 
   <!-- ════════════════════════════════════════════
@@ -770,19 +769,7 @@
 </div>
 
 <!-- INVENTORY MODAL -->
-<div class="modal-overlay" id="inventoryModal">
-  <div class="modal-box">
-    <div class="modal-top">
-      <h3>📦 Update Inventory</h3>
-      <button class="modal-close" onclick="document.getElementById('inventoryModal').classList.remove('open')">✕</button>
-    </div>
-    <div class="form-group"><label>Book / Section Title</label><input type="text" id="invTitle" placeholder="e.g. IT & Computing"></div>
-    <div class="form-group"><label>Shelf / Location</label><input type="text" id="invShelf" placeholder="e.g. IT & Computing / Shelf B"></div>
-    <div class="form-group"><label>Total Copies</label><input type="number" id="invCopies" min="0" value="3"></div>
-    <div class="form-group"><label>Currently Available</label><input type="number" id="invAvailable" min="0" value="2"></div>
-    <button class="modal-submit" onclick="saveInventory()">💾 Save Inventory</button>
-  </div>
-</div>
+
 
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────────────────

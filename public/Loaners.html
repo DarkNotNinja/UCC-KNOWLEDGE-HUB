@@ -35,7 +35,6 @@
     .nav-logout { font-size:0.875rem; color:hsl(0,70%,70%); padding:7px 14px; border-radius:8px; border:1px solid hsla(0,70%,60%,0.25); background:hsla(0,70%,60%,0.08); cursor:pointer; transition:all .2s; font-family:var(--font-body); }
     .nav-logout:hover { background:hsla(0,70%,60%,0.18); color:#fff; }
 
-    /* LIVE INDICATOR */
     .live-badge { display:inline-flex; align-items:center; gap:6px; font-size:0.72rem; font-weight:600; color:var(--green); font-family:var(--font-display); background:hsla(152,60%,52%,0.1); border:1px solid hsla(152,60%,52%,0.25); border-radius:20px; padding:4px 10px; }
     .live-dot { width:6px; height:6px; border-radius:50%; background:var(--green); animation:pulse 2s infinite; }
     @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
@@ -125,7 +124,6 @@
     .pickup-countdown.urgent { color:var(--red); }
     .pickup-countdown.ok     { color:var(--green); }
 
-    /* READY BANNER — appears when librarian marks a hold ready */
     .ready-banner { background:hsla(152,60%,52%,0.1); border:1px solid hsla(152,60%,52%,0.35); border-radius:12px; padding:14px 18px; display:flex; align-items:center; gap:12px; margin-bottom:4px; animation:fadeUp .4s ease; }
     .ready-banner .rb-icon { font-size:1.5rem; flex-shrink:0; }
     .ready-banner .rb-text strong { display:block; color:var(--green); font-family:var(--font-display); font-size:0.9rem; }
@@ -163,7 +161,7 @@
     /* HOLD MODAL */
     .modal-overlay { display:none; position:fixed; inset:0; z-index:200; background:hsla(220,40%,5%,0.88); backdrop-filter:blur(8px); align-items:center; justify-content:center; }
     .modal-overlay.open { display:flex; }
-    .modal-box { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:32px 36px; width:90%; max-width:500px; box-shadow:0 24px 70px rgba(0,0,0,0.6); animation:scaleIn .22s ease; max-height:90vh; overflow-y:auto; }
+    .modal-box { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:32px 36px; width:90%; max-width:520px; box-shadow:0 24px 70px rgba(0,0,0,0.6); animation:scaleIn .22s ease; max-height:90vh; overflow-y:auto; }
     .modal-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; }
     .modal-top h3 { font-size:1.15rem; font-weight:700; }
     .modal-close { background:none; border:none; color:var(--muted); font-size:1.3rem; cursor:pointer; line-height:1; }
@@ -175,7 +173,7 @@
     .book-preview-info h4 { font-size:0.95rem; font-weight:600; margin-bottom:4px; }
     .book-preview-info p  { font-size:0.8rem; color:var(--muted); margin-bottom:8px; }
 
-    .avail-status-box { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:10px; margin-bottom:22px; }
+    .avail-status-box { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:10px; margin-bottom:16px; }
     .avail-status-box.available   { background:hsla(152,60%,52%,0.08); border:1px solid hsla(152,60%,52%,0.25); }
     .avail-status-box.unavailable { background:hsla(30,90%,58%,0.08);  border:1px solid hsla(30,90%,58%,0.25); }
     .avail-icon { font-size:1.5rem; }
@@ -184,7 +182,21 @@
     .avail-status-box.available .avail-text strong   { color:var(--green); }
     .avail-status-box.unavailable .avail-text strong { color:var(--orange); }
 
-    .shelf-info { display:flex; align-items:center; gap:8px; background:var(--secondary); border:1px solid var(--border); border-radius:10px; padding:12px 16px; margin-bottom:22px; font-size:0.85rem; }
+    /* ── DURATION SELECTOR ── */
+    .duration-section { margin-bottom:18px; }
+    .duration-label { font-size:0.72rem; color:var(--muted); font-family:var(--font-display); font-weight:600; letter-spacing:.05em; text-transform:uppercase; margin-bottom:10px; display:block; }
+    .duration-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+    .dur-card { background:var(--secondary); border:2px solid var(--border); border-radius:10px; padding:10px 8px; text-align:center; cursor:pointer; transition:all .2s; }
+    .dur-card:hover { border-color:hsla(43,55%,54%,0.5); background:hsla(43,55%,54%,0.06); }
+    .dur-card.active { border-color:var(--primary); background:hsla(43,55%,54%,0.12); }
+    .dur-val { font-family:var(--font-display); font-size:0.82rem; font-weight:700; color:var(--fg); }
+    .dur-card.active .dur-val { color:var(--primary); }
+    .dur-sub { font-size:0.65rem; color:var(--muted); margin-top:2px; }
+    .dur-card.active .dur-sub { color:var(--primary); opacity:.7; }
+    .due-date-preview { margin-top:8px; font-size:0.8rem; color:var(--green); font-family:var(--font-display); font-weight:600; display:flex; align-items:center; gap:6px; }
+    .due-date-preview span { color:var(--muted); font-weight:400; font-family:var(--font-body); }
+
+    .shelf-info { display:flex; align-items:center; gap:8px; background:var(--secondary); border:1px solid var(--border); border-radius:10px; padding:12px 16px; margin-bottom:16px; font-size:0.85rem; }
     .shelf-info .shelf-icon { font-size:1.2rem; }
     .shelf-info div strong  { display:block; font-size:0.8rem; color:var(--fg); margin-bottom:1px; }
     .shelf-info div span    { font-size:0.75rem; color:var(--muted); }
@@ -215,7 +227,7 @@
     @keyframes fadeUp  { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
     @keyframes scaleIn { from{opacity:0;transform:scale(.94)} to{opacity:1;transform:scale(1)} }
     @media (max-width:900px) { .stats-row{grid-template-columns:repeat(2,1fr)} }
-    @media (max-width:640px) { main{padding:32px 16px 60px} .title-wrap .subtitle{display:none} .modal-box{padding:24px 18px} }
+    @media (max-width:640px) { main{padding:32px 16px 60px} .title-wrap .subtitle{display:none} .modal-box{padding:24px 18px} .duration-grid{grid-template-columns:repeat(2,1fr)} }
   </style>
 </head>
 <body>
@@ -276,7 +288,6 @@
     <div class="card-title">
       <span>🔖 My Holds</span>
       <div style="display:flex;align-items:center;gap:10px;">
-        <!--<span class="live-badge" style="font-size:0.68rem;"><span class="live-dot"></span> Updates automatically</span>-->
         <button class="btn btn-ghost btn-sm" onclick="loadMyHolds()">↻ Refresh</button>
       </div>
     </div>
@@ -335,6 +346,8 @@
       <h3>📖 Place a Hold</h3>
       <button class="modal-close" onclick="closeHoldModal()">✕</button>
     </div>
+
+    <!-- Book preview -->
     <div class="book-preview-row">
       <div class="book-preview-cover" id="modalCover">📚</div>
       <div class="book-preview-info">
@@ -342,6 +355,8 @@
         <p  id="modalAuthor">—</p>
       </div>
     </div>
+
+    <!-- Availability status -->
     <div id="availStatusBox" class="avail-status-box available">
       <span class="avail-icon" id="availIcon">✅</span>
       <div class="avail-text">
@@ -349,6 +364,35 @@
         <small  id="availSub">Please wait</small>
       </div>
     </div>
+
+    <!-- ── BORROW DURATION SELECTOR ── -->
+    <div class="duration-section">
+      <span class="duration-label">⏱ How long do you need it?</span>
+      <div class="duration-grid" id="durationGrid">
+        <div class="dur-card active" data-days="7"  onclick="selectDuration(this, 7)">
+          <div class="dur-val">1 Week</div>
+          <div class="dur-sub">7 days</div>
+        </div>
+        <div class="dur-card" data-days="14" onclick="selectDuration(this, 14)">
+          <div class="dur-val">2 Weeks</div>
+          <div class="dur-sub">14 days</div>
+        </div>
+        <div class="dur-card" data-days="21" onclick="selectDuration(this, 21)">
+          <div class="dur-val">3 Weeks</div>
+          <div class="dur-sub">21 days</div>
+        </div>
+        <div class="dur-card" data-days="30" onclick="selectDuration(this, 30)">
+          <div class="dur-val">1 Month</div>
+          <div class="dur-sub">30 days</div>
+        </div>
+      </div>
+      <div class="due-date-preview" id="dueDatePreview">
+        📅 Due back: <strong id="dueDateLabel">—</strong>
+        <span id="dueDateDay"></span>
+      </div>
+    </div>
+
+    <!-- Shelf location -->
     <div class="shelf-info">
       <span class="shelf-icon">📍</span>
       <div>
@@ -356,6 +400,7 @@
         <span id="shelfSection">—</span>
       </div>
     </div>
+
     <textarea class="note-input" id="holdNote" rows="2" placeholder="Optional note for the librarian…"></textarea>
     <button class="modal-submit" id="holdSubmitBtn" onclick="confirmHold()">Confirm Hold</button>
     <p class="modal-status" id="holdStatus"></p>
@@ -395,6 +440,7 @@ let myHolds      = [];
 let readingList  = JSON.parse(localStorage.getItem(`rl_${userId}`) || "[]");
 let savedIds     = new Set(readingList.map(b => b.id));
 let _holdBook    = null;
+let _selectedDurationDays = 7; // default 1 week
 
 const INVENTORY_CACHE = {};
 function getInventory(bookId) {
@@ -406,12 +452,32 @@ function getInventory(bookId) {
   return INVENTORY_CACHE[bookId];
 }
 
+// ── DURATION SELECTOR ─────────────────────────────────
+function selectDuration(card, days) {
+  _selectedDurationDays = days;
+  // Update active state
+  document.querySelectorAll(".dur-card").forEach(c => c.classList.remove("active"));
+  card.classList.add("active");
+  // Update due date preview
+  updateDueDatePreview();
+}
+
+function updateDueDatePreview() {
+  const dueDate = new Date();
+  dueDate.setDate(dueDate.getDate() + _selectedDurationDays);
+  const opts = { weekday:"long", month:"long", day:"numeric", year:"numeric" };
+  const dateStr = dueDate.toLocaleDateString("en-JM", opts);
+  document.getElementById("dueDateLabel").textContent = dueDate.toLocaleDateString("en-JM", { month:"short", day:"numeric", year:"numeric" });
+  document.getElementById("dueDateDay").textContent   = "(" + dueDate.toLocaleDateString("en-JM", { weekday:"long" }) + ")";
+}
+
 // ── INIT ─────────────────────────────────────────────
 window.addEventListener("DOMContentLoaded", () => {
   loadMyHolds();
   renderReadingList();
   updateStats();
-  subscribeToMyHolds(); // ← real-time listener
+  subscribeToMyHolds();
+  updateDueDatePreview(); // init the due date label
 });
 
 // ── REAL-TIME: subscribe to changes on THIS student's holds ──
@@ -431,17 +497,13 @@ function subscribeToMyHolds() {
 
 function handleHoldChange(payload) {
   const { eventType, new: newRow, old: oldRow } = payload;
-
   if (eventType === "INSERT") {
-    if (!myHolds.find(h => String(h.id) === String(newRow.id))) {
-      myHolds.unshift(newRow);
-    }
+    if (!myHolds.find(h => String(h.id) === String(newRow.id))) myHolds.unshift(newRow);
   } else if (eventType === "UPDATE") {
     const idx = myHolds.findIndex(h => String(h.id) === String(newRow.id));
     if (idx !== -1) {
       const prev = myHolds[idx];
       myHolds[idx] = newRow;
-      // Notify student when librarian marks ready
       if (prev.status !== "ready" && newRow.status === "ready") {
         showToast("🎉 Great news! Your book is ready for pickup!", "success");
         showReadyNotification(newRow);
@@ -456,13 +518,11 @@ function handleHoldChange(payload) {
     myHolds = myHolds.filter(h => String(h.id) !== String(oldRow.id));
     showToast("Hold removed by librarian.", "warn");
   }
-
   renderHolds();
   updateStats();
 }
 
 function showReadyNotification(hold) {
-  // Big banner notification for "book ready" — gets the student's attention
   const banner = document.createElement("div");
   banner.className = "ready-banner";
   banner.innerHTML = `
@@ -594,6 +654,8 @@ function bookCard(b) {
 // ── HOLD MODAL ────────────────────────────────────────
 function openHoldModal(book) {
   _holdBook = book;
+  _selectedDurationDays = 7; // reset to default
+
   const inv = getInventory(book.id);
   const coverEl = document.getElementById("modalCover");
   if (book.cover) coverEl.innerHTML=`<img src="${book.cover}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='📚'">`;
@@ -602,6 +664,13 @@ function openHoldModal(book) {
   document.getElementById("modalAuthor").textContent = book.author;
   document.getElementById("holdNote").value = "";
   document.getElementById("holdStatus").textContent = "";
+
+  // Reset duration selector to 1 week
+  document.querySelectorAll(".dur-card").forEach(c => {
+    c.classList.toggle("active", c.dataset.days === "7");
+  });
+  updateDueDatePreview();
+
   const box=document.getElementById("availStatusBox"), icon=document.getElementById("availIcon"), text=document.getElementById("availText"), sub=document.getElementById("availSub");
   if (inv.available>0) {
     box.className="avail-status-box available"; icon.textContent="✅";
@@ -616,6 +685,7 @@ function openHoldModal(book) {
   document.getElementById("shelfSection").textContent  = inv.shelf.split(" / ")[1]||"";
   document.getElementById("holdModal").classList.add("open");
 }
+
 function closeHoldModal() { document.getElementById("holdModal").classList.remove("open"); _holdBook=null; }
 document.getElementById("holdModal").addEventListener("click", e => { if(e.target===document.getElementById("holdModal")) closeHoldModal(); });
 
@@ -626,44 +696,47 @@ async function confirmHold() {
   const note   = document.getElementById("holdNote").value.trim();
   const inv    = getInventory(_holdBook.id);
 
+  // Calculate due date from selected duration
+  const dueDate = new Date();
+  dueDate.setDate(dueDate.getDate() + _selectedDurationDays);
+
   btn.disabled = true;
   status.style.color = "var(--muted)";
   status.textContent = "Placing hold…";
 
   const holdData = {
-    user_id:          userId,
-    student_name:     fullname,
-    book_id:          _holdBook.id,
-    book_title:       _holdBook.title,
-    book_author:      _holdBook.author,
-    book_cover:       _holdBook.cover || null,
-    shelf_location:   inv.shelf,
-    copies_available: inv.available,
-    status:           inv.available > 0 ? "pending" : "waitlist",
-    note:             note || null,
-    placed_at:        new Date().toISOString(),
-    pickup_by:        null
+    user_id:              userId,
+    student_name:         fullname,
+    book_id:              _holdBook.id,
+    book_title:           _holdBook.title,
+    book_author:          _holdBook.author,
+    book_cover:           _holdBook.cover || null,
+    shelf_location:       inv.shelf,
+    copies_available:     inv.available,
+    status:               inv.available > 0 ? "pending" : "waitlist",
+    note:                 note || null,
+    placed_at:            new Date().toISOString(),
+    pickup_by:            null,
+    loan_duration_days:   _selectedDurationDays,
+    loan_due_date:        dueDate.toISOString()   // ← new: stores when book must be returned
   };
 
-  // ── SUPABASE ONLY — no localStorage fallback ──────────────────
-  // This ensures the librarian always sees the hold.
   try {
     const { data, error } = await sb.from("book_holds").insert(holdData).select().single();
     if (error) throw error;
-    // The realtime subscription will fire and add it to myHolds automatically.
-    // We add it locally too in case the subscription is slightly delayed.
-    if (!myHolds.find(h => String(h.id)===String(data.id))) {
-      myHolds.unshift(data);
-    }
+    if (!myHolds.find(h => String(h.id)===String(data.id))) myHolds.unshift(data);
+
     btn.disabled = false;
     status.style.color = "var(--green)";
+    const dueFmt = dueDate.toLocaleDateString("en-JM", { weekday:"short", month:"short", day:"numeric" });
     status.textContent = inv.available>0
-      ? "✓ Hold placed! The librarian has been notified. Check back for updates."
-      : "✓ Added to waitlist! We'll notify you when a copy is ready.";
+      ? `✓ Hold placed! Due back by ${dueFmt}. Librarian has been notified.`
+      : `✓ Added to waitlist! Duration: ${_selectedDurationDays} day${_selectedDurationDays!==1?"s":""}. We'll notify you when ready.`;
+
     updateStats(); renderHolds();
     const card=document.getElementById(`card-${_holdBook.id}`);
     if (card) { const b2=card.querySelector(".ba-hold"); if(b2){b2.textContent="⏳ On Hold";b2.className="ba-btn ba-hold on-hold";b2.disabled=true;} }
-    setTimeout(closeHoldModal, 2200);
+    setTimeout(closeHoldModal, 2400);
   } catch(err) {
     btn.disabled = false;
     status.style.color = "var(--red)";
@@ -703,10 +776,17 @@ function renderHolds() {
       expired:  `<span class="hold-status-pill hs-expired">❌ Expired</span>`,
       collected:`<span class="hold-status-pill hs-collected">📦 Collected</span>`
     }[h.status]||"";
+
+    // Duration / due date info
+    const durationInfo = h.loan_duration_days
+      ? `<span style="font-size:0.72rem;color:var(--muted);">⏱ ${h.loan_duration_days} day${h.loan_duration_days!==1?"s":""}${h.loan_due_date ? ` · due ${new Date(h.loan_due_date).toLocaleDateString("en-JM",{month:"short",day:"numeric"})}` : ""}</span>`
+      : "";
+
     const pickupInfo = isReady && h.pickup_by
       ? `<div class="pickup-countdown ${isExpiring?"urgent":"ok"}">⏱ Pick up by: ${new Date(h.pickup_by).toLocaleString("en-JM",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})} — ${formatTimeLeft(h.pickup_by)} remaining</div>`
       : h.status==="pending" ? `<span style="font-size:0.72rem;color:var(--muted);">Librarian will prep your book shortly</span>`
       : h.status==="waitlist" ? `<span style="font-size:0.72rem;color:var(--muted);">You'll be notified when a copy is available</span>` : "";
+
     return `<div class="hold-item ${isReady?"ready":""} ${isExpiring?"expiring":""}" id="hi-${h.id}">
       <div class="hold-cover">${cover}</div>
       <div class="hold-info">
@@ -715,6 +795,7 @@ function renderHolds() {
         <div class="hold-meta">
           ${statusPill}
           ${h.shelf_location?`<div class="hold-location">📍 ${h.shelf_location}</div>`:""}
+          ${durationInfo}
         </div>
         ${pickupInfo}
         ${h.librarian_note?`<div style="margin-top:6px;font-size:0.75rem;color:var(--primary);background:hsla(43,55%,54%,0.08);border:1px solid hsla(43,55%,54%,0.2);border-radius:6px;padding:4px 10px;display:inline-block;">📝 Librarian: "${escHtml(h.librarian_note)}"</div>`:""}
@@ -731,9 +812,7 @@ async function cancelHold(holdId) {
   try {
     const { error } = await sb.from("book_holds").delete().eq("id", holdId);
     if (error) throw error;
-    // Realtime will fire DELETE event and remove it from myHolds
   } catch(e) {
-    // If realtime didn't fire, remove locally
     myHolds = myHolds.filter(h => String(h.id)!==String(holdId));
     renderHolds(); updateStats();
     console.error("cancelHold:", e);

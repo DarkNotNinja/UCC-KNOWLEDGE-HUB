@@ -180,8 +180,6 @@
       <a href="Forum.html">Forum</a>
       <a href="leaderboard.html">Leaderboard</a>
       <a href="profile.html">Profile</a>
-      <span class="db-status" id="dbStatus"><span class="dot"></span> DB</span>
-      <span class="nav-user" id="navUser">—</span>
       <button class="theme-toggle" id="themeToggle" title="Toggle theme">🌙</button>
       <button class="nav-logout" id="logoutBtn">Log Out</button>
     </nav>
@@ -191,11 +189,11 @@
 <main>
 
   <div class="prog-selector" id="progSelector">
-    <div class="prog-selector-title">🎓 Find Your Free CompTIA Courses</div>
+    <div class="prog-selector-title">Find Your Free CompTIA Courses</div>
     <div class="prog-selector-sub">Select your programme, year of study, and current semester to see exactly which certifications are free for you this term.</div>
 
     <!-- STEP 1: School + Programme -->
-    <div class="step-divider"><span>Step 1 — Programme</span></div>
+   <div class="step-divider"><span></span></div>
     <div class="prog-select-row">
       <div class="prog-select-group">
         <label>School / Faculty</label>
@@ -217,7 +215,7 @@
     </div>
 
     <!-- STEP 2: Year + Semester -->
-    <div class="step-divider"><span>Step 2 — Year &amp; Semester</span></div>
+    <div class="step-divider"><span></span></div>
     <div class="sem-row">
       <div class="prog-select-group">
         <label>Year of Study</label>
@@ -241,7 +239,7 @@
     </div>
 
     <!-- STEP 3: Course -->
-    <div class="step-divider"><span>Step 3 — Your Courses This Semester</span></div>
+    <div class="step-divider"><span></span></div>
     <div class="prog-select-group">
       <label>Courses enrolled this semester</label>
       <select id="courseSelect" disabled>
@@ -252,21 +250,21 @@
 
     <!-- CONFIRM -->
     <div style="margin-top:16px;">
-      <button class="prog-confirm-btn" id="progConfirmBtn" disabled>Show My Free Courses →</button>
+      <button class="prog-confirm-btn" id="progConfirmBtn" disabled>Show My Free Courses </button>
     </div>
 
     <!-- RESULTS -->
     <div class="prog-result" id="progResult">
 
       <div id="semContextPill"></div>
-      <div class="prog-result-label" id="progResultLabel">🟢 Your Free CompTIA Courses</div>
+      <div class="prog-result-label" id="progResultLabel">Your Free CompTIA Courses</div>
       <div id="progPathBanner"></div>
       <div class="prog-free-courses" id="progFreeCourses"></div>
       <div id="progEmpty" class="empty-state" style="display:none;">
+
         <div class="icon">📋</div>
         <p>No specific CompTIA courses are mapped to this semester yet.<br>Your full programme path is shown above — start with <strong>Year 1 Semester 1</strong>.</p>
       </div>
-
       <button class="prog-change-btn" id="progChangeBtn">↩ Change programme / semester</button>
     </div>
   </div>
@@ -307,7 +305,7 @@ function showToast(msg, type='success') {
 }
 
 document.getElementById('logoutBtn').addEventListener('click', async () => {
-  await sb.auth.signOut(); window.location.href = 'index.html';
+  await sb.auth.signOut(); window.location.href = 'ucc_landing_page.html';
 });
 
 // ══════════════════════════════════════════════════════
