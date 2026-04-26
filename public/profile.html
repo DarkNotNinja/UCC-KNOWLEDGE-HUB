@@ -294,6 +294,14 @@
     .stab { padding:7px 16px; border-radius:8px; border:1px solid var(--border); background:var(--secondary); color:var(--muted); font-size:0.8rem; font-weight:600; cursor:pointer; transition:all .2s; font-family:var(--font-display); }
     .stab:hover { color:var(--fg); }
     .stab.active { border-color:var(--primary); color:var(--primary); background:hsla(43,55%,54%,0.1); }
+
+    /* ── RETURN HISTORY MODAL ── */
+    .return-modal-overlay { display:none; position:fixed; inset:0; z-index:300; background:hsla(220,40%,5%,0.88); backdrop-filter:blur(8px); align-items:center; justify-content:center; padding:20px; }
+    .return-modal-overlay.open { display:flex; }
+    .return-modal-box { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:28px 32px; width:90%; max-width:580px; max-height:85vh; overflow-y:auto; box-shadow:0 24px 70px rgba(0,0,0,0.6); animation:scaleIn .22s ease; }
+    .return-hist-item { background:var(--secondary); border:1px solid var(--border); border-radius:12px; padding:14px 16px; display:flex; align-items:center; gap:14px; }
+    .return-hist-cover { width:42px; height:56px; border-radius:6px; background:var(--card); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0; overflow:hidden; }
+    .return-hist-cover img { width:100%; height:100%; object-fit:cover; }
   </style>
 </head>
 <body>
@@ -319,7 +327,7 @@
 
 <main>
 
-  <!-- FINES ALERT BANNER (shown only if unpaid fines exist) -->
+  <!-- FINES ALERT BANNER -->
   <div class="fines-alert-banner" id="finesAlertBanner" style="display:none;">
     <div class="fal-icon">⚠️</div>
     <div class="fal-body">
@@ -366,10 +374,10 @@
       <div class="action-icon">📗</div>
       <span class="action-label">Browse Library</span>
     </a>
-    <a class="action-card" href="pdf-materials.html">
+    <div class="action-card" onclick="openReturnHistoryModal()">
       <div class="action-icon">📕</div>
       <span class="action-label">Books Returned</span>
-    </a>
+    </div>
     <div class="action-card danger" onclick="scrollToFines()">
       <div class="action-icon">💰</div>
       <span class="action-label">View Fines</span>
@@ -394,7 +402,7 @@
     </div>
   </div>
 
-  <!-- ── MY FINES ── -->
+  <!-- MY FINES -->
   <div class="card" id="finesCard">
     <div class="card-header">
       <div style="display:flex;align-items:center;gap:10px;">
@@ -439,9 +447,9 @@
   <div class="card">
     <div class="card-header"><h2>🔒 Change Password</h2></div>
     <form id="passwordForm">
-      <div class="form-group"><label>Current Password</label><input type="password" id="currentPassword" placeholder="Enter current password" required></div>
-      <div class="form-group"><label>New Password</label><input type="password" id="newPassword" placeholder="Enter new password" required></div>
-      <div class="form-group"><label>Confirm New Password</label><input type="password" id="confirmPassword" placeholder="Repeat new password" required></div>
+      <div class="form-group"><label>Current Password</label><input type="password" id="currentPassword" placeholder="Enter current password" required autocomplete="current-password"></div>
+      <div class="form-group"><label>New Password</label><input type="password" id="newPassword" placeholder="Enter new password" required autocomplete="new-password"></div>
+      <div class="form-group"><label>Confirm New Password</label><input type="password" id="confirmPassword" placeholder="Repeat new password" required autocomplete="new-password"></div>
       <button class="btn btn-primary" type="submit">Update Password</button>
       <p id="passwordResult" style="margin-top:10px;font-size:.85rem;min-height:18px;"></p>
     </form>
@@ -460,6 +468,19 @@
 
 <div class="toast" id="toast"></div>
 
+<!-- ── RETURN HISTORY MODAL ── -->
+<div class="return-modal-overlay" id="returnHistoryModal">
+  <div class="return-modal-box">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border);">
+      <h3 style="font-family:var(--font-display);font-size:1.1rem;font-weight:700;">📕 Books Returned</h3>
+      <button onclick="closeReturnHistoryModal()" style="background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;">✕</button>
+    </div>
+    <div id="returnHistoryContent">
+      <p style="color:var(--muted);font-size:0.875rem;">Loading…</p>
+    </div>
+  </div>
+</div>
+
 <!-- ── PAY FINES MODAL ── -->
 <div class="modal-overlay" id="payFineModal">
   <div class="modal">
@@ -467,26 +488,18 @@
       <h3>💳 Pay Selected Fines</h3>
       <button class="modal-close" onclick="closeModal('payFineModal')">✕</button>
     </div>
-
-    <!-- List of selected fines to pay -->
     <div class="pay-modal-fine-list" id="payModalFineList"></div>
-
-    <!-- Total -->
     <div class="pay-total-row">
       <span class="pay-total-label">Total to pay</span>
       <span class="pay-total-amount" id="payModalTotal">$0.00</span>
     </div>
-
-    <!-- Card inputs -->
-    <div class="form-group"><label>Cardholder Name</label><input type="text" id="cardName" placeholder="Name on card"></div>
-    <div class="form-group"><label>Card Number</label><input type="text" id="cardNumber" placeholder="•••• •••• •••• ••••" maxlength="19" oninput="fmtCard(this)"></div>
+    <div class="form-group"><label>Cardholder Name</label><input type="text" id="cardName" placeholder="Name on card" autocomplete="cc-name"></div>
+    <div class="form-group"><label>Card Number</label><input type="text" id="cardNumber" placeholder="•••• •••• •••• ••••" maxlength="19" oninput="fmtCard(this)" autocomplete="cc-number"></div>
     <div style="display:flex;gap:12px;">
-      <div class="form-group" style="flex:1"><label>Expiry</label><input type="text" id="cardExpiry" placeholder="MM / YY" maxlength="7" oninput="fmtExpiry(this)"></div>
-      <div class="form-group" style="flex:1"><label>CVV</label><input type="text" id="cardCvv" placeholder="•••" maxlength="3"></div>
+      <div class="form-group" style="flex:1"><label>Expiry</label><input type="text" id="cardExpiry" placeholder="MM / YY" maxlength="7" oninput="fmtExpiry(this)" autocomplete="cc-exp"></div>
+      <div class="form-group" style="flex:1"><label>CVV</label><input type="text" id="cardCvv" placeholder="•••" maxlength="3" autocomplete="cc-csc"></div>
     </div>
-    <button class="btn btn-primary" style="width:100%;margin-top:4px;padding:14px;" id="payNowBtn" onclick="submitPayment()">
-      Pay Now
-    </button>
+    <button class="btn btn-primary" style="width:100%;margin-top:4px;padding:14px;" id="payNowBtn" onclick="submitPayment()">Pay Now</button>
     <p style="text-align:center;font-size:0.72rem;color:var(--muted);margin-top:10px;">🔒 Secure payment — your card details are encrypted</p>
   </div>
 </div>
@@ -494,8 +507,7 @@
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────────────────
 const SUPABASE_URL  = "https://bqgtuxhfqfmxvryfljya.supabase.co";
-const SUPABASE_ANON = "sb_publishable_y71RZ0UCDxkcmFQQHGEf-Q_davD0hbm"; 
-
+const SUPABASE_ANON = "sb_publishable_y71RZ0UCDxkcmFQQHGEf-Q_davD0hbm";
 const sb            = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
 document.getElementById("year").textContent = new Date().getFullYear();
@@ -503,9 +515,9 @@ document.getElementById("year").textContent = new Date().getFullYear();
 // ── AUTH ──────────────────────────────────────────────────────────────────────
 const token    = getToken();
 const _user    = getCurrentUser();
-const userId   = _user?.userId   || null;
+const userId   = _user?.userId || null;
 const fullname = _user?.fullname || "Student";
-const email    = _user?.email    || "";
+const email    = _user?.email   || "";
 
 document.getElementById("logoutBtn").addEventListener("click", () => logout());
 
@@ -513,7 +525,7 @@ document.getElementById("logoutBtn").addEventListener("click", () => logout());
 function openModal(id)  { document.getElementById(id).classList.add("open"); }
 function closeModal(id) { document.getElementById(id).classList.remove("open"); }
 document.querySelectorAll(".modal-overlay").forEach(o =>
-  o.addEventListener("click", e => { if (e.target===o) o.classList.remove("open"); })
+  o.addEventListener("click", e => { if (e.target === o) o.classList.remove("open"); })
 );
 
 // ── TOAST ─────────────────────────────────────────────────────────────────────
@@ -541,9 +553,8 @@ window.addEventListener("DOMContentLoaded", () => {
 
 // ── PROFILE ───────────────────────────────────────────────────────────────────
 function loadProfile() {
-  // Show immediately from auth.js token — no API needed
   const displayName  = _user?.fullname || fullname || "Unknown Student";
-  const displayEmail = _user?.email || email || "";
+  const displayEmail = _user?.email    || email    || "";
   const displayId    = _user?.school_id || _user?.userId || userId || "";
 
   const initials = displayName.split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase();
@@ -552,7 +563,6 @@ function loadProfile() {
   document.getElementById("heroEmail").textContent   = displayEmail;
   document.getElementById("heroBadgeId").textContent = "ID: " + (displayId ? displayId.toString().slice(0,10).toUpperCase() : "—");
 
-  // Optionally enrich from Railway API if configured
   if (token) {
     fetch("/api/user", { headers:{ "Authorization":"Bearer "+token } })
       .then(r => r.ok ? r.json() : null)
@@ -564,7 +574,7 @@ function loadProfile() {
         const i2 = (user.fullname||displayName).split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase();
         document.getElementById("avatarEl").textContent = i2;
       })
-      .catch(() => {}); // silent — already showing from token
+      .catch(() => {});
   }
 }
 
@@ -573,11 +583,9 @@ async function loadHolds() {
   const area = document.getElementById("holdsArea");
   try {
     const { data, error } = await sb
-      .from("book_holds")
-      .select("*")
+      .from("book_holds").select("*")
       .eq("user_id", userId)
       .order("placed_at", { ascending: false });
-
     if (error) throw error;
     const holds = data || [];
     renderHolds(holds);
@@ -618,7 +626,7 @@ function renderHolds(holds) {
       collected:`<span class="fine-pill fp-waived">📦 Collected</span>`,
       expired:  `<span class="fine-pill fp-unpaid">❌ Expired</span>`
     };
-    const canCancel = ["pending","waitlist"].includes(h.status);
+    const canCancel  = ["pending","waitlist"].includes(h.status);
     const placedDate = h.placed_at ? new Date(h.placed_at).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"}) : "—";
 
     return `<div class="hold-row status-${h.status}">
@@ -669,8 +677,83 @@ function updateHoldStats(holds) {
   document.getElementById("statCollected").textContent   = holds.filter(h=>h.status==="collected").length;
 }
 
+// ── RETURN HISTORY MODAL ──────────────────────────────────────────────────────
+async function openReturnHistoryModal() {
+  document.getElementById("returnHistoryModal").classList.add("open");
+  const content = document.getElementById("returnHistoryContent");
+  content.innerHTML = `<p style="color:var(--muted);font-size:0.875rem;text-align:center;padding:20px;">Loading your return history…</p>`;
+
+  try {
+    const { data, error } = await sb
+      .from("loans")
+      .select("*")
+      .eq("user_id", String(userId))
+      .eq("status", "returned")
+      .order("returned_at", { ascending: false });
+
+    if (error) throw error;
+
+    if (!data || !data.length) {
+      content.innerHTML = `
+        <div style="text-align:center;padding:40px 20px;color:var(--muted);">
+          <div style="font-size:2.5rem;margin-bottom:10px;">📭</div>
+          <div style="font-family:var(--font-display);font-weight:600;">No returned books yet</div>
+          <div style="font-size:0.8rem;margin-top:6px;">Books the librarian marks as returned will appear here.</div>
+        </div>`;
+      return;
+    }
+
+    content.innerHTML = `
+      <p style="font-size:0.78rem;color:var(--muted);margin-bottom:16px;">${data.length} book${data.length!==1?"s":""} returned</p>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        ${data.map(loan => {
+          const returnedDate = loan.returned_at
+            ? new Date(loan.returned_at).toLocaleDateString("en-JM",{weekday:"short",month:"short",day:"numeric",year:"numeric"})
+            : "—";
+          const borrowedDate = loan.borrowed_at
+            ? new Date(loan.borrowedat).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"})
+            : "—";
+
+          const conditionBadge = loan.return_condition === "damaged"
+            ? `<span style="font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:10px;background:hsla(30,90%,58%,0.12);color:var(--orange);border:1px solid hsla(30,90%,58%,0.3);">💥 Damaged</span>`
+            : loan.return_condition === "lost"
+            ? `<span style="font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:10px;background:hsla(210,80%,65%,0.12);color:var(--blue);border:1px solid hsla(210,80%,65%,0.3);">❓ Lost</span>`
+            : `<span style="font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:10px;background:hsla(152,60%,52%,0.12);color:var(--green);border:1px solid hsla(152,60%,52%,0.3);">✅ Good Condition</span>`;
+
+          return `<div class="return-hist-item">
+            <div class="return-hist-cover">
+              ${loan.book_cover ? `<img src="${loan.book_cover}" onerror="this.parentElement.innerHTML='📗'">` : "📗"}
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-weight:600;font-size:0.875rem;margin-bottom:2px;">${escHtml(loan.book_title||"Unknown")}</div>
+              <div style="font-size:0.75rem;color:var(--muted);margin-bottom:6px;">${escHtml(loan.book_author||"")}</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                ${conditionBadge}
+                <span style="font-size:0.7rem;color:var(--muted);">📅 Borrowed ${borrowedDate}</span>
+                <span style="font-size:0.7rem;color:var(--muted);">✅ Returned ${returnedDate}</span>
+              </div>
+            </div>
+          </div>`;
+        }).join("")}
+      </div>`;
+
+  } catch(e) {
+    console.error("openReturnHistoryModal:", e);
+    content.innerHTML = `<p style="color:var(--red);font-size:0.875rem;text-align:center;padding:20px;">Failed to load return history.</p>`;
+  }
+}
+
+function closeReturnHistoryModal() {
+  document.getElementById("returnHistoryModal").classList.remove("open");
+}
+
+// Close return modal when clicking outside
+document.getElementById("returnHistoryModal").addEventListener("click", e => {
+  if (e.target === document.getElementById("returnHistoryModal")) closeReturnHistoryModal();
+});
+
 // ── FINES ─────────────────────────────────────────────────────────────────────
-let allFines       = [];
+let allFines        = [];
 let selectedFineIds = new Set();
 
 const FINE_TYPES = {
@@ -683,21 +766,18 @@ async function loadFines() {
   const section = document.getElementById("finesSection");
   try {
     const { data, error } = await sb
-      .from("fines")
-      .select("*")
+      .from("fines").select("*")
       .eq("user_id", userId)
       .order("issued_at", { ascending: false });
-
     if (error) throw error;
     allFines = data || [];
 
-    // Auto-recalculate overdue fines amount based on days
     allFines = allFines.map(f => {
       if (f.fine_type === "overdue" && f.fine_status === "unpaid" && f.due_date) {
         const daysLate = Math.max(0, Math.floor((Date.now() - new Date(f.due_date)) / 86400000));
-        f.amount = daysLate * 200;
-        f._accruing = true;
-        f._daysLate = daysLate;
+        f.amount     = daysLate * 200;
+        f._accruing  = true;
+        f._daysLate  = daysLate;
       }
       return f;
     });
@@ -711,9 +791,9 @@ async function loadFines() {
 }
 
 function renderFines() {
-  const section = document.getElementById("finesSection");
-  const unpaid  = allFines.filter(f => f.fine_status === "unpaid");
-  const paid    = allFines.filter(f => f.fine_status !== "unpaid");
+  const section     = document.getElementById("finesSection");
+  const unpaid      = allFines.filter(f => f.fine_status === "unpaid");
+  const paid        = allFines.filter(f => f.fine_status !== "unpaid");
   const totalUnpaid = unpaid.reduce((s,f) => s + (f.amount||0), 0);
   const hasConsult  = unpaid.some(f => f.fine_type === "lost");
 
@@ -727,39 +807,25 @@ function renderFines() {
     return;
   }
 
-  // Summary bar
   const summaryBar = `
     <div class="fines-summary-bar">
-      <div class="fsb-item">
-        <div class="fsb-label">Unpaid</div>
-        <div class="fsb-val red">$${totalUnpaid.toLocaleString()}</div>
-      </div>
+      <div class="fsb-item"><div class="fsb-label">Unpaid</div><div class="fsb-val red">$${totalUnpaid.toLocaleString()}</div></div>
       <div class="fsb-divider"></div>
-      <div class="fsb-item">
-        <div class="fsb-label">Total Fines</div>
-        <div class="fsb-val">${allFines.length}</div>
-      </div>
+      <div class="fsb-item"><div class="fsb-label">Total Fines</div><div class="fsb-val">${allFines.length}</div></div>
       <div class="fsb-divider"></div>
-      <div class="fsb-item">
-        <div class="fsb-label">Unpaid</div>
-        <div class="fsb-val orange">${unpaid.length}</div>
-      </div>
+      <div class="fsb-item"><div class="fsb-label">Unpaid</div><div class="fsb-val orange">${unpaid.length}</div></div>
       <div class="fsb-divider"></div>
-      <div class="fsb-item">
-        <div class="fsb-label">Paid / Waived</div>
-        <div class="fsb-val green">${paid.length}</div>
-      </div>
+      <div class="fsb-item"><div class="fsb-label">Paid / Waived</div><div class="fsb-val green">${paid.length}</div></div>
       <div class="fsb-actions">
         <button class="btn btn-outline btn-sm" onclick="selectAllFines()">Select All</button>
         <button class="btn btn-primary btn-sm" onclick="openPayModal()" ${unpaid.length===0?"disabled":""}>Pay Selected</button>
       </div>
     </div>`;
 
-  // Fine rows
   const fineRows = allFines.map(f => {
-    const type     = FINE_TYPES[f.fine_type] || FINE_TYPES.overdue;
-    const isPaid   = f.fine_status !== "unpaid";
-    const isConsult= f.fine_type === "lost";
+    const type       = FINE_TYPES[f.fine_type] || FINE_TYPES.overdue;
+    const isPaid     = f.fine_status !== "unpaid";
+    const isConsult  = f.fine_type === "lost";
     const isSelected = selectedFineIds.has(f.id);
 
     const amountDisplay = isConsult
@@ -774,25 +840,11 @@ function renderFines() {
           ? `<span class="fine-pill fp-consult">📞 See Librarian</span>`
           : `<span class="fine-pill fp-unpaid">⚠️ Unpaid</span>`;
 
-    const accruing = f._accruing
-      ? `<span class="accruing-tag">+$200/day · ${f._daysLate} day${f._daysLate!==1?"s":""} late</span>`
-      : "";
-
-    const dueDateStr = f.due_date
-      ? `<span>📅 Due ${new Date(f.due_date).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"})}</span>`
-      : "";
-
-    const issuedStr = f.issued_at
-      ? `<span>🕐 Issued ${new Date(f.issued_at).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"})}</span>`
-      : "";
-
-    const noteStr = f.librarian_note
-      ? `<span style="color:var(--primary);">📝 ${escHtml(f.librarian_note)}</span>`
-      : "";
-
-    const clickHandler = (!isPaid && !isConsult)
-      ? `onclick="toggleFineSelection('${f.id}')"`
-      : "";
+    const accruing   = f._accruing ? `<span class="accruing-tag">+$200/day · ${f._daysLate} day${f._daysLate!==1?"s":""} late</span>` : "";
+    const dueDateStr = f.due_date  ? `<span>📅 Due ${new Date(f.due_date).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"})}</span>` : "";
+    const issuedStr  = f.issued_at ? `<span>🕐 Issued ${new Date(f.issued_at).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"})}</span>` : "";
+    const noteStr    = f.librarian_note ? `<span style="color:var(--primary);">📝 ${escHtml(f.librarian_note)}</span>` : "";
+    const clickHandler = (!isPaid && !isConsult) ? `onclick="toggleFineSelection('${f.id}')"` : "";
 
     return `
       <div class="fine-row ${isSelected?"selected":""} ${isPaid?"paid":""}" id="fine-row-${f.id}" ${clickHandler}>
@@ -800,33 +852,15 @@ function renderFines() {
         <div class="fine-type-icon ${f.fine_type}">${type.icon}</div>
         <div class="fine-body">
           <div class="fine-book-title">${escHtml(f.book_title||"Unknown Book")}</div>
-          <div class="fine-reason">
-            ${type.label}
-            ${accruing}
-          </div>
-          <div class="fine-meta">
-            ${dueDateStr}
-            ${issuedStr}
-            ${noteStr}
-            ${f.book_author ? `<span>✍️ ${escHtml(f.book_author)}</span>` : ""}
-          </div>
+          <div class="fine-reason">${type.label} ${accruing}</div>
+          <div class="fine-meta">${dueDateStr}${issuedStr}${noteStr}${f.book_author ? `<span>✍️ ${escHtml(f.book_author)}</span>` : ""}</div>
         </div>
-        <div class="fine-right">
-          ${amountDisplay}
-          ${pill}
-        </div>
+        <div class="fine-right">${amountDisplay}${pill}</div>
       </div>`;
   }).join("");
 
-  // Consult note
-  const consultNote = hasConsult ? `
-    <div class="consult-badge">
-      📞 <strong>Lost book fine(s):</strong> Please visit or contact the library to determine the replacement cost.
-      The amount will be set by the librarian based on the book's value.
-    </div>` : "";
-
-  // Selection bar (shown when items selected)
-  const selectionBar = `
+  const consultNote   = hasConsult ? `<div class="consult-badge">📞 <strong>Lost book fine(s):</strong> Please visit or contact the library to determine the replacement cost.</div>` : "";
+  const selectionBar  = `
     <div class="pay-selection-bar" id="selectionBar" style="${selectedFineIds.size===0?"display:none":""}">
       <div class="psb-text">
         <strong>${selectedFineIds.size} fine${selectedFineIds.size!==1?"s":""} selected</strong>
@@ -844,45 +878,30 @@ function renderFines() {
 function toggleFineSelection(fineId) {
   const fine = allFines.find(f => f.id === fineId);
   if (!fine || fine.fine_status !== "unpaid" || fine.fine_type === "lost") return;
-
-  if (selectedFineIds.has(fineId)) {
-    selectedFineIds.delete(fineId);
-  } else {
-    selectedFineIds.add(fineId);
-  }
+  if (selectedFineIds.has(fineId)) selectedFineIds.delete(fineId);
+  else selectedFineIds.add(fineId);
   updateSelectionUI();
 }
 
 function selectAllFines() {
-  const payable = allFines.filter(f => f.fine_status === "unpaid" && f.fine_type !== "lost");
-  payable.forEach(f => selectedFineIds.add(f.id));
+  allFines.filter(f => f.fine_status === "unpaid" && f.fine_type !== "lost").forEach(f => selectedFineIds.add(f.id));
   updateSelectionUI();
 }
 
-function clearSelection() {
-  selectedFineIds.clear();
-  updateSelectionUI();
-}
+function clearSelection() { selectedFineIds.clear(); updateSelectionUI(); }
 
 function updateSelectionUI() {
   const selected = allFines.filter(f => selectedFineIds.has(f.id));
   const total    = selected.reduce((s,f) => s + (f.amount||0), 0);
 
-  // Update row highlights
   allFines.forEach(f => {
     const row = document.getElementById(`fine-row-${f.id}`);
     if (!row || f.fine_status !== "unpaid") return;
     const check = row.querySelector(".fine-check");
-    if (selectedFineIds.has(f.id)) {
-      row.classList.add("selected");
-      if(check) check.textContent = "✓";
-    } else {
-      row.classList.remove("selected");
-      if(check) check.textContent = "";
-    }
+    if (selectedFineIds.has(f.id)) { row.classList.add("selected"); if(check) check.textContent = "✓"; }
+    else { row.classList.remove("selected"); if(check) check.textContent = ""; }
   });
 
-  // Selection bar
   const bar = document.getElementById("selectionBar");
   if (bar) {
     bar.style.display = selectedFineIds.size > 0 ? "flex" : "none";
@@ -903,34 +922,26 @@ function subscribeToFines() {
 
 function handleFineRealtimeChange(payload) {
   const { eventType, new: newRow, old: oldRow } = payload;
-
   if (eventType === "INSERT") {
     const labels = { overdue:"Overdue Return ($200/day)", damage:"Book Damage ($500)", lost:"Lost Book" };
     const amt    = newRow.fine_type === "lost" ? "consult librarian" : "$" + (newRow.amount||0).toLocaleString();
     showToast("New fine: \"" + (newRow.book_title||"") + "\" — " + (labels[newRow.fine_type]||"Fine") + " " + amt, "warn");
-
     const card = document.getElementById("finesCard");
     if (card) {
-      card.style.borderColor = "var(--red)";
-      card.style.boxShadow   = "0 0 30px hsla(0,70%,60%,0.3)";
+      card.style.borderColor = "var(--red)"; card.style.boxShadow = "0 0 30px hsla(0,70%,60%,0.3)";
       setTimeout(() => { card.style.borderColor = ""; card.style.boxShadow = ""; }, 4000);
     }
     showFineNotificationBanner(newRow);
-
   } else if (eventType === "UPDATE") {
     if (oldRow?.fine_status !== newRow?.fine_status) {
-      if (newRow.fine_status === "waived")
-        showToast("Fine waived: \"" + (newRow.book_title||"") + "\"", "success");
-      else if (newRow.fine_status === "paid")
-        showToast("Payment confirmed: \"" + (newRow.book_title||"") + "\"", "success");
+      if (newRow.fine_status === "waived") showToast("Fine waived: \"" + (newRow.book_title||"") + "\"", "success");
+      else if (newRow.fine_status === "paid") showToast("Payment confirmed: \"" + (newRow.book_title||"") + "\"", "success");
     } else if (newRow.amount !== oldRow?.amount) {
       showToast("Fine updated: \"" + (newRow.book_title||"") + "\" now $" + (newRow.amount||0).toLocaleString(), "info");
     }
-
   } else if (eventType === "DELETE") {
     showToast("A fine was removed from your account.", "info");
   }
-
   selectedFineIds.clear();
   loadFines();
 }
@@ -940,7 +951,6 @@ function showFineNotificationBanner(fine) {
   const labels = { overdue:"Overdue Return ($200/day)", damage:"Book Damage ($500)", lost:"Lost Book" };
   const amt    = fine.fine_type === "lost" ? "TBD — contact library" : "$" + (fine.amount||0).toLocaleString();
   const note   = fine.librarian_note ? `<div style="font-size:0.75rem;color:var(--primary);margin-top:3px;">Note: "${escHtml(fine.librarian_note)}"</div>` : "";
-
   const b = document.createElement("div");
   b.id    = "fineNotifBanner";
   b.innerHTML = `<div style="background:linear-gradient(135deg,hsla(0,70%,60%,0.14),hsla(30,90%,58%,0.08));border:1px solid hsla(0,70%,60%,0.5);border-radius:14px;padding:16px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:4px;">
@@ -956,12 +966,10 @@ function showFineNotificationBanner(fine) {
     <button onclick="this.closest('#fineNotifBanner').remove();"
       style="background:none;border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--muted);cursor:pointer;font-size:0.8rem;">Dismiss</button>
   </div>`;
-
   const finesCard = document.getElementById("finesCard");
   if (finesCard) finesCard.parentNode.insertBefore(b, finesCard);
   setTimeout(() => { try { b.remove(); } catch(e){} }, 30000);
 }
-
 
 function updateFineStats() {
   const unpaid      = allFines.filter(f => f.fine_status === "unpaid" && f.fine_type !== "lost");
@@ -970,7 +978,6 @@ function updateFineStats() {
 
   document.getElementById("statFinesTotal").textContent = "$" + totalUnpaid.toLocaleString();
 
-  // Alert banner
   const banner = document.getElementById("finesAlertBanner");
   if (unpaidCount > 0) {
     banner.style.display = "flex";
@@ -981,70 +988,16 @@ function updateFineStats() {
     cb.textContent   = `${unpaidCount} unpaid`;
   } else {
     banner.style.display = "none";
-    document.getElementById("finesBadge").style.display = "none";
+    document.getElementById("finesBadge").style.display     = "none";
     document.getElementById("finesCountBadge").style.display = "none";
   }
 }
 
 // ── PAY MODAL ─────────────────────────────────────────────────────────────────
-function openPayModal() {
-  const selected = allFines.filter(f => selectedFineIds.has(f.id));
-  if (!selected.length) {
-    // Auto-select all unpaid non-consult fines
-    selectAllFines();
-    const selected2 = allFines.filter(f => selectedFineIds.has(f.id));
-    if (!selected2.length) {
-      showToast("No payable fines selected.", "warn");
-      return;
-    }
-  }
-
-  const toPay  = allFines.filter(f => selectedFineIds.has(f.id));
-  const total  = toPay.reduce((s,f) => s + (f.amount||0), 0);
-
-  document.getElementById("payModalFineList").innerHTML = toPayItems(toPlay => toPay);
-
-  // Build fine list
-  const listEl = document.getElementById("payModalFineList");
-  listEl.innerHTML = toPayItems(toPayFn => toPayFn, toPayArr => toPayArr);
-
-  // Simpler direct build:
-  listEl.innerHTML = toPayListHtml(toPayList => toPayList);
-
-  const listHTML = toPayListHtmlDirect(toPayArr => toPayArr, toPayArr2 => toPayArr2);
-
-  // Direct approach:
-  listEl.innerHTML = toPayFinesHtml(toPayFines => toPayFines);
-
-  // OK just build it directly:
-  listEl.innerHTML = "";
-  toPayFinal(toPayFin => {
-    toPayFin.forEach(f => {
-      const t = FINE_TYPES[f.fine_type]||FINE_TYPES.overdue;
-      const div = document.createElement("div");
-      div.className = "pay-modal-fine-item";
-      div.innerHTML = `
-        <div class="pmfi-left">
-          <div class="pmfi-title">${t.icon} ${escHtml(f.book_title||"Unknown Book")}</div>
-          <div class="pmfi-reason">${t.label}${f._daysLate ? ` · ${f._daysLate} days late` : ""}</div>
-        </div>
-        <div class="pmfi-amount">$${(f.amount||0).toLocaleString()}</div>`;
-      listEl.appendChild(div);
-    });
-  });
-
-  function toPayFinal(cb) { cb(toPayList2()); }
-  function toPayList2() { return allFines.filter(f => selectedFineIds.has(f.id)); }
-
-  // Flush all the above, just do it cleanly:
-  buildPayModal();
-  openModal("payFineModal");
-}
-
 function buildPayModal() {
-  const toPayArr  = allFines.filter(f => selectedFineIds.has(f.id));
-  const total     = toPayArr.reduce((s,f) => s + (f.amount||0), 0);
-  const listEl    = document.getElementById("payModalFineList");
+  const toPayArr = allFines.filter(f => selectedFineIds.has(f.id));
+  const total    = toPayArr.reduce((s,f) => s + (f.amount||0), 0);
+  const listEl   = document.getElementById("payModalFineList");
 
   listEl.innerHTML = toPayArr.map(f => {
     const t = FINE_TYPES[f.fine_type] || FINE_TYPES.overdue;
@@ -1060,22 +1013,18 @@ function buildPayModal() {
   document.getElementById("payModalTotal").textContent = "$" + total.toLocaleString() + ".00";
 }
 
-// Rewrite openPayModal cleanly:
 function openPayModal() {
   const payable = allFines.filter(f => f.fine_status === "unpaid" && f.fine_type !== "lost");
   if (!selectedFineIds.size) {
     payable.forEach(f => selectedFineIds.add(f.id));
     updateSelectionUI();
   }
-
   const toPayArr = allFines.filter(f => selectedFineIds.has(f.id));
   if (!toPayArr.length) { showToast("No payable fines. Select at least one fine.", "warn"); return; }
-
   buildPayModal();
   openModal("payFineModal");
 }
 
-// ── SUBMIT PAYMENT ────────────────────────────────────────────────────────────
 async function submitPayment() {
   const name   = document.getElementById("cardName").value.trim();
   const number = document.getElementById("cardNumber").value.replace(/\s/g,"");
@@ -1088,33 +1037,23 @@ async function submitPayment() {
   }
 
   const btn = document.getElementById("payNowBtn");
-  btn.disabled = true;
-  btn.textContent = "Processing…";
-
-  const toPayIds = [...selectedFineIds];
+  btn.disabled = true; btn.textContent = "Processing…";
 
   try {
-    // Mark each selected fine as paid in Supabase
     const { error } = await sb
       .from("fines")
       .update({ fine_status: "paid", paid_at: new Date().toISOString() })
-      .in("id", toPayIds);
-
+      .in("id", [...selectedFineIds]);
     if (error) throw error;
-
     closeModal("payFineModal");
     selectedFineIds.clear();
     showToast("✅ Payment successful! Fines marked as paid.", "success");
-
-    // Reload fines
     await loadFines();
-
   } catch(err) {
     console.error("Payment error:", err);
     showToast("Payment failed. Please try again.", "warn");
   } finally {
-    btn.disabled = false;
-    btn.textContent = "Pay Now";
+    btn.disabled = false; btn.textContent = "Pay Now";
   }
 }
 
@@ -1122,12 +1061,10 @@ async function submitPayment() {
 function loadReadingList() {
   const list    = JSON.parse(localStorage.getItem(`rl_${userId}`) || "[]");
   const content = document.getElementById("readingListContent");
-
   if (!list.length) {
     content.innerHTML = `<p style="color:var(--muted);font-size:.875rem;">No books saved yet. <a href="Loaners.html" style="color:var(--primary);">Browse the library</a> to add resources.</p>`;
     return;
   }
-
   content.innerHTML = `<div class="reading-grid">${list.slice(0,12).map(b => `
     <div class="rl-card">
       <div class="rl-title">${escHtml(b.title)}</div>
@@ -1147,7 +1084,7 @@ function updateReadingStatus(bookId, status) {
   if (!book) return;
   book.status = status;
   localStorage.setItem(`rl_${userId}`, JSON.stringify(list));
-  showToast(`Reading status updated.`, "info");
+  showToast("Reading status updated.", "info");
 }
 
 // ── CHANGE PASSWORD ───────────────────────────────────────────────────────────
@@ -1161,8 +1098,7 @@ document.getElementById("passwordForm").addEventListener("submit", async e => {
   if (newPass !== confirm) { result.style.color="var(--red)"; result.textContent="Passwords do not match."; return; }
   if (newPass.length < 6)  { result.style.color="var(--red)"; result.textContent="Password must be at least 6 characters."; return; }
 
-  result.style.color = "var(--muted)";
-  result.textContent = "Updating…";
+  result.style.color = "var(--muted)"; result.textContent = "Updating…";
 
   try {
     const res  = await fetch("/setpassword", {
@@ -1194,64 +1130,60 @@ function fmtExpiry(el) {
 // ── HELPERS ───────────────────────────────────────────────────────────────────
 function escHtml(s) { return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 function fmtDate(d) { return new Date(d).toLocaleString("en-JM",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}); }
+
 // ── PROFILE ACTIVITY HISTORY ──────────────────────────────────────────────────
-let allProfileHistory  = [];
-let profileHistFilter  = "all";
+let allProfileHistory = [];
+let profileHistFilter = "all";
 
 async function loadProfileHistory() {
   const feed = document.getElementById("profileHistoryFeed");
   if (!feed) return;
-
   try {
-    // Fetch fines, holds and loans in parallel
     const [finesRes, holdsRes, loansRes] = await Promise.all([
       sb.from("fines").select("*").eq("user_id", String(userId)).order("issued_at", { ascending:false }).limit(50),
       sb.from("book_holds").select("*").eq("user_id", String(userId)).order("placed_at", { ascending:false }).limit(50),
-      sb.from("loans").select("*").eq("user_id", String(userId)).order("borrowed_at", { ascending:false }).limit(50)
+      sb.from("loans").select("*").eq("user_id", String(userId)).order("borrowedat", { ascending:false }).limit(50)
     ]);
 
     const items = [];
 
     (finesRes.data || []).forEach(f => {
       items.push({
-        type:   "fine",
-        icon:   "💸",
-        title:  `Fine: "${f.book_title||"Unknown"}"`,
-        sub1:   f.fine_type === "overdue" ? `Overdue · $${(f.amount||0).toLocaleString()}` : f.fine_type === "damage" ? "Book Damage · $500" : "Lost Book",
-        sub2:   f.librarian_note || "",
-        badge:  f.fine_status === "paid" ? "✅ Paid" : f.fine_status === "waived" ? "🔓 Waived" : "⚠️ Unpaid",
-        time:   f.issued_at
+        type:  "fine", icon:"💸",
+        title: `Fine: "${f.book_title||"Unknown"}"`,
+        sub1:  f.fine_type==="overdue" ? `Overdue · $${(f.amount||0).toLocaleString()}` : f.fine_type==="damage" ? "Book Damage · $500" : "Lost Book",
+        sub2:  f.librarian_note || "",
+        badge: f.fine_status==="paid" ? "✅ Paid" : f.fine_status==="waived" ? "🔓 Waived" : "⚠️ Unpaid",
+        time:  f.issued_at
       });
     });
 
     (holdsRes.data || []).forEach(h => {
       items.push({
-        type:   "hold",
-        icon:   "🔖",
-        title:  `Hold: "${h.book_title||"Unknown"}"`,
-        sub1:   { pending:"⏳ Pending prep", ready:"✅ Ready for pickup", collected:"📦 Collected", expired:"❌ Expired", waitlist:"📋 Waitlist" }[h.status] || h.status,
-        sub2:   h.shelf_location ? `📍 ${h.shelf_location}` : "",
-        badge:  { pending:"Pending", ready:"Ready", collected:"Collected", expired:"Expired", waitlist:"Waitlist" }[h.status] || h.status,
-        time:   h.placed_at
+        type:  "hold", icon:"🔖",
+        title: `Hold: "${h.book_title||"Unknown"}"`,
+        sub1:  { pending:"⏳ Pending prep", ready:"✅ Ready for pickup", collected:"📦 Collected", expired:"❌ Expired", waitlist:"📋 Waitlist" }[h.status] || h.status,
+        sub2:  h.shelf_location ? `📍 ${h.shelf_location}` : "",
+        badge: { pending:"Pending", ready:"Ready", collected:"Collected", expired:"Expired", waitlist:"Waitlist" }[h.status] || h.status,
+        time:  h.placed_at
       });
     });
 
     (loansRes.data || []).forEach(l => {
       const isReturned = l.status !== "active";
       items.push({
-        type:   isReturned ? "return" : "loan",
-        icon:   isReturned ? "📥" : "📚",
-        title:  isReturned ? `Returned: "${l.book_title||"Unknown"}"` : `Borrowed: "${l.book_title||"Unknown"}"`,
-        sub1:   l.due_date ? `Due: ${new Date(l.due_date).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"})}` : "No due date",
-        sub2:   isReturned && l.returned_at ? `Returned: ${new Date(l.returned_at).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"})}` : "",
-        badge:  isReturned ? "Returned" : "Active",
-        time:   isReturned ? (l.returned_at || l.borrowed_at) : l.borrowed_at
+        type:  isReturned ? "return" : "loan",
+        icon:  isReturned ? "📥" : "📚",
+        title: isReturned ? `Returned: "${l.booktitle||"Unknown"}"` : `Borrowed: "${l.booktitle||"Unknown"}"`,
+        sub1:  l.due ? `Due: ${new Date(l.due).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"})}` : "No due date",
+        sub2:  isReturned && l.return ? `Returned: ${new Date(l.return).toLocaleDateString("en-JM",{month:"short",day:"numeric",year:"numeric"})}` : "",
+        badge: isReturned ? "Returned" : "Active",
+        time:  isReturned ? (l.return || l.borrowedat) : l.borrowedat
       });
     });
 
     allProfileHistory = items.sort((a, b) => new Date(b.time) - new Date(a.time));
     renderProfileHistory();
-
   } catch(e) {
     console.error("loadProfileHistory:", e);
     if (feed) feed.innerHTML = `<p style="color:var(--muted);font-size:.875rem;">Could not load activity.</p>`;
@@ -1278,7 +1210,6 @@ function renderProfileHistory() {
     return;
   }
 
-  // Group by date
   const groups = {};
   items.forEach(item => {
     const d   = item.time ? new Date(item.time) : new Date();
@@ -1306,7 +1237,6 @@ function renderProfileHistory() {
       </div>`).join("")}
   `).join("");
 }
-
 </script>
 </body>
 </html>

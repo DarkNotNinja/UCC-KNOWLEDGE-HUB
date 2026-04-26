@@ -19,7 +19,7 @@ const _isLibrarianPage = (
   window.location.pathname.includes("librarian")
 );
 
-function requireAuth() {
+async function requireAuth() {
   if (_isLibrarianPage) {
     return requireLibrarianAuth();
   } else {
@@ -28,14 +28,29 @@ function requireAuth() {
 }
 
 // ── STUDENT AUTH ─────────────────────────────────────
-function requireStudentAuth() {
+async function requireStudentAuth() {
   const token = localStorage.getItem("token");
-  if (!token) {
-    window.location.href = "ucc_landing_page.html";
-    return false;
+  if (token) {
+    document.documentElement.style.visibility = "visible";
+    return true;
   }
-  document.documentElement.style.visibility = "visible";
-  return true;
+
+  // ── Check for Supabase Google session ──
+  const SUPABASE_URL  = "https://bqgtuxhfqfmxvryfljya.supabase.co";
+  const SUPABASE_ANON = "sb_publishable_y71RZ0UCDxkcmFQQHGEf-Q_davD0hbm";
+  const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  const { data: { session } } = await _sb.auth.getSession();
+  if (session) {
+    // Save user info so the rest of the app can use it
+    localStorage.setItem("token", session.access_token);
+    document.documentElement.style.visibility = "visible";
+    return true;
+  }
+
+  // No session at all — redirect to login
+  window.location.href = "ucc_landing_page.html";
+  return false;
 }
 
 // ── LIBRARIAN AUTH ────────────────────────────────────
@@ -159,7 +174,7 @@ function injectThemeStyles() {
     /* ── Light mode CSS variable overrides ── */
     html.light-mode {
       --bg:         hsl(220, 30%, 96%);
-      --fg:         hsl(220, 40%, 12%);
+      --fg:         hsl(220, 40%, 12%)
       --primary:    hsl(43, 65%, 40%);
       --primary-fg: hsl(0, 0%, 100%);
       --card:       hsl(0, 0%, 100%);
@@ -292,4 +307,6 @@ function injectThemeToggle() {
 }
 
 // ── RUN AUTH CHECK ────────────────────────────────────
-requireAuth();
+requireAuth().catch(() => {
+  window.location.href = "ucc_landing_page.html";
+});
