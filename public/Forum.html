@@ -679,7 +679,7 @@
     } else {
       // INSERT new thread — try Supabase first, fallback to backend
       const payload = { title, category, message, author: fullname, type: selectedType, book_ref: bookRef||null, likes: 0, user_id: userId, is_lecturer: false };
-      const { error: sbErr } = await sb.from("threads").insert(payload);
+      const { error: sbErr } = await _sb2.from("threads").insert(payload);
 
       if (sbErr) {
         try {
